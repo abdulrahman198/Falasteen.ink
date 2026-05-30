@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 | FALASTEEN.INK</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s2:#1c1b1b; --s4:#353534; --red:#E8221F; --red2:#930006; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; position:relative; overflow:hidden; }
+.bg-num { position:absolute; font-family:"Courier New",monospace; font-size:clamp(10rem,40vw,22rem); font-weight:900; color:rgba(232,34,31,.04); user-select:none; pointer-events:none; z-index:0; }
+.glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:500px; height:500px; background:radial-gradient(circle,rgba(232,34,31,.06),transparent 65%); pointer-events:none; }
+.card { position:relative; z-index:1; max-width:440px; }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1.1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; margin-bottom:40px; display:block; }
+.logo .r { color:var(--red); }
+.error-tag { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:14px; display:block; }
+.error-title { font-size:clamp(2rem,8vw,3.5rem); font-weight:900; line-height:1.1; margin-bottom:14px; }
+.error-title .r { color:var(--red); }
+.error-desc { font-size:.88rem; color:var(--dim); line-height:1.7; margin-bottom:32px; direction:inherit; text-align:left; }
+.btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:40px; }
+.btn-red { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:.84rem; font-weight:700; padding:13px 24px; text-decoration:none; transition:transform .2s; border:none; cursor:pointer; }
+.btn-red:hover { transform:translateY(-2px); }
+.btn-outline { display:inline-flex; align-items:center; gap:8px; background:transparent; border:1px solid rgba(93,63,59,.4); color:var(--dim); font-size:.84rem; padding:13px 24px; text-decoration:none; transition:background .2s; }
+.btn-outline:hover { background:var(--s2); }
+.quick-links { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; width:100%; max-width:320px; margin:0 auto; }
+.quick-link { background:var(--s2); padding:14px; text-decoration:none; color:var(--dim); font-size:.78rem; transition:all .2s; display:flex; align-items:center; gap:8px; }
+.quick-link:hover { background:rgba(232,34,31,.08); color:var(--text); }
+.ql-icon { font-size:1.1rem; }
+</style>
+</head>
+<body class="error-page">
+<div class="bg-num">404</div>
+<div class="glow"></div>
+<div class="card">
+  <a href="Index.html" class="logo">FALASTEEN<span class="r">.</span>INK</a>
+  <span class="error-tag">الذاكرة لا تضل — FALASTEEN.INK</span>
+  <h1 class="error-title">عودة إلى <span class="r">نبض المشروع</span></h1>
+  <p class="error-desc" dir="rtl">عالمنا يسير، ونحن هنا لنعيدك إلى محتوى الذاكرة والفعل.</p>
+  <p class="error-desc" dir="ltr" style="text-align:left;">The pulse continues. Return to the project's stream and keep exploring.</p>
+  <div class="btns" style="justify-content:center;">
+    <a href="Index.html" class="btn-red pulse-btn">🏠 العودة إلى الرئيسية</a>
+  </div>
+  <div class="quick-links">
+    <a href="Martyrs.html" class="quick-link"><span class="ql-icon">🕊</span>سجل الشهداء</a>
+    <a href="live.html" class="quick-link"><span class="ql-icon">🔴</span>بث مباشر</a>
+    <a href="Feed.html" class="quick-link"><span class="ql-icon">▶</span>نبض غزة</a>
+    <a href="Landmarks.html" class="quick-link"><span class="ql-icon">🏛</span>المعالم</a>
+    <a href="Map.html" class="quick-link"><span class="ql-icon">🗺</span>الخريطة</a>
+    <a href="Contact.html" class="quick-link"><span class="ql-icon">✉</span>تواصل</a>
+  </div>
+</div>
+<script>
+var sec=10;
+var el=document.createElement('p');
+el.style.cssText='font-family:Courier New,monospace;font-size:.7rem;color:#9a9898;margin-top:16px;';
+el.textContent='الانتقال للرئيسية خلال '+sec+' ثانية / Redirecting in '+sec+'s...';
+var card=document.querySelector('.card')||document.body;
+card.appendChild(el);
+var t=setInterval(function(){
+  if(sec<=0){clearInterval(t);window.location.href='Index.html';return;}
+  sec--;
+  el.textContent='الانتقال للرئيسية خلال '+sec+' ثانية / Redirecting in '+sec+'s...';
+},1000);
+window.addEventListener('pagehide',function(){clearInterval(t);});
+</script>
+</body>
+</html>

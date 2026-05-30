@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>انضم | FALASTEEN.INK</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+.glow { position:fixed; top:30%; left:50%; transform:translateX(-50%); width:500px; height:500px; background:radial-gradient(circle,rgba(232,34,31,0.07),transparent 65%); pointer-events:none; }
+.card { width:100%; max-width:400px; position:relative; z-index:1; }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1.3rem; letter-spacing:.08em; text-align:center; margin-bottom:6px; display:block; text-decoration:none; color:var(--text); }
+.logo .r { color:var(--red); }
+.tagline { text-align:center; font-size:.76rem; color:var(--dim); margin-bottom:28px; }
+.tabs { display:flex; gap:2px; margin-bottom:2px; }
+.tab { flex:1; padding:13px; text-align:center; background:var(--s2); border:none; cursor:pointer; color:var(--dim); font-size:.82rem; font-weight:600; transition:all .2s; border-bottom:2px solid transparent; font-family:Arial,sans-serif; }
+.tab.on { color:var(--red); border-bottom-color:var(--red); background:rgba(232,34,31,.05); }
+.form-box { background:var(--s2); padding:26px 22px; }
+.f { margin-bottom:16px; }
+.lbl { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:7px; }
+.inp { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.9rem; padding:12px 14px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; }
+.inp:focus { border-color:var(--red); }
+.inp::placeholder { color:var(--dim); }
+.pw { position:relative; }
+.pw .inp { padding-right:46px; }
+.eye { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--dim); font-size:1rem; padding:4px; }
+.eye:hover { color:var(--text); }
+.bar { height:3px; background:var(--s4); margin-top:6px; border-radius:2px; overflow:hidden; }
+.bar-fill { height:100%; width:0%; border-radius:2px; transition:width .3s,background .3s; }
+.bar-text { font-size:.68rem; margin-top:4px; color:var(--dim); }
+.sel { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.88rem; padding:12px 14px; outline:none; font-family:Arial,sans-serif; appearance:none; }
+.sel option { background:var(--s3); }
+.err { background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.25); padding:10px 14px; font-size:.8rem; color:var(--red); margin-bottom:14px; display:none; line-height:1.5; }
+.btn { width:100%; padding:15px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.88rem; font-weight:700; letter-spacing:.04em; transition:transform .2s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(232,34,31,.35); }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.forgot { text-align:left; direction:ltr; margin-top:6px; }
+.forgot a { font-size:.72rem; color:var(--dim); text-decoration:none; }
+.forgot a:hover { color:var(--red); }
+/* SUCCESS */
+.ok-screen { display:none; background:var(--s2); padding:36px 22px; text-align:center; }
+.ok-icon { font-size:3rem; margin-bottom:14px; display:block; }
+.ok-title { font-size:1.1rem; font-weight:900; margin-bottom:8px; }
+.ok-title .r { color:var(--red); }
+.ok-desc { font-size:.82rem; color:var(--dim); line-height:1.7; margin-bottom:20px; }
+.w-box { background:var(--s3); border:1px solid rgba(0,185,84,.2); padding:14px; margin-bottom:16px; }
+.w-lbl { font-family:"Courier New",monospace; font-size:.5rem; color:var(--green); letter-spacing:.18em; margin-bottom:6px; display:block; }
+.w-addr { font-family:"Courier New",monospace; font-size:.58rem; color:var(--text); word-break:break-all; direction:ltr; line-height:1.6; }
+.w-note { font-size:.68rem; color:var(--dim); margin-top:6px; line-height:1.5; }
+.g-box { background:rgba(232,34,31,.06); border:1px solid rgba(232,34,31,.2); padding:14px; display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.g-icon { font-size:2rem; }
+.g-name { font-size:.9rem; font-weight:700; margin-bottom:2px; }
+.g-sub { font-size:.7rem; color:var(--dim); }
+.go { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.86rem; font-weight:700; text-decoration:none; display:block; text-align:center; }
+.dots { display:flex; justify-content:center; gap:18px; margin-bottom:20px; }
+.dot-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(93,63,59,.3); transition:background .3s; }
+.dot.done { background:var(--green); }
+.dot.active { background:var(--red); animation:glow 1.5s infinite; }
+@keyframes glow { 0%,100%{box-shadow:0 0 0 0 rgba(232,34,31,.4);}50%{box-shadow:0 0 0 5px rgba(232,34,31,0);} }
+.dot-lbl { font-family:"Courier New",monospace; font-size:.44rem; color:var(--dim); letter-spacing:.1em; }
+.note { text-align:center; margin-top:14px; font-size:.72rem; color:var(--dim); }
+.note a { color:var(--red); text-decoration:none; }
+.spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:sp .7s linear infinite; }
+@keyframes sp { to{transform:rotate(360deg);} }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="card">
+  <a href="Index.html" class="logo">FALASTEEN<span class="r">.</span>INK</a>
+  <p class="tagline">الذاكرة التي لا تُمحى — The Uncensorable Memory</p>
+
+  <div class="tabs">
+    <button type="button" class="tab on" id="t1" onclick="sw('signup')">انضم / Join</button>
+    <button type="button" class="tab" id="t2" onclick="sw('login')">دخول / Login</button>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="pSignup">
+    <div class="form-box">
+      <div class="err" id="eS"></div>
+      <div class="f">
+        <label class="lbl">الاسم / Name *</label>
+        <input type="text" class="inp" id="sN" placeholder="اسمك الكامل / Full name" autocomplete="name"/>
+      </div>
+      <div class="f">
+        <label class="lbl">البريد الإلكتروني / Email *</label>
+        <input type="email" class="inp" id="sE" placeholder="example@email.com" dir="ltr" autocomplete="email"/>
+      </div>
+      <div class="f">
+        <label class="lbl">كلمة المرور / Password *</label>
+        <div class="pw">
+          <input type="password" class="inp" id="sP" placeholder="8 أحرف على الأقل / Min 8" autocomplete="new-password" oninput="strength(this.value)"/>
+          <button type="button" class="eye" onclick="eye('sP',this)">👁</button>
+        </div>
+        <div class="bar"><div class="bar-fill" id="bFill"></div></div>
+        <div class="bar-text" id="bTxt"></div>
+      </div>
+      <div class="f" style="margin-bottom:8px;">
+        <label class="lbl">التخصص / Role</label>
+        <select class="sel" id="sR">
+          <option value="witness">🌱 شاهد / Witness</option>
+          <option value="journalist">📸 صحفي / Journalist</option>
+          <option value="archivist">📜 مؤرخ / Archivist</option>
+          <option value="activist">🛡 ناشط / Activist</option>
+          <option value="diaspora">🌍 شتات / Diaspora</option>
+        </select>
+      </div>
+      <button type="button" class="btn" id="bS" onclick="signup()"><span>🛡</span> إنشاء حساب / Create Account</button>
+    </div>
+    <div class="note">بالتسجيل أنت توافق على <a href="Policy.html">سياسة المنصة</a></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="pLogin" style="display:none;">
+    <div class="form-box">
+      <div class="err" id="eL"></div>
+      <div class="f">
+        <label class="lbl">البريد الإلكتروني / Email</label>
+        <input type="email" class="inp" id="lE" placeholder="example@email.com" dir="ltr" autocomplete="email"/>
+      </div>
+      <div class="f" style="margin-bottom:6px;">
+        <label class="lbl">كلمة المرور / Password</label>
+        <div class="pw">
+          <input type="password" class="inp" id="lP" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+          <button type="button" class="eye" onclick="eye('lP',this)">👁</button>
+        </div>
+        <div class="forgot"><a href="#" onclick="reset();return false;">نسيت كلمة المرور؟ / Forgot?</a></div>
+      </div>
+      <button type="button" class="btn" id="bL" onclick="login()"><span>🔑</span> دخول / Login</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="ok-screen" id="okScreen">
+    <div class="dots">
+      <div class="dot-wrap"><div class="dot" id="d1"></div><span class="dot-lbl">ACCOUNT</span></div>
+      <div class="dot-wrap"><div class="dot" id="d2"></div><span class="dot-lbl">WALLET</span></div>
+      <div class="dot-wrap"><div class="dot" id="d3"></div><span class="dot-lbl">GUARDIAN</span></div>
+    </div>
+    <span class="ok-icon" id="okI">⏳</span>
+    <h2 class="ok-title" id="okT">جاري الإعداد<span class="r">...</span></h2>
+    <p class="ok-desc" id="okD">نقوم بإنشاء هويتك الرقمية.<br/>Creating your digital identity.</p>
+    <div class="w-box" id="wBox" style="display:none;">
+      <span class="w-lbl">محفظتك / YOUR WALLET</span>
+      <div class="w-addr" id="wAddr"></div>
+      <p class="w-note">🔐 مرتبطة بإيميلك / Linked to your email</p>
+    </div>
+    <div class="g-box" id="gBox" style="display:none;">
+      <span class="g-icon" id="gI">🌱</span>
+      <div><div class="g-name" id="gN">—</div><div class="g-sub">Level 1 · Guardian ✓</div></div>
+    </div>
+    <a href="Index.html" class="go" id="goBtn" style="display:none;">ادخل إلى المنصة →</a>
+  </div>
+</div>
+
+<script>
+// Supabase client
+var SB = null;
+try { SB = window.supabase.createClient(FL.SUPABASE_URL, FL.SUPABASE_KEY); } catch(e) {}
+
+var RI = {witness:'🌱',journalist:'📸',archivist:'📜',activist:'🛡',diaspora:'🌍'};
+
+function getNextPage() {
+  var next = new URLSearchParams(window.location.search).get('next') || 'Index.html';
+  return /^[A-Za-z0-9_-]+\.html$/.test(next) ? next : 'Index.html';
+}
+
+function goToPage(page) {
+  window.location.assign(new URL(page, window.location.href).href);
+}
+
+function sw(tab) {
+  document.getElementById('t1').classList.toggle('on', tab==='signup');
+  document.getElementById('t2').classList.toggle('on', tab==='login');
+  document.getElementById('pSignup').style.display = tab==='signup'?'block':'none';
+  document.getElementById('pLogin').style.display = tab==='login'?'block':'none';
+}
+
+function eye(id, btn) {
+  var el = document.getElementById(id);
+  el.type = el.type==='password'?'text':'password';
+  btn.textContent = el.type==='password'?'👁':'🙈';
+}
+
+function strength(v) {
+  var f=document.getElementById('bFill'), t=document.getElementById('bTxt');
+  if(!v){f.style.width='0%';t.textContent='';return;}
+  var s=0;
+  if(v.length>=8)s++; if(v.length>=12)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
+  var l=[{w:'20%',bg:'#E8221F',t:'ضعيفة'},{w:'40%',bg:'#ff6b35',t:'مقبولة'},{w:'65%',bg:'#ffb347',t:'جيدة'},{w:'85%',bg:'#a0d468',t:'قوية'},{w:'100%',bg:'#00b954',t:'ممتازة ✓'}];
+  var o=l[Math.min(s,4)];f.style.width=o.w;f.style.background=o.bg;t.textContent=o.t;t.style.color=o.bg;
+}
+
+function setLoading(id, on) {
+  var b=document.getElementById(id);
+  b.disabled=on;
+  if(on){b._t=b.innerHTML;b.innerHTML='<span class="spin"></span>';}
+  else{b.innerHTML=b._t||b.innerHTML;}
+}
+
+function showErr(id, msg) {
+  var el=document.getElementById(id);el.textContent=msg;el.style.display='block';
+}
+
+async function signup() {
+  var name=document.getElementById('sN').value.trim();
+  var email=document.getElementById('sE').value.trim().toLowerCase();
+  var pass=document.getElementById('sP').value;
+  var role=document.getElementById('sR').value;
+  var err=document.getElementById('eS');
+  err.style.display='none';
+
+  if(!name){showErr('eS','الرجاء إدخال الاسم / Enter name');return;}
+  if(!email||!email.includes('@')){showErr('eS','بريد إلكتروني غير صحيح / Invalid email');return;}
+  if(pass.length<8){showErr('eS','كلمة المرور 8 أحرف على الأقل / Min 8 chars');return;}
+
+  setLoading('bS',true);
+
+  try {
+    if(!SB){
+      showErr('eS','خدمة تسجيل الدخول غير متاحة حالياً / Auth service unavailable');
+      setLoading('bS',false);return;
+    }
+    var r=await SB.auth.signUp({email:email,password:pass,options:{data:{name:name,role:role}}});
+    if(r.error){
+      var m=r.error.message;
+      if(m.toLowerCase().includes('already')){showErr('eS','هذا الإيميل مسجل بالفعل / Already registered');}
+      else{showErr('eS',m);}
+      setLoading('bS',false);return;
+    }
+    showSuccess(name, r.data && r.data.user ? r.data.user.id : '', role);
+  } catch(e){
+    showErr('eS','خطأ في الاتصال / Connection error');
+    setLoading('bS',false);
+  }
+}
+
+async function login() {
+  var email=document.getElementById('lE').value.trim().toLowerCase();
+  var pass=document.getElementById('lP').value;
+  document.getElementById('eL').style.display='none';
+
+  if(!email){showErr('eL','الرجاء إدخال الإيميل / Enter email');return;}
+  if(!pass){showErr('eL','الرجاء إدخال كلمة المرور / Enter password');return;}
+
+  setLoading('bL',true);
+
+  try {
+    if(!SB){
+      showErr('eL','خدمة تسجيل الدخول غير متاحة حالياً / Auth service unavailable');
+      setLoading('bL',false);return;
+    }
+    var r=await SB.auth.signInWithPassword({email:email,password:pass});
+    if(r.error){showErr('eL','إيميل أو كلمة مرور غير صحيحة / Incorrect credentials');setLoading('bL',false);return;}
+    goToPage(getNextPage());
+  } catch(e){
+    showErr('eL','خطأ في الاتصال / Connection error');
+    setLoading('bL',false);
+  }
+}
+
+async function reset() {
+  var email=document.getElementById('lE').value.trim();
+  if(!email){alert('الرجاء إدخال إيميلك أولاً / Enter your email first');return;}
+  if(SB){
+    var failed = false;
+    await SB.auth.resetPasswordForEmail(email).catch(function(){
+      showErr('eL','الخدمة غير متاحة — تحقق من الاتصال / Service unavailable');
+      failed = true;
+    });
+    if (!failed) alert('تم إرسال رابط إعادة التعيين / Reset link sent to: '+email);
+  }
+}
+
+function showSuccess(name,wallet,role) {
+  document.getElementById('pSignup').style.display='none';
+  document.querySelector('.tabs').style.display='none';
+  document.querySelector('.tagline').style.display='none';
+  document.getElementById('okScreen').style.display='block';
+
+  setTimeout(function(){
+    document.getElementById('d1').className='dot done';
+    document.getElementById('d2').className='dot active';
+    document.getElementById('okI').textContent='🔐';
+    document.getElementById('okT').innerHTML='جاري إنشاء <span class="r">المحفظة</span>...';
+  },500);
+
+  setTimeout(function(){
+    document.getElementById('d2').className='dot done';
+    document.getElementById('d3').className='dot active';
+    document.getElementById('wBox').style.display='block';
+    document.getElementById('wAddr').textContent=wallet;
+  },1400);
+
+  setTimeout(function(){
+    document.getElementById('d3').className='dot done';
+    var icon=RI[role]||'🌱';
+    document.getElementById('okI').textContent=icon;
+    document.getElementById('okT').innerHTML='مرحباً <span class="r">'+FL.esc(name.split(' ')[0])+'</span>! 🎉';
+    document.getElementById('okD').innerHTML='أنت الآن حارس للذاكرة الفلسطينية.<br/>You are now a Guardian.';
+    document.getElementById('gI').textContent=icon;
+    document.getElementById('gN').textContent=name;
+    document.getElementById('gBox').style.display='flex';
+    document.getElementById('goBtn').href=getNextPage();
+    document.getElementById('goBtn').style.display='block';
+  },2400);
+}
+
+// Auto-login check
+window.addEventListener('load',function(){
+  if(SB){
+    SB.auth.getSession().then(function(res){
+      var s=res.data&&res.data.session;
+      if(s&&s.user){
+        goToPage(getNextPage());
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>

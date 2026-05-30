@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#E8221F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>تواصل معنا | FALASTEEN.INK</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:80px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+
+.hero { padding:90px 18px 28px; }
+.hero-tag { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(2rem,6vw,3rem); font-weight:900; margin-bottom:8px; }
+.hero-title .red { color:var(--red); }
+.hero-desc { font-size:0.86rem; color:var(--dim); line-height:1.7; max-width:460px; }
+
+.section { padding:0 18px; margin-bottom:2px; }
+.section-label { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:.22em; padding:18px 0 10px; display:block; }
+
+/* CONTACT METHODS */
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:2px; }
+@media(max-width:400px){ .contact-grid{grid-template-columns:1fr;} }
+.contact-card { background:var(--s2); padding:24px 18px; text-align:center; cursor:pointer; transition:background .2s; text-decoration:none; display:block; color:var(--text); }
+.contact-card:hover { background:var(--s3); }
+.cc-icon { font-size:2rem; margin-bottom:10px; display:block; }
+.cc-label { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:.14em; margin-bottom:4px; }
+.cc-value { font-size:0.82rem; color:var(--dim); }
+
+/* FORM */
+.contact-form { background:var(--s2); padding:24px; margin-bottom:2px; }
+.form-label { font-family:"Courier New",monospace; font-size:0.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:7px; }
+.form-input, .form-select, .form-textarea { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:0.88rem; padding:11px 13px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; appearance:none; margin-bottom:14px; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--red); }
+.form-input::placeholder, .form-textarea::placeholder { color:var(--dim); }
+.form-textarea { resize:vertical; min-height:100px; }
+.submit-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.88rem; font-weight:700; letter-spacing:.06em; transition:transform .2s,box-shadow .2s; }
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,34,31,.35); }
+.success-msg { background:rgba(0,185,84,.08); border:1px solid rgba(0,185,84,.25); padding:14px; text-align:center; font-size:.84rem; color:var(--green); display:none; }
+
+/* TEAM */
+.team-list { display:flex; flex-direction:column; gap:2px; margin-bottom:24px; }
+.team-item { background:var(--s2); padding:16px; display:flex; gap:14px; align-items:center; }
+.team-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.88rem; font-weight:700; color:#fff; flex-shrink:0; }
+.team-name { font-size:.9rem; font-weight:700; margin-bottom:2px; }
+.team-role { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.1em; }
+
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:.54rem; }
+.bottom-nav a:hover { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <a href="Index.html" style="font-family:'Courier New',monospace;font-size:.62rem;color:var(--dim);text-decoration:none;">← رجوع / Back</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">تواصل معنا — CONTACT US</span>
+  <h1 class="hero-title">كيف <span class="red">تتواصل</span> معنا؟</h1>
+  <p class="hero-desc">How to reach us — نحن هنا لسماعك. كل رسالة تصلنا مهمة.</p>
+</div>
+
+<div class="section">
+  <span class="section-label">قنوات التواصل — CHANNELS</span>
+  <div class="contact-grid">
+    <a href="mailto:handala_hamburg@yahoo.com" class="contact-card">
+      <span class="cc-icon">📧</span>
+      <div class="cc-label">EMAIL / البريد</div>
+      <div class="cc-value">handala_hamburg@yahoo.com</div>
+    </a>
+    <a href="Index.html" class="contact-card">
+      <span class="cc-icon">🐦</span>
+      <div class="cc-label">TWITTER / تويتر</div>
+      <div class="cc-value">@falasteenink</div>
+    </a>
+    <a href="Index.html" class="contact-card">
+      <span class="cc-icon">💬</span>
+      <div class="cc-label">TELEGRAM / تيليغرام</div>
+      <div class="cc-value">t.me/falasteenink</div>
+    </a>
+    <a href="Index.html" class="contact-card">
+      <span class="cc-icon">🌐</span>
+      <div class="cc-label">NOSTR / نوستر</div>
+      <div class="cc-value">Decentralized</div>
+    </a>
+  </div>
+</div>
+
+<div class="section" style="margin-bottom:2px;">
+  <span class="section-label">أرسل رسالة — SEND MESSAGE</span>
+</div>
+<form class="contact-form" id="contact-form" style="margin:0 18px 2px;" action="https://formsubmit.co/handala_hamburg@yahoo.com" method="POST" onsubmit="return prepareContactSubmit(event)">
+  <input type="hidden" name="_subject" value="رسالة جديدة من FALASTEEN.INK"/>
+  <input type="hidden" name="_template" value="table"/>
+  <input type="hidden" name="_captcha" value="false"/>
+  <input type="hidden" name="_next" id="formNext" value=""/>
+  <label class="form-label">الاسم / Name</label>
+  <input type="text" class="form-input" id="cName" name="name" placeholder="اسمك / Your name" required/>
+  <label class="form-label">البريد الإلكتروني / Email</label>
+  <input type="email" class="form-input" id="cEmail" name="email" placeholder="email@example.com" required/>
+  <label class="form-label">الموضوع / Subject</label>
+  <select class="form-select" style="margin-bottom:14px;" id="cSubject" name="subject" required>
+    <option value="">اختر / Select...</option>
+    <option>توثيق شهيد / Report a Martyr</option>
+    <option>توثيق معلم / Report a Landmark</option>
+    <option>الإبلاغ عن خطأ / Report an Error</option>
+    <option>مساهمة / Contribution</option>
+    <option>شراكة / Partnership</option>
+    <option>أخرى / Other</option>
+  </select>
+  <label class="form-label">الرسالة / Message</label>
+  <textarea class="form-textarea" id="cMessage" name="message" placeholder="اكتب رسالتك هنا / Write your message here..." required></textarea>
+  <button class="submit-btn" type="submit">إرسال / Send →</button>
+  <div class="success-msg" id="successMsg">✅ تم إرسال رسالتك! سنرد عليك قريباً.<br/>Your message was sent! We'll reply soon.</div>
+</form>
+
+<div class="section">
+  <span class="section-label">الفريق — TEAM</span>
+  <div class="team-list">
+    <div class="team-item">
+      <div class="team-avatar" style="background:linear-gradient(135deg,var(--red),var(--red2));">م.أ</div>
+      <div><div class="team-name">المؤسس / Founder</div><div class="team-role">VISION & STRATEGY — الرؤية والاستراتيجية</div></div>
+    </div>
+    <div class="team-item">
+      <div class="team-avatar" style="background:linear-gradient(135deg,#006633,#003322);">T.D</div>
+      <div><div class="team-name">تطوير تقني / Tech Lead</div><div class="team-role">BLOCKCHAIN & INFRASTRUCTURE</div></div>
+    </div>
+    <div class="team-item">
+      <div class="team-avatar" style="background:linear-gradient(135deg,#1a1a6e,#0a0a40);">A.R</div>
+      <div><div class="team-name">توثيق وأرشيف / Archive Lead</div><div class="team-role">DOCUMENTATION & HISTORY</div></div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>Profile</a>
+</nav>
+
+<script>
+function prepareContactSubmit() {
+  var name = document.getElementById('cName').value.trim();
+  var email = document.getElementById('cEmail').value.trim();
+  var msg = document.getElementById('cMessage').value.trim();
+  if (!name || !email || !msg) { alert('الرجاء ملء جميع الحقول / Please fill all fields'); return false; }
+  document.getElementById('formNext').value = window.location.href.split('?')[0] + '?sent=1#contact-form';
+  var btn = document.querySelector('.submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال... / Sending...';
+  return true;
+}
+
+window.addEventListener('load', function() {
+  if (new URLSearchParams(window.location.search).get('sent') === '1') {
+    document.getElementById('successMsg').style.display = 'block';
+  }
+});
+</script>
+
+<script>
+if("serviceWorker" in navigator && window.location.protocol !== "file:"){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js")
+    .then(function(r){console.log("SW registered ✓");})
+    .catch(function(e){console.log("SW error:",e);});
+  });
+}
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

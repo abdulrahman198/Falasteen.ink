@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#E8221F"/>
+<title>For You | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="manifest" href="manifest.json"/>
+<script src="app-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="discovery-engine.js" defer></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+html, body { min-height:100%; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; padding-bottom:78px; overflow-x:hidden; }
+.topnav { position:fixed; top:0; inset-inline:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:13px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; color:var(--text); text-decoration:none; letter-spacing:.08em; }
+.logo-dot { color:var(--red); }
+.nav-mode { display:flex; gap:2px; background:rgba(0,0,0,.42); padding:3px; }
+.mode-pill { border:none; color:var(--dim); background:transparent; padding:6px 10px; font-size:.68rem; font-weight:800; cursor:pointer; }
+.mode-pill.on { background:var(--red); color:#fff; }
+.discovery-shell { padding-top:56px; }
+.hero-strip { padding:18px; background:linear-gradient(180deg,rgba(232,34,31,.07),transparent); }
+.eyebrow { display:block; font-family:"Courier New",monospace; color:var(--red); letter-spacing:.22em; font-size:.54rem; margin-bottom:8px; }
+.hero-row { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; }
+.hero-title { font-size:clamp(1.55rem,5vw,2.45rem); line-height:1.05; font-weight:900; }
+.hero-title span { color:var(--red); }
+.refresh-btn { flex-shrink:0; border:1px solid rgba(232,34,31,.42); color:#fff; background:var(--s2); min-height:38px; padding:0 12px; font-weight:900; cursor:pointer; }
+.refresh-btn:hover { background:rgba(232,34,31,.16); }
+.trend-bar { display:flex; gap:8px; overflow-x:auto; padding:0 18px 14px; scrollbar-width:none; }
+.trend-bar::-webkit-scrollbar { display:none; }
+.trend-chip { border:1px solid rgba(232,34,31,.34); background:rgba(232,34,31,.08); color:#fff; padding:7px 10px; font-size:.72rem; font-weight:800; white-space:nowrap; cursor:pointer; }
+.feed { display:flex; flex-direction:column; gap:2px; }
+.discovery-card { min-height:calc(100vh - 134px); background:var(--s2); display:grid; grid-template-rows:minmax(260px,1fr) auto; scroll-margin-top:56px; position:relative; border-block:1px solid rgba(93,63,59,.08); }
+.media-zone { position:relative; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at top right,rgba(232,34,31,.14),transparent 34%), #111; overflow:hidden; }
+.media-zone img, .media-zone video { width:100%; height:100%; object-fit:cover; display:block; }
+.media-zone video { background:#000; }
+.media-fallback { width:100%; height:100%; min-height:300px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; color:rgba(255,255,255,.9); text-align:center; padding:28px; }
+.fallback-icon { font-size:3.4rem; }
+.fallback-type { font-family:"Courier New",monospace; color:var(--red); font-size:.58rem; letter-spacing:.2em; }
+.score-badge { position:absolute; top:12px; left:12px; background:rgba(0,0,0,.64); border:1px solid rgba(232,34,31,.34); color:#fff; padding:6px 9px; font-family:"Courier New",monospace; font-size:.56rem; z-index:3; }
+.content-zone { display:grid; grid-template-columns:1fr auto; gap:14px; padding:16px 18px 18px; background:linear-gradient(180deg,rgba(14,14,14,.92),var(--s2)); }
+.meta-line { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.type-pill { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.22); padding:4px 8px; }
+.city { font-family:"Courier New",monospace; color:var(--dim); font-size:.56rem; }
+.card-title { font-size:1.2rem; font-weight:900; line-height:1.35; margin-bottom:8px; }
+.card-desc { color:var(--dim); font-size:.86rem; line-height:1.7; max-width:70ch; }
+.tag-row { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; direction:rtl; }
+.tag { color:#fff; background:rgba(0,0,0,.28); border:1px solid rgba(232,34,31,.28); padding:5px 8px; font-size:.7rem; font-weight:800; }
+.related { margin-top:13px; display:flex; gap:6px; flex-wrap:wrap; }
+.related a { color:var(--dim); text-decoration:none; border-bottom:1px solid rgba(232,34,31,.35); font-size:.72rem; }
+.actions { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:10px; }
+.action-btn { width:46px; height:46px; border:1px solid rgba(93,63,59,.28); background:var(--s3); color:#fff; font-size:1.05rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.action-btn:hover, .action-btn.on { border-color:var(--red); color:#fff; background:rgba(232,34,31,.22); }
+.action-label { font-family:"Courier New",monospace; font-size:.5rem; color:var(--dim); text-align:center; margin-top:-6px; }
+.loader { padding:26px 18px; text-align:center; color:var(--dim); font-size:.8rem; }
+.empty { min-height:50vh; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--dim); padding:28px; }
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; border-top:1px solid rgba(93,63,59,.12); }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:.54rem; }
+.bottom-nav a.active, .bottom-nav a:hover { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+@media (min-width:900px) {
+  body { padding-bottom:0; }
+  .discovery-shell { max-width:980px; margin:0 auto; }
+  .discovery-card { min-height:720px; grid-template-columns:minmax(0,1.08fr) minmax(340px,.72fr); grid-template-rows:1fr; }
+  .content-zone { grid-template-columns:1fr 56px; align-content:end; }
+}
+@media (max-width:560px) {
+  .topnav { padding-inline:12px; }
+  .mode-pill { padding-inline:8px; }
+  .content-zone { padding:14px 14px 16px; gap:10px; }
+  .card-title { font-size:1.05rem; }
+  .card-desc { font-size:.8rem; }
+  .action-btn { width:42px; height:42px; }
+}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <div class="nav-mode" aria-label="Discovery mode">
+    <button class="mode-pill on" id="forYouBtn" type="button">For You</button>
+    <button class="mode-pill" id="trendingBtn" type="button">Trending</button>
+  </div>
+</nav>
+
+<main class="discovery-shell">
+  <section class="hero-strip">
+    <span class="eyebrow">DISCOVERY FEED</span>
+    <div class="hero-row">
+      <h1 class="hero-title">لك، حسب <span>اهتمامك</span></h1>
+      <button class="refresh-btn" id="refreshBtn" type="button">تحديث</button>
+    </div>
+  </section>
+
+  <section class="trend-bar" id="trendingTags" aria-label="Trending tags"></section>
+  <section class="feed" id="feed" aria-live="polite"></section>
+  <div class="loader" id="loader">جاري تحميل التوصيات...</div>
+  <div id="sentinel" style="height:1px;"></div>
+</main>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">⌂</span>Home</a>
+  <a href="live.html"><span class="nav-icon">●</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Martyrs.html"><span class="nav-icon">◊</span>Martyrs</a>
+  <a href="Discovery.html"><span class="nav-icon">⌕</span>Discover</a>
+</nav>
+
+<script>
+var discoveryItems = [];
+var renderedCount = 0;
+var pageSize = 5;
+var activeMode = 'for-you';
+var observer = null;
+var videoObserver = null;
+var watchTimers = {};
+
+function byId(id) { return document.getElementById(id); }
+
+function itemTypeLabel(type) {
+  return {
+    reel: 'REEL',
+    martyr: 'MARTYR',
+    landmark: 'LANDMARK',
+    archive: 'ARCHIVE'
+  }[type] || 'CONTENT';
+}
+
+function renderTrendingTags() {
+  var wrap = byId('trendingTags');
+  var tags = FLDiscoveryEngine.getTrendingTags(12);
+  wrap.innerHTML = tags.map(function(item) {
+    return '<button type="button" class="trend-chip" data-tag="' + FLDiscoveryEngine.esc(item.tag) + '">#' + FLDiscoveryEngine.esc(item.tag) + '</button>';
+  }).join('');
+  wrap.querySelectorAll('.trend-chip').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tag = btn.getAttribute('data-tag');
+      discoveryItems = discoveryItems.slice().sort(function(a, b) {
+        return (b.tags.indexOf(tag) > -1 ? 1 : 0) - (a.tags.indexOf(tag) > -1 ? 1 : 0);
+      });
+      resetFeed();
+    });
+  });
+}
+
+function mediaHtml(item) {
+  if (item.video_url) {
+    return '<video muted playsinline loop preload="metadata" data-id="' + FLDiscoveryEngine.esc(item.id) + '">' +
+      '<source src="' + FLDiscoveryEngine.esc(item.video_url) + '">' +
+      '</video>';
+  }
+  if (item.cover_url) {
+    return '<img src="' + FLDiscoveryEngine.esc(item.cover_url) + '" alt="' + FLDiscoveryEngine.esc(item.title) + '"/>';
+  }
+  return '<div class="media-fallback">' +
+    '<div class="fallback-icon">' + item.icon + '</div>' +
+    '<div class="fallback-type">' + itemTypeLabel(item.type) + '</div>' +
+  '</div>';
+}
+
+function renderRelated(item) {
+  var related = FLDiscoveryEngine.getRelatedContent(item, discoveryItems, 3);
+  if (!related.length) return '';
+  return '<div class="related">' + related.map(function(r) {
+    return '<a href="' + r.source + '">' + FLDiscoveryEngine.esc(r.title) + '</a>';
+  }).join('') + '</div>';
+}
+
+function cardHtml(item, index) {
+  return '<article class="discovery-card" data-id="' + FLDiscoveryEngine.esc(item.id) + '" data-tags="' + FLDiscoveryEngine.esc(JSON.stringify(item.tags)) + '">' +
+    '<div class="media-zone">' +
+      '<div class="score-badge">SCORE ' + Math.round(item.score || 0) + '</div>' +
+      mediaHtml(item) +
+    '</div>' +
+    '<div class="content-zone">' +
+      '<div>' +
+        '<div class="meta-line"><span class="type-pill">' + itemTypeLabel(item.type) + '</span>' + (item.city ? '<span class="city">' + FLDiscoveryEngine.esc(item.city) + '</span>' : '') + '</div>' +
+        '<h2 class="card-title">' + FLDiscoveryEngine.esc(item.title) + '</h2>' +
+        '<p class="card-desc">' + FLDiscoveryEngine.esc(item.description || 'محتوى من أرشيف FALASTEEN.INK') + '</p>' +
+        '<div class="tag-row">' + item.tags.map(function(tag) { return '<span class="tag">#' + FLDiscoveryEngine.esc(tag) + '</span>'; }).join('') + '</div>' +
+        renderRelated(item) +
+      '</div>' +
+      '<div class="actions">' +
+        '<button type="button" class="action-btn" data-action="like" aria-label="Like">♥</button><span class="action-label">LIKE</span>' +
+        '<button type="button" class="action-btn" data-action="save" aria-label="Save">＋</button><span class="action-label">SAVE</span>' +
+        '<button type="button" class="action-btn" data-action="share" aria-label="Share">↗</button><span class="action-label">SHARE</span>' +
+        '<button type="button" class="action-btn" data-action="comment" aria-label="Comment">✎</button><span class="action-label">COMMENT</span>' +
+        '<a class="action-btn" href="' + item.source + '" aria-label="Open">→</a><span class="action-label">OPEN</span>' +
+      '</div>' +
+    '</div>' +
+  '</article>';
+}
+
+function bindCards(root) {
+  root.querySelectorAll('.discovery-card').forEach(function(card) {
+    var id = card.getAttribute('data-id');
+    var item = discoveryItems.find(function(x) { return x.id === id; });
+    if (!item || card.dataset.bound === '1') return;
+    card.dataset.bound = '1';
+    card.querySelectorAll('[data-action]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var action = btn.getAttribute('data-action');
+        btn.classList.add('on');
+        FLDiscoveryEngine.trackInteraction(action, item.tags, item.id);
+        if (action === 'share') {
+          var text = item.title + ' — FALASTEEN.INK';
+          if (navigator.share) navigator.share({ title: item.title, text: text, url: location.href }).catch(function(){});
+          else if (navigator.clipboard) navigator.clipboard.writeText(text + ' ' + location.href).catch(function(){});
+        }
+      });
+    });
+  });
+  observeCards(root);
+}
+
+function renderMore() {
+  var feed = byId('feed');
+  var next = discoveryItems.slice(renderedCount, renderedCount + pageSize);
+  if (!next.length) {
+    byId('loader').textContent = discoveryItems.length ? 'وصلت لنهاية التوصيات' : 'لا توجد توصيات بعد';
+    return;
+  }
+  var html = next.map(cardHtml).join('');
+  var holder = document.createElement('div');
+  holder.innerHTML = html;
+  while (holder.firstChild) feed.appendChild(holder.firstChild);
+  renderedCount += next.length;
+  bindCards(feed);
+  byId('loader').textContent = 'اسحب للمزيد / Scroll for more';
+}
+
+function resetFeed() {
+  renderedCount = 0;
+  byId('feed').innerHTML = '';
+  renderMore();
+}
+
+function observeCards(root) {
+  if (!observer) {
+    observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var card = entry.target;
+        var id = card.getAttribute('data-id');
+        var item = discoveryItems.find(function(x) { return x.id === id; });
+        if (!item) return;
+        if (entry.isIntersecting && entry.intersectionRatio > 0.62) {
+          if (!card.dataset.viewed) {
+            card.dataset.viewed = '1';
+            FLDiscoveryEngine.trackInteraction('view', item.tags, item.id);
+          }
+          startWatchTimer(item);
+        } else {
+          stopWatchTimer(item);
+        }
+      });
+    }, { threshold: [0, .62, .9] });
+  }
+  if (!videoObserver) {
+    videoObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var video = entry.target;
+        if (entry.isIntersecting && entry.intersectionRatio > 0.72) video.play().catch(function(){});
+        else video.pause();
+      });
+    }, { threshold: [.25, .72] });
+  }
+  root.querySelectorAll('.discovery-card').forEach(function(card) { observer.observe(card); });
+  root.querySelectorAll('video').forEach(function(video) { videoObserver.observe(video); });
+}
+
+function startWatchTimer(item) {
+  if (watchTimers[item.id]) return;
+  watchTimers[item.id] = setInterval(function() {
+    FLDiscoveryEngine.trackWatchTime(item.tags, 2, item.id);
+  }, 2000);
+}
+
+function stopWatchTimer(item) {
+  if (!watchTimers[item.id]) return;
+  clearInterval(watchTimers[item.id]);
+  delete watchTimers[item.id];
+}
+
+async function loadDiscovery(mode) {
+  activeMode = mode || activeMode;
+  byId('loader').textContent = 'جاري تحميل التوصيات...';
+  discoveryItems = await FLDiscoveryEngine.getRecommendations();
+  if (activeMode === 'trending') {
+    discoveryItems = discoveryItems.slice().sort(function(a, b) {
+      return ((b.views || 0) + (b.likes || 0) * 5 + (b.saves || 0) * 7) - ((a.views || 0) + (a.likes || 0) * 5 + (a.saves || 0) * 7);
+    });
+  }
+  renderTrendingTags();
+  resetFeed();
+}
+
+function setupInfiniteScroll() {
+  var sentinel = byId('sentinel');
+  var moreObserver = new IntersectionObserver(function(entries) {
+    if (entries.some(function(entry) { return entry.isIntersecting; })) renderMore();
+  }, { rootMargin: '600px 0px' });
+  moreObserver.observe(sentinel);
+}
+
+function setupControls() {
+  byId('refreshBtn').addEventListener('click', function() { loadDiscovery(activeMode); });
+  byId('forYouBtn').addEventListener('click', function() {
+    byId('forYouBtn').classList.add('on');
+    byId('trendingBtn').classList.remove('on');
+    loadDiscovery('for-you');
+  });
+  byId('trendingBtn').addEventListener('click', function() {
+    byId('trendingBtn').classList.add('on');
+    byId('forYouBtn').classList.remove('on');
+    loadDiscovery('trending');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window.FLDiscoveryEngine) {
+    byId('loader').textContent = 'تعذر تحميل محرك الاكتشاف';
+    return;
+  }
+  setupControls();
+  setupInfiniteScroll();
+  loadDiscovery('for-you');
+});
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>حارس الذاكرة | FALASTEEN.INK</title>
+<style>
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);padding-bottom:80px;}
+.topnav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(14,14,14,.97);border-bottom:1px solid var(--border);}
+/* HERO */
+.g-hero{padding:80px 18px 28px;background:radial-gradient(ellipse at 30% 50%,rgba(232,34,31,.08),transparent 60%);position:relative;overflow:hidden;}
+.g-hero::before{content:'GUARDIAN';position:absolute;bottom:-20px;left:-10px;font-size:clamp(5rem,18vw,11rem);font-weight:900;color:rgba(232,34,31,.04);pointer-events:none;font-family:var(--font-mono);}
+.g-tag{font-family:var(--font-mono);font-size:.54rem;color:var(--red);letter-spacing:.28em;margin-bottom:10px;display:block;}
+.g-title{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;line-height:1.1;margin-bottom:8px;}
+.g-title .r{color:var(--red);}
+.g-desc{font-size:.86rem;color:var(--dim);line-height:1.7;max-width:480px;margin-bottom:20px;}
+/* STATS */
+.g-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px;}
+.g-stat{background:var(--s2);padding:18px 12px;text-align:center;}
+.g-stat-n{font-family:var(--font-mono);font-size:1.4rem;font-weight:900;margin-bottom:3px;}
+.g-stat-l{font-family:var(--font-mono);font-size:.48rem;color:var(--dim);letter-spacing:.1em;}
+/* LEVEL */
+.level-bar{background:var(--s2);padding:16px 18px;margin-bottom:2px;}
+.level-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.level-name{font-size:.88rem;font-weight:700;}
+.level-pts{font-family:var(--font-mono);font-size:.7rem;color:var(--red);}
+.level-track{height:6px;background:var(--s4);border-radius:3px;overflow:hidden;}
+.level-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b35);border-radius:3px;transition:width 1s ease;}
+.level-range{font-family:var(--font-mono);font-size:.5rem;color:var(--dim);display:flex;justify-content:space-between;margin-top:5px;}
+/* SECTION */
+.sec-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px;}
+.sec-hdr-icon{font-size:1.3rem;}
+.sec-hdr-title{font-size:.96rem;font-weight:900;}
+.sec-hdr-sub{font-size:.74rem;color:var(--dim);margin-top:2px;}
+/* MISSIONS */
+.missions{padding:0 18px;display:flex;flex-direction:column;gap:2px;margin-bottom:4px;}
+.mission-card{background:var(--s2);padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:background .2s;border-right:3px solid transparent;}
+.mission-card:hover{background:var(--s3);}
+.mission-card.active{border-right-color:var(--red);}
+.mission-card.done{border-right-color:var(--green);opacity:.7;}
+.m-icon{width:44px;height:44px;background:var(--s4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.m-body{flex:1;min-width:0;}
+.m-title{font-size:.88rem;font-weight:700;margin-bottom:3px;}
+.m-desc{font-size:.74rem;color:var(--dim);line-height:1.5;margin-bottom:6px;}
+.m-footer{display:flex;align-items:center;gap:8px;}
+.m-pts{font-family:var(--font-mono);font-size:.56rem;color:var(--red);}
+.m-prog{flex:1;height:3px;background:var(--s4);}
+.m-prog-fill{height:100%;background:var(--red);transition:width .5s;}
+.m-pct{font-family:var(--font-mono);font-size:.5rem;color:var(--dim);}
+.m-status{font-size:.7rem;flex-shrink:0;padding:3px 10px;font-family:var(--font-mono);}
+.m-status.todo{color:var(--dim);background:var(--s4);}
+.m-status.active{color:var(--red);background:rgba(232,34,31,.1);}
+.m-status.done{color:var(--green);background:rgba(0,185,84,.1);}
+/* BADGES */
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:0 18px;margin-bottom:4px;}
+.badge{background:var(--s2);padding:14px 8px;text-align:center;cursor:pointer;transition:background .2s;}
+.badge:hover{background:var(--s3);}
+.badge.locked{opacity:.35;cursor:default;}
+.b-icon{font-size:1.8rem;margin-bottom:6px;display:block;}
+.b-name{font-family:var(--font-mono);font-size:.46rem;color:var(--dim);line-height:1.4;}
+.badge.unlocked .b-name{color:var(--green);}
+/* ACTIONS */
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 18px;margin-bottom:4px;}
+.action-btn-big{background:var(--s2);padding:18px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer;transition:background .2s;border:2px solid transparent;text-decoration:none;}
+.action-btn-big:hover{background:var(--s3);border-color:rgba(232,34,31,.2);}
+.ab-icon{font-size:1.6rem;}
+.ab-title{font-size:.86rem;font-weight:700;color:var(--text);}
+.ab-sub{font-size:.7rem;color:var(--dim);line-height:1.5;}
+/* LEADERBOARD */
+.leaders{padding:0 18px;display:flex;flex-direction:column;gap:2px;margin-bottom:24px;}
+.leader{background:var(--s2);padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.leader.me{border-right:3px solid var(--red);background:rgba(232,34,31,.05);}
+.l-rank{font-size:1rem;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
+.r1{color:#FFD700;}.r2{color:#C0C0C0;}.r3{color:#CD7F32;}
+.l-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;color:#fff;flex-shrink:0;}
+.l-info{flex:1;min-width:0;}
+.l-name{font-family:var(--font-mono);font-size:.78rem;font-weight:700;}
+.l-role{font-size:.68rem;color:var(--dim);}
+.l-pts{font-family:var(--font-mono);font-size:.9rem;font-weight:700;color:var(--red);}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);display:none;align-items:flex-end;justify-content:center;}
+.overlay.on{display:flex;}
+.modal{background:var(--s1);width:100%;max-width:540px;padding:22px 18px 32px;border-top:3px solid var(--red);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-title{font-size:1rem;font-weight:900;}
+.modal-close{background:none;border:none;color:var(--dim);font-size:1.4rem;cursor:pointer;}
+.modal-body{font-size:.86rem;color:var(--dim);line-height:1.7;margin-bottom:14px;}
+.modal-pts{font-family:var(--font-mono);font-size:1.1rem;color:var(--red);margin-bottom:16px;}
+.modal-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:none;cursor:pointer;font-size:.88rem;font-weight:700;}
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 22px;font-size:.78rem;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+.nav-icon{font-size:1.25rem;line-height:1;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="r">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</nav>
+
+<div class="g-hero">
+  <span class="g-tag" id="gTag">حارس الذاكرة — GUARDIAN OF MEMORY</span>
+  <h1 class="g-title">أنت <span class="r">الحارس</span></h1>
+  <p class="g-desc" id="gDesc">كل مساهمة توثّق حقيقة. كل حقيقة تحفظ ذاكرة. أنت جزء من الأرشيف الذي لا يُمحى.</p>
+</div>
+
+<!-- STATS -->
+<div class="g-stats">
+  <div class="g-stat"><div class="g-stat-n" id="statPoints">0</div><div class="g-stat-l">GUARDIAN POINTS</div></div>
+  <div class="g-stat"><div class="g-stat-n" id="statContrib">0</div><div class="g-stat-l">CONTRIBUTIONS</div></div>
+  <div class="g-stat"><div class="g-stat-n" id="statBadges">0</div><div class="g-stat-l">BADGES</div></div>
+</div>
+
+<!-- LEVEL -->
+<div class="level-bar">
+  <div class="level-hdr">
+    <span class="level-name" id="levelName">🌱 حارس مبتدئ / Novice Guardian</span>
+    <span class="level-pts" id="levelPts">0 / 500 XP</span>
+  </div>
+  <div class="level-track"><div class="level-fill" id="levelFill" style="width:0%"></div></div>
+  <div class="level-range"><span>Level 1</span><span>Level 2</span></div>
+</div>
+
+<!-- MISSIONS -->
+<div class="sec-hdr">
+  <span class="sec-hdr-icon">🎯</span>
+  <div><div class="sec-hdr-title" id="mTitle">المهام / Missions</div><div class="sec-hdr-sub" id="mSub">أكمل المهام واكسب النقاط</div></div>
+</div>
+<div class="missions" id="missionsList"></div>
+
+<!-- QUICK ACTIONS -->
+<div class="sec-hdr">
+  <span class="sec-hdr-icon">⚡</span>
+  <div><div class="sec-hdr-title" id="aTitle">إجراءات سريعة / Quick Actions</div></div>
+</div>
+<div class="actions-grid">
+  <a class="action-btn-big" href="Martyrs.html">
+    <span class="ab-icon">🕊</span>
+    <span class="ab-title" id="a1">أضف شهيداً</span>
+    <span class="ab-sub" id="a1s">سجّل اسماً في الأرشيف · +100 XP</span>
+  </a>
+  <a class="action-btn-big" href="Landmarks.html">
+    <span class="ab-icon">🏛</span>
+    <span class="ab-title" id="a2">وثّق معلماً</span>
+    <span class="ab-sub" id="a2s">أضف صورة قبل/بعد · +150 XP</span>
+  </a>
+  <a class="action-btn-big" href="live.html">
+    <span class="ab-icon">🔴</span>
+    <span class="ab-title" id="a3">ابث مباشرة</span>
+    <span class="ab-sub" id="a3s">شارك ما يحدث الآن · +200 XP</span>
+  </a>
+  <a class="action-btn-big" href="Vault.html">
+    <span class="ab-icon">📁</span>
+    <span class="ab-title" id="a4">ارفع وثيقة</span>
+    <span class="ab-sub" id="a4s">صور أو فيديو أو صوت · +80 XP</span>
+  </a>
+  <a class="action-btn-big" href="Messages.html">
+    <span class="ab-icon">💬</span>
+    <span class="ab-title" id="a5">تواصل</span>
+    <span class="ab-sub" id="a5s">راسل حرّاساً آخرين · +20 XP</span>
+  </a>
+  <a class="action-btn-big" href="Feed.html">
+    <span class="ab-icon">▶</span>
+    <span class="ab-title" id="a6">شارك ريل</span>
+    <span class="ab-sub" id="a6s">انشر توثيقاً على الفيد · +50 XP</span>
+  </a>
+</div>
+
+<!-- BADGES -->
+<div class="sec-hdr">
+  <span class="sec-hdr-icon">🏅</span>
+  <div><div class="sec-hdr-title" id="bTitle">الأوسمة / Badges</div></div>
+</div>
+<div class="badges-grid" id="badgesGrid"></div>
+
+<!-- LEADERBOARD -->
+<div class="sec-hdr">
+  <span class="sec-hdr-icon">🏆</span>
+  <div><div class="sec-hdr-title" id="lbTitle">المتصدرون / Leaderboard</div><div class="sec-hdr-sub" id="lbSub">أفضل 10 حراس هذا الشهر</div></div>
+</div>
+<div class="leaders" id="leadersList"></div>
+
+<!-- MISSION MODAL -->
+<div class="overlay" id="missionModal" onclick="if(event.target===this)closeMission()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="mModalTitle">—</div>
+      <button class="modal-close" onclick="closeMission()" aria-label="إغلاق المهمة">✕</button>
+    </div>
+    <div class="modal-body" id="mModalBody">—</div>
+    <div class="modal-pts" id="mModalPts">+0 XP</div>
+    <button class="modal-btn" id="mModalBtn" onclick="completeMission()">ابدأ المهمة / Start Mission</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>Guardian</a>
+</nav>
+
+<script>
+var isAr = true;
+var PROFILE_KEY = 'fl_guardian_profile';
+var activeMission = null;
+
+var MISSIONS = [
+  {id:'M1', icon:'🕊', title:'أضف أول شهيد', titleEn:'Add First Martyr',
+   desc:'سجّل اسم شهيد في سجل الشهداء. كل اسم يُحفظ للأبد.',
+   descEn:'Register a martyr name in the registry. Every name is preserved forever.',
+   pts:100, link:'Martyrs.html', target:1, key:'martyrs_added'},
+  {id:'M2', icon:'🏛', title:'وثّق معلماً مدمراً', titleEn:'Document a Landmark',
+   desc:'أضف صورة قبل وبعد لمعلم دمّره الاحتلال.',
+   descEn:'Add before/after photos of a destroyed landmark.',
+   pts:150, link:'Landmarks.html', target:1, key:'landmarks_added'},
+  {id:'M3', icon:'🔴', title:'أول بث مباشر', titleEn:'First Live Stream',
+   desc:'ابث مباشرة من قلب الحدث. شارك الواقع مع العالم.',
+   descEn:'Stream live from the heart of events. Share reality with the world.',
+   pts:200, link:'live.html', target:1, key:'streams_done'},
+  {id:'M4', icon:'📁', title:'ارفع 3 وثائق', titleEn:'Upload 3 Documents',
+   desc:'ارفع صوراً أو فيديوهات أو تسجيلات صوتية في القبو الرقمي.',
+   descEn:'Upload photos, videos, or audio recordings to the Digital Vault.',
+   pts:120, link:'Vault.html', target:3, key:'files_uploaded'},
+  {id:'M5', icon:'📸', title:'شارك توثيقاً على الفيد', titleEn:'Share on Feed',
+   desc:'انشر ريل توثيقي لتصل روايتك لآلاف الحراس.',
+   descEn:'Post a documentary reel to reach thousands of guardians.',
+   pts:80, link:'Feed.html', target:1, key:'reels_shared'},
+  {id:'M6', icon:'💬', title:'تواصل مع 3 حراس', titleEn:'Message 3 Guardians',
+   desc:'بنِ شبكة تواصل مع حراس الذاكرة الآخرين.',
+   descEn:'Build your network with other memory guardians.',
+   pts:60, link:'Messages.html', target:3, key:'messages_sent'},
+];
+
+var BADGES = [
+  {id:'B1',icon:'📖',name:'حافظ القصص',nameEn:'Story Keeper',req:'M1'},
+  {id:'B2',icon:'🌿',name:'حارس الأرض',nameEn:'Land Guardian',req:'M2'},
+  {id:'B3',icon:'🎙',name:'صوت الحق',nameEn:'Voice of Truth',req:'M3'},
+  {id:'B4',icon:'📂',name:'حارس القبو',nameEn:'Vault Keeper',req:'M4'},
+  {id:'B5',icon:'📡',name:'ناقل البث',nameEn:'Broadcaster',req:'M5'},
+  {id:'B6',icon:'🤝',name:'بنّاء الشبكة',nameEn:'Network Builder',req:'M6'},
+  {id:'B7',icon:'⚔️',name:'بطل الحقيقة',nameEn:'Truth Champion',req:null,locked:true},
+  {id:'B8',icon:'🏛',name:'أمين المتحف',nameEn:'Museum Curator',req:null,locked:true},
+];
+
+var LEADERBOARD = [
+  {name:'حارس 1', role:'مساهم', pts:1200, color:'#5a3000'},
+  {name:'حارس 2', role:'موثق',  pts:980,  color:'#003a1a'},
+  {name:'حارس 3', role:'شاهد',  pts:750,  color:'#1a003a'},
+];
+
+function getProfile(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')}catch(e){return{}}}
+function saveProfile(p){localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}
+
+function init(){
+  var p = getProfile();
+  if(!p.pts) p.pts=0;
+  if(!p.missions) p.missions={};
+  if(!p.contribs) p.contribs=0;
+  saveProfile(p);
+
+  // Count real contributions
+  try{var m=JSON.parse(localStorage.getItem('fl_martyrs')||'[]');p.contribs=m.length;}catch(e){}
+  var pts = p.pts || 0;
+  var contribs = p.contribs || 0;
+  var badges = BADGES.filter(function(b){return !b.locked&&p.missions&&p.missions[b.req]==='done';}).length;
+
+  document.getElementById('statPoints').textContent = pts.toLocaleString('ar');
+  document.getElementById('statContrib').textContent = contribs;
+  document.getElementById('statBadges').textContent = badges;
+
+  // Level
+  var levels = [
+    {min:0,max:500,name:'🌱 حارس مبتدئ',nameEn:'Novice Guardian'},
+    {min:500,max:1500,name:'🌿 حارس نشط',nameEn:'Active Guardian'},
+    {min:1500,max:3500,name:'🔥 حارس متقدم',nameEn:'Advanced Guardian'},
+    {min:3500,max:7000,name:'⚔️ حارس خبير',nameEn:'Expert Guardian'},
+    {min:7000,max:15000,name:'🏛 حارس الذاكرة',nameEn:'Memory Guardian'},
+    {min:15000,max:999999,name:'🕊 الحارس الأبدي',nameEn:'Eternal Guardian'},
+  ];
+  var lvl = levels.find(function(l){return pts>=l.min&&pts<l.max;})||levels[0];
+  var pct = Math.min(100,Math.round((pts-lvl.min)/(lvl.max-lvl.min)*100));
+  document.getElementById('levelName').textContent = isAr ? lvl.name : lvl.nameEn;
+  document.getElementById('levelPts').textContent = pts+' / '+lvl.max+' XP';
+  document.getElementById('levelFill').style.width = pct+'%';
+
+  renderMissions(p);
+  renderBadges(p);
+  renderLeaderboard(p, pts);
+}
+
+function renderMissions(p){
+  var list = document.getElementById('missionsList');
+  list.innerHTML = '';
+  MISSIONS.forEach(function(m){
+    var status = p.missions&&p.missions[m.id] ? p.missions[m.id] : 'todo';
+    var card = document.createElement('div');
+    card.className = 'mission-card'+(status==='active'?' active':status==='done'?' done':'');
+    card.onclick = function(){openMission(m,status);};
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.onkeydown = function(e){if(e.key==='Enter')openMission(m,status);};
+    var pct = status==='done'?100:status==='active'?50:0;
+    var statusLabel = status==='done'?(isAr?'✓ مكتمل':'✓ Done'):status==='active'?(isAr?'جارٍ':'Active'):(isAr?'جديد':'New');
+    var statusClass = status==='done'?'done':status==='active'?'active':'todo';
+    card.innerHTML =
+      '<div class="m-icon">'+m.icon+'</div>'+
+      '<div class="m-body">'+
+        '<div class="m-title">'+(isAr?m.title:m.titleEn)+'</div>'+
+        '<div class="m-desc">'+(isAr?m.desc:m.descEn)+'</div>'+
+        '<div class="m-footer">'+
+          '<span class="m-pts">+'+m.pts+' XP</span>'+
+          '<div class="m-prog"><div class="m-prog-fill" style="width:'+pct+'%"></div></div>'+
+          '<span class="m-pct">'+pct+'%</span>'+
+        '</div>'+
+      '</div>'+
+      '<span class="m-status '+statusClass+'">'+statusLabel+'</span>';
+    list.appendChild(card);
+  });
+}
+
+function renderBadges(p){
+  var grid = document.getElementById('badgesGrid');
+  grid.innerHTML = '';
+  BADGES.forEach(function(b){
+    var unlocked = !b.locked && p.missions && p.missions[b.req]==='done';
+    var div = document.createElement('div');
+    div.className = 'badge'+(b.locked?' locked':unlocked?' unlocked':'');
+    div.onclick = function(){if(!b.locked){toast((isAr?'وسام: ':'Badge: ')+(isAr?b.name:b.nameEn)+(unlocked?(isAr?' — مكتسب ✓':' — Earned ✓'):(isAr?' — مقفل':' — Locked')));} };
+    div.innerHTML = '<span class="b-icon">'+b.icon+'</span><div class="b-name">'+(isAr?b.name:b.nameEn)+'</div>';
+    grid.appendChild(div);
+  });
+}
+
+var guardianUserName = 'أنت';
+
+function renderLeaderboard(p, myPts){
+  var list = document.getElementById('leadersList');
+  list.innerHTML = '';
+  var myName = guardianUserName || 'أنت';
+
+  // Add self to leaderboard
+  var lb = LEADERBOARD.slice();
+  lb.push({name:myName, role:isAr?'أنت — You':'You', pts:myPts, isMe:true, color:'#930006'});
+  lb.sort(function(a,b){return b.pts-a.pts;});
+
+  lb.forEach(function(u,i){
+    var div = document.createElement('div');
+    div.className = 'leader'+(u.isMe?' me':'');
+    var rankClass = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    div.innerHTML =
+      '<span class="l-rank '+rankClass+'">'+medal+'</span>'+
+      '<div class="l-av" style="background:'+u.color+'">'+esc(u.name[0].toUpperCase())+'</div>'+
+      '<div class="l-info"><div class="l-name">'+esc(u.name)+'</div><div class="l-role">'+esc(u.role)+'</div></div>'+
+      '<span class="l-pts">'+u.pts.toLocaleString('ar')+'</span>';
+    list.appendChild(div);
+  });
+}
+
+function openMission(m, status){
+  activeMission = m;
+  document.getElementById('mModalTitle').textContent = isAr ? m.title : m.titleEn;
+  document.getElementById('mModalBody').textContent = isAr ? m.desc : m.descEn;
+  document.getElementById('mModalPts').textContent = '+'+m.pts+' XP';
+  var btn = document.getElementById('mModalBtn');
+  if(status==='done'){
+    btn.textContent = isAr?'✓ مكتملة':'✓ Completed';
+    btn.style.background='var(--green)';
+    btn.onclick = closeMission;
+  } else {
+    btn.textContent = isAr?'انطلق للمهمة →':'Go to Mission →';
+    btn.style.background='';
+    btn.onclick = completeMission;
+  }
+  document.getElementById('missionModal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+
+function closeMission(){
+  document.getElementById('missionModal').classList.remove('on');
+  document.body.style.overflow='';
+  activeMission=null;
+}
+
+function completeMission(){
+  if(!activeMission)return;
+  var p = getProfile();
+  if(!p.missions) p.missions={};
+  if(p.missions[activeMission.id]==='done'){
+    closeMission();
+    window.location.href = activeMission.link;
+    return;
+  }
+  p.missions[activeMission.id]='done';
+  p.pts=(p.pts||0)+activeMission.pts;
+  saveProfile(p);
+  closeMission();
+  toast('+'+ activeMission.pts +' XP — '+(isAr?'مكتسب!':'Earned!'));
+  setTimeout(function(){
+    init();
+    window.location.href=activeMission.link;
+  },800);
+}
+
+function toggleLang(){
+  isAr=!isAr;
+  document.documentElement.setAttribute('dir',isAr?'rtl':'ltr');
+  document.documentElement.setAttribute('lang',isAr?'ar':'en');
+  document.getElementById('langBtn').textContent=isAr?'EN':'AR';
+  document.getElementById('gTag').textContent=isAr?'حارس الذاكرة — GUARDIAN OF MEMORY':'GUARDIAN OF MEMORY — حارس الذاكرة';
+  document.getElementById('gDesc').textContent=isAr?'كل مساهمة توثّق حقيقة. كل حقيقة تحفظ ذاكرة.':'Every contribution documents a truth. Every truth preserves a memory.';
+  document.getElementById('mTitle').textContent=isAr?'المهام / Missions':'Missions / المهام';
+  document.getElementById('mSub').textContent=isAr?'أكمل المهام واكسب النقاط':'Complete missions and earn points';
+  document.getElementById('aTitle').textContent=isAr?'إجراءات سريعة / Quick Actions':'Quick Actions / إجراءات سريعة';
+  document.getElementById('bTitle').textContent=isAr?'الأوسمة / Badges':'Badges / الأوسمة';
+  document.getElementById('lbTitle').textContent=isAr?'المتصدرون / Leaderboard':'Leaderboard / المتصدرون';
+  document.getElementById('lbSub').textContent=isAr?'أفضل 10 حراس هذا الشهر':'Top 10 guardians this month';
+  // Update action buttons
+  var actions=[['a1','أضف شهيداً','Add Martyr'],['a2','وثّق معلماً','Document Landmark'],
+    ['a3','ابث مباشرة','Go Live'],['a4','ارفع وثيقة','Upload Document'],
+    ['a5','تواصل','Message'],['a6','شارك ريل','Share Reel']];
+  actions.forEach(function(a){var el=document.getElementById(a[0]);if(el)el.textContent=isAr?a[1]:a[2];});
+  init();
+}
+
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.style.background='#00b954';t.style.color='#fff';
+  t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);
+}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+window.addEventListener('load', async function() {
+  try {
+    var user = await FL.getUser();
+    if (user) {
+      guardianUserName = (user.user_metadata && user.user_metadata.name) || (user.email ? user.email.split('@')[0] : guardianUserName);
+    }
+  } catch(e) {
+    guardianUserName = 'أنت';
+  }
+  init();
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMission();});
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>لوحة الأدمن | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:40px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+.admin-badge { font-family:"Courier New",monospace; font-size:0.58rem; color:var(--red); background:rgba(232,34,31,.1); border:1px solid rgba(232,34,31,.3); padding:4px 10px; }
+
+.hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,.06) 0%,transparent); }
+.hero-tag { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; margin-bottom:6px; }
+.hero-title .r { color:var(--red); }
+.hero-desc { font-size:.84rem; color:var(--dim); line-height:1.7; }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:2px; }
+.stat { background:var(--s2); padding:18px 14px; text-align:center; }
+.stat-num { font-size:1.6rem; font-weight:900; color:var(--red); }
+.stat-lbl { font-family:"Courier New",monospace; font-size:.48rem; color:var(--dim); letter-spacing:.12em; margin-top:3px; }
+
+/* TABS */
+.tabs { display:flex; background:var(--s1); border-bottom:1px solid rgba(93,63,59,.12); overflow-x:auto; scrollbar-width:none; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab { flex-shrink:0; padding:13px 18px; background:none; border:none; cursor:pointer; color:var(--dim); font-size:.76rem; font-weight:600; border-bottom:2px solid transparent; transition:all .2s; font-family:Arial,sans-serif; white-space:nowrap; }
+.tab.on { color:var(--red); border-bottom-color:var(--red); }
+
+.section { display:none; padding:18px; }
+.section.on { display:block; }
+
+.section-title { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.22em; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+.add-btn { display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:.72rem; font-weight:700; padding:7px 16px; border:none; cursor:pointer; }
+
+/* REEL CARDS */
+.reels-list { display:flex; flex-direction:column; gap:2px; margin-bottom:24px; }
+.reel-item { background:var(--s2); overflow:hidden; transition:background .2s; }
+.reel-item:hover { background:var(--s3); }
+.reel-thumb-row { display:flex; gap:0; }
+.reel-thumb { width:100px; height:80px; flex-shrink:0; object-fit:cover; background:var(--s4); display:flex; align-items:center; justify-content:center; font-size:1.8rem; overflow:hidden; }
+.reel-thumb img { width:100%; height:100%; object-fit:cover; }
+.reel-info { flex:1; padding:12px; }
+.reel-title-text { font-size:.88rem; font-weight:700; margin-bottom:3px; }
+.reel-cat { font-family:"Courier New",monospace; font-size:.5rem; color:var(--green); background:rgba(0,185,84,.08); border:1px solid rgba(0,185,84,.18); padding:2px 7px; display:inline-block; margin-bottom:6px; }
+.reel-desc-text { font-size:.76rem; color:var(--dim); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.reel-actions { display:flex; gap:8px; padding:10px 12px; border-top:1px solid rgba(93,63,59,.1); }
+.r-btn { font-size:.7rem; font-weight:600; padding:6px 14px; border:none; cursor:pointer; transition:all .2s; }
+.r-edit { background:var(--s4); color:var(--text); }
+.r-edit:hover { background:var(--s3); }
+.r-del { background:rgba(232,34,31,.1); color:var(--red); border:1px solid rgba(232,34,31,.2); }
+.r-del:hover { background:var(--red); color:#fff; }
+.r-pub { background:rgba(0,185,84,.1); color:var(--green); border:1px solid rgba(0,185,84,.2); font-size:.62rem; }
+.r-pub:hover { background:var(--green); color:#fff; }
+.r-order { background:var(--s4); color:var(--dim); width:30px; text-align:center; }
+
+/* EMPTY */
+.empty { padding:40px; text-align:center; background:var(--s2); }
+.empty-icon { font-size:2rem; opacity:.3; margin-bottom:10px; display:block; }
+.empty-text { font-size:.82rem; color:var(--dim); margin-bottom:14px; }
+
+/* MODAL */
+.overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.9); display:none; align-items:flex-end; justify-content:center; }
+.overlay.on { display:flex; }
+.modal { background:var(--s1); width:100%; max-width:560px; max-height:92vh; overflow-y:auto; padding:22px 18px 32px; border-top:3px solid var(--red); scrollbar-width:none; }
+.modal::-webkit-scrollbar { display:none; }
+.modal-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-hdr-title { font-size:1rem; font-weight:900; }
+.modal-close { background:none; border:none; color:var(--dim); font-size:1.4rem; cursor:pointer; }
+.field { margin-bottom:14px; }
+.lbl { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:6px; }
+.inp, .sel, .ta { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.88rem; padding:11px 13px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; appearance:none; }
+.inp:focus, .sel:focus, .ta:focus { border-color:var(--red); }
+.inp::placeholder, .ta::placeholder { color:var(--dim); }
+.ta { resize:vertical; min-height:80px; }
+.sel option { background:var(--s3); }
+.img-upload { border:2px dashed rgba(93,63,59,.3); padding:20px; text-align:center; cursor:pointer; position:relative; transition:all .2s; }
+.img-upload:hover { border-color:var(--red); }
+.img-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.img-upload .u-icon { font-size:1.6rem; margin-bottom:6px; display:block; }
+.img-upload p { font-size:.74rem; color:var(--dim); }
+.img-preview { width:100%; max-height:180px; object-fit:cover; display:none; margin-top:8px; }
+.save-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.9rem; font-weight:700; transition:transform .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.save-btn:hover { transform:translateY(-2px); }
+.save-btn:disabled { opacity:.5; transform:none; cursor:not-allowed; }
+
+/* TOAST */
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:10px 22px; font-size:.78rem; font-weight:700; z-index:999; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; }
+
+/* LOADING */
+.loading { padding:40px; text-align:center; color:var(--dim); font-size:.84rem; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <span class="admin-badge">⚙ ADMIN PANEL</span>
+</nav>
+<div class="hero">
+  <span class="hero-tag">لوحة التحكم — ADMIN PANEL</span>
+  <h1 class="hero-title">إدارة <span class="r">المحتوى</span></h1>
+  <p class="hero-desc">أضف وعدّل ريلز نبض غزة، المعالم، والمحتوى العام.</p>
+  <p class="hero-desc" style="margin-top:8px;color:var(--green);">ملاحظة: إضافة الريلز متاحة الآن للجميع من صفحة نبض غزة.</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="sReels">—</div><div class="stat-lbl">REELS</div></div>
+  <div class="stat"><div class="stat-num" id="sPublished">—</div><div class="stat-lbl">PUBLISHED</div></div>
+  <div class="stat"><div class="stat-num" id="sDrafts">—</div><div class="stat-lbl">DRAFTS</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('reels',this)">📹 الريلز / Reels</button>
+  <button class="tab" onclick="sw('settings',this)">⚙ الإعدادات</button>
+</div>
+
+<!-- REELS TAB -->
+<div class="section on" id="tab-reels">
+  <div class="section-title">
+    <span>الريلز المحفوظة / SAVED REELS</span>
+    <button class="add-btn" onclick="openModal()">+ أضف ريل / Add Reel</button>
+  </div>
+  <div class="reels-list" id="reelsList"><div class="loading">جارٍ التحميل من Supabase...</div></div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div class="section" id="tab-settings">
+  <div style="background:var(--s2);padding:22px;margin-bottom:2px;">
+    <div class="lbl" style="margin-bottom:12px;">رابط الموقع / Site URL</div>
+    <input type="text" class="inp" value="https://falasteen.ink" readonly/>
+  </div>
+  <div style="background:var(--s2);padding:22px;">
+    <div class="lbl" style="margin-bottom:12px;">إجراءات / Actions</div>
+    <button class="save-btn" onclick="clearAllReels()" style="background:rgba(232,34,31,.15);color:var(--red);border:1px solid rgba(232,34,31,.3);margin-bottom:10px;">
+      🗑 مسح كل الريلز / Clear All Reels
+    </button>
+    <a href="Feed.html" class="save-btn" style="text-decoration:none;display:flex;">
+      👁 معاينة صفحة الريلز / Preview Feed
+    </a>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="modal" onclick="closeOnBg(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-hdr-title" id="modalTitle">إضافة ريل / Add Reel</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="field">
+      <label class="lbl">صورة الغلاف / Cover Image</label>
+      <div class="img-upload">
+        <input type="file" accept="image/*" id="imgInput" onchange="previewImg(this)"/>
+        <span class="u-icon">🖼</span>
+        <p>اضغط لرفع صورة الغلاف — يُرفع مباشرة إلى Supabase</p>
+      </div>
+      <img class="img-preview" id="imgPreview" alt=""/>
+      <div id="uploadProgress" style="display:none;margin-top:6px;font-size:.72rem;color:var(--dim);">⏳ جارٍ رفع الصورة...</div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">العنوان / Title *</label>
+      <input type="text" class="inp" id="fTitle" placeholder="عنوان الريل / Reel title" maxlength="100"/>
+    </div>
+
+    <div class="field">
+      <label class="lbl">الوصف / Description</label>
+      <textarea class="ta" id="fDesc" placeholder="وصف مختصر / Short description"></textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label class="lbl">التصنيف / Category</label>
+        <select class="sel" id="fCat">
+          <option value="توثيق معماري">🕌 توثيق معماري</option>
+          <option value="تراث طبيعي">🌿 تراث طبيعي</option>
+          <option value="شهادة حية">🎙 شهادة حية</option>
+          <option value="بنية تحتية">🏥 بنية تحتية</option>
+          <option value="تراث ثقافي">🎭 تراث ثقافي</option>
+          <option value="مقاومة">✊ مقاومة</option>
+          <option value="أخرى">◈ أخرى</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label class="lbl">الحالة / Status</label>
+        <select class="sel" id="fStatus">
+          <option value="published">✅ منشور / Published</option>
+          <option value="draft">📝 مسودة / Draft</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">رابط الفيديو / Video URL (اختياري)</label>
+      <input type="url" class="inp" id="fVideo" placeholder="https://youtube.com/watch?v=... أو رابط مباشر" dir="ltr"/>
+    </div>
+
+    <div class="field">
+      <label class="lbl">أو ارفع فيديو من جهازك / Upload Video</label>
+      <div class="img-upload">
+        <input type="file" accept="video/mp4,video/webm,video/quicktime,video/*" id="videoInput" onchange="previewVideo(this)"/>
+        <span class="u-icon">🎬</span>
+        <p id="videoName">اضغط لاختيار فيديو — يُرفع مباشرة إلى Supabase</p>
+      </div>
+      <div id="videoUploadProgress" style="display:none;margin-top:6px;font-size:.72rem;color:var(--dim);">⏳ جارٍ رفع الفيديو...</div>
+    </div>
+
+    <div class="field">
+      <label class="lbl">مهمة التوثيق / Mission Text (اختياري)</label>
+      <textarea class="ta" id="fMission" placeholder="اكتب مهمة توثيقية للمشاهدين..." style="min-height:60px;"></textarea>
+    </div>
+
+    <div class="field">
+      <label class="lbl">الكلمات المفتاحية / Tags (مفصولة بفاصلة)</label>
+      <input type="text" class="inp" id="fTags" placeholder="#غزة, #تراث, #لن_يُنسى" dir="ltr"/>
+    </div>
+    <div class="field fl-ai-tags-panel">
+      <input type="hidden" id="mTags"/>
+      <div class="fl-ai-tags-actions">
+        <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
+      </div>
+      <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
+    </div>
+
+    <input type="hidden" id="editId"/>
+    <button class="save-btn" id="saveBtn" onclick="saveReel()">💾 حفظ الريل / Save Reel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="ollama-auto-tagging.js" defer></script>
+<script>
+if ('serviceWorker' in navigator && !sessionStorage.getItem('fl_admin_cache_reset_v3')) {
+  sessionStorage.setItem('fl_admin_cache_reset_v3', '1');
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    return Promise.all(regs.map(function(reg) { return reg.update(); }));
+  }).catch(function(){});
+}
+if (window.caches && !sessionStorage.getItem('fl_admin_caches_cleared_v3')) {
+  sessionStorage.setItem('fl_admin_caches_cleared_v3', '1');
+  caches.keys().then(function(keys) {
+    return Promise.all(keys.filter(function(k) { return k !== 'fl-v3'; }).map(function(k) { return caches.delete(k); }));
+  }).catch(function(){});
+}
+
+var SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
+var SB_KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb';
+var ADMIN_EMAIL = 'alazzehabdul@gmail.com';
+var LOCAL_REELS_KEY = 'fl_local_reels';
+var sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+var imgFile = null;
+var videoFile = null;
+var editingId = null;
+var lastReels = [];
+
+function withTimeout(promise, ms, fallback) {
+  return Promise.race([
+    promise,
+    new Promise(function(resolve) {
+      setTimeout(function() { resolve(fallback); }, ms);
+    })
+  ]);
+}
+
+// ── AUTH CHECK ──
+async function init() {
+  var session = null;
+  if (sb && sb.auth) {
+    try {
+      var sessionRes = await withTimeout(sb.auth.getSession(), 2500, { data: { session: null } });
+      session = sessionRes.data && sessionRes.data.session;
+    } catch(e) {}
+  }
+  if (!session || !session.user || session.user.email !== ADMIN_EMAIL) {
+    // Fallback password for offline testing
+    var pass = prompt('🔐 كلمة مرور الأدمن / Admin Password:');
+    if (pass !== 'Falasteen1948') {
+      alert('غير مصرح / Unauthorized');
+      window.location.href = 'Index.html';
+      return;
+    }
+  }
+  await render();
+}
+
+// ── RENDER ──
+async function render() {
+  if (!sb) {
+    toast('وضع محلي: تعذر تحميل Supabase، يمكنك إدارة الريلز على هذا الجهاز.', 'warn');
+    renderReels(loadLocalReels());
+    return;
+  }
+
+  // Admin sees ALL reels regardless of status (for moderation)
+    var res = await withTimeout(sb.from('reels')
+      .select('*')
+      .order('created_at', { ascending: false }), 4500, {
+        data: null,
+        error: { message: 'انتهت مهلة الاتصال بـ Supabase / Supabase timeout' }
+      });
+
+  var reels = res.data || [];
+  var error = res.error;
+
+  if (error) {
+    toast('وضع محلي: ' + error.message, 'warn');
+    renderReels(loadLocalReels());
+    return;
+  }
+
+  renderReels(reels);
+}
+
+function renderReels(reels) {
+  lastReels = reels || [];
+  var published = reels.filter(function(r){ return r.status === 'published'; }).length;
+  var drafts = reels.filter(function(r){ return r.status === 'draft'; }).length;
+
+  document.getElementById('sReels').textContent = reels.length;
+  document.getElementById('sPublished').textContent = published;
+  document.getElementById('sDrafts').textContent = drafts;
+
+  var list = document.getElementById('reelsList');
+  list.innerHTML = '';
+
+  if (reels.length === 0) {
+    list.innerHTML = '<div class="empty"><span class="empty-icon">📹</span><p class="empty-text">لا توجد ريلز بعد. أضف أول ريل!</p></div>';
+    return;
+  }
+
+  reels.forEach(function(r, idx) {
+    var item = document.createElement('div');
+    item.className = 'reel-item';
+    var thumb = r.cover_url
+      ? '<img src="' + esc(r.cover_url) + '" alt=""/>'
+      : '<span style="font-size:1.8rem;opacity:.3;">📹</span>';
+    var statusColor = r.status === 'published' ? 'var(--green)' : 'var(--dim)';
+    var statusText = r.status === 'published' ? '✅ منشور' : '📝 مسودة';
+
+    item.innerHTML =
+      '<div class="reel-thumb-row">' +
+        '<div class="reel-thumb">' + thumb + '</div>' +
+        '<div class="reel-info">' +
+          '<div class="reel-title-text">' + esc(r.title) + '</div>' +
+          '<span class="reel-cat">' + esc(r.category || '') + '</span>' +
+          '<div style="font-size:.64rem;color:var(--dim);margin-bottom:3px;">👤 ' + esc(r.username || 'مجهول') + '</div>' +
+          '<div class="reel-desc-text">' + esc(r.description || '—') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="reel-actions">' +
+        '<button class="r-btn r-order" onclick="moveUp(\'' + r.id + '\',' + idx + ')" title="لأعلى">↑</button>' +
+        '<button class="r-btn r-order" onclick="moveDown(\'' + r.id + '\',' + idx + ')" title="لأسفل">↓</button>' +
+        '<button class="r-btn r-edit" onclick="editReel(\'' + r.id + '\')">✏ تعديل</button>' +
+        '<button class="r-btn r-pub" onclick="togglePublish(\'' + r.id + '\',\'' + r.status + '\')" style="color:' + statusColor + '">' + statusText + '</button>' +
+        '<button class="r-btn r-del" onclick="deleteReel(\'' + r.id + '\')">🗑 حذف</button>' +
+      '</div>';
+    list.appendChild(item);
+  });
+}
+
+// ── SAVE (Insert / Update) ──
+async function saveReel() {
+  var title = document.getElementById('fTitle').value.trim();
+  if (!title) { toast('الرجاء إدخال العنوان / Enter title', 'err'); return; }
+
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ الحفظ...';
+
+  // Keep existing cover_url if editing and no new file chosen
+  var cover_url = null;
+  if (editingId && !imgFile) {
+    var prev = document.getElementById('imgPreview');
+    if (prev.src && !prev.src.startsWith('data:') && prev.style.display !== 'none') {
+      cover_url = prev.src;
+    }
+  }
+
+  // Upload new cover image to Supabase Storage, or keep a local preview if Supabase is unavailable.
+  if (imgFile && sb) {
+    document.getElementById('uploadProgress').style.display = 'block';
+    var ext = imgFile.name.split('.').pop().toLowerCase();
+    var fileName = 'covers/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+    var upRes = await sb.storage.from('reels').upload(fileName, imgFile, { upsert: true });
+    document.getElementById('uploadProgress').style.display = 'none';
+    if (upRes.error) {
+      toast('خطأ في رفع الصورة: ' + upRes.error.message, 'err');
+      btn.disabled = false;
+      btn.textContent = '💾 حفظ الريل / Save Reel';
+      return;
+    }
+    var urlData = sb.storage.from('reels').getPublicUrl(fileName);
+    cover_url = urlData.data.publicUrl;
+  } else if (imgFile) {
+    cover_url = document.getElementById('imgPreview').src || null;
+  }
+
+  var video_url = document.getElementById('fVideo').value.trim() || null;
+  if (videoFile && sb) {
+    document.getElementById('videoUploadProgress').style.display = 'block';
+    var vext = videoFile.name.split('.').pop().toLowerCase();
+    var videoName = 'videos/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + vext;
+    var videoRes = await sb.storage.from('reels').upload(videoName, videoFile, {
+      upsert: true,
+      contentType: videoFile.type || 'video/mp4'
+    });
+    document.getElementById('videoUploadProgress').style.display = 'none';
+    if (videoRes.error) {
+      toast('خطأ في رفع الفيديو: ' + videoRes.error.message, 'err');
+      btn.disabled = false;
+      btn.textContent = '💾 حفظ الريل / Save Reel';
+      return;
+    }
+    video_url = sb.storage.from('reels').getPublicUrl(videoName).data.publicUrl;
+  } else if (videoFile) {
+    video_url = URL.createObjectURL(videoFile);
+  }
+
+  var payload = {
+    title: title,
+    description: document.getElementById('fDesc').value.trim() || null,
+    category: document.getElementById('fCat').value,
+    status: document.getElementById('fStatus').value,
+    video_url: video_url,
+    mission: document.getElementById('fMission').value.trim() || null,
+    tags: document.getElementById('fTags').value.trim() || null,
+  };
+  if (cover_url !== undefined) payload.cover_url = cover_url;
+
+  if (!sb) {
+    saveLocalReel(payload, editingId);
+    btn.disabled = false;
+    btn.textContent = '💾 حفظ الريل / Save Reel';
+    clearGeneratedTags();
+    closeModal();
+    renderReels(loadLocalReels());
+    toast('✅ تم الحفظ محلياً على هذا الجهاز');
+    return;
+  }
+
+  var opRes;
+  if (editingId) {
+    opRes = await sb.from('reels').update(payload).eq('id', editingId);
+  } else {
+    opRes = await sb.from('reels').insert(payload);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '💾 حفظ الريل / Save Reel';
+
+  if (opRes.error) {
+    toast('خطأ: ' + opRes.error.message, 'err');
+    return;
+  }
+
+  closeModal();
+  clearGeneratedTags();
+  await render();
+  toast('✅ تم الحفظ بنجاح على Supabase!');
+}
+
+// ── EDIT ──
+async function editReel(id) {
+  var r = null;
+  if (sb) {
+    var res = await sb.from('reels').select('*').eq('id', id).single();
+    if (res.error || !res.data) { toast('خطأ في التحميل', 'err'); return; }
+    r = res.data;
+  } else {
+    r = loadLocalReels().find(function(item){ return item.id === id; });
+    if (!r) { toast('خطأ في التحميل', 'err'); return; }
+  }
+
+  editingId = id;
+  imgFile = null;
+  videoFile = null;
+  document.getElementById('modalTitle').textContent = 'تعديل ريل / Edit Reel';
+  document.getElementById('fTitle').value = r.title || '';
+  document.getElementById('fDesc').value = r.description || '';
+  document.getElementById('fCat').value = r.category || 'أخرى';
+  document.getElementById('fStatus').value = r.status || 'published';
+  document.getElementById('fVideo').value = r.video_url || '';
+  document.getElementById('videoInput').value = '';
+  document.getElementById('videoName').textContent = r.video_url ? 'فيديو محفوظ مسبقاً / Existing video' : 'اضغط لاختيار فيديو — يُرفع مباشرة إلى Supabase';
+  document.getElementById('fMission').value = r.mission || '';
+  document.getElementById('fTags').value = r.tags || '';
+
+  var prev = document.getElementById('imgPreview');
+  if (r.cover_url) {
+    prev.src = r.cover_url;
+    prev.style.display = 'block';
+    document.querySelector('.img-upload .u-icon').style.display = 'none';
+    document.querySelector('.img-upload p').style.display = 'none';
+  } else {
+    prev.style.display = 'none';
+    prev.src = '';
+    document.querySelector('.img-upload .u-icon').style.display = 'block';
+    document.querySelector('.img-upload p').style.display = 'block';
+  }
+
+  document.getElementById('modal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+// ── DELETE ──
+async function deleteReel(id) {
+  if (!confirm('هل تريد حذف هذا الريل؟ / Delete this reel?')) return;
+  if (!sb) {
+    saveLocalReels(loadLocalReels().filter(function(r){ return r.id !== id; }));
+    renderReels(loadLocalReels());
+    toast('✓ تم الحذف محلياً / Deleted locally');
+    return;
+  }
+  var res = await sb.from('reels').delete().eq('id', id);
+  if (res.error) { toast('خطأ في الحذف: ' + res.error.message, 'err'); return; }
+  await render();
+  toast('✓ تم الحذف / Deleted');
+}
+
+// ── TOGGLE PUBLISH ──
+async function togglePublish(id, currentStatus) {
+  var newStatus = currentStatus === 'published' ? 'draft' : 'published';
+  if (!sb) {
+    var reels = loadLocalReels().map(function(r){
+      if (r.id === id) r.status = newStatus;
+      return r;
+    });
+    saveLocalReels(reels);
+    renderReels(reels);
+    return;
+  }
+  var res = await sb.from('reels').update({ status: newStatus }).eq('id', id);
+  if (res.error) { toast('خطأ / Error: ' + res.error.message, 'err'); return; }
+  await render();
+}
+
+// ── MOVE UP ──
+async function moveUp(id, idx) {
+  if (!sb) {
+    var local = loadLocalReels();
+    if (idx <= 0) return;
+    var tmp = local[idx - 1];
+    local[idx - 1] = local[idx];
+    local[idx] = tmp;
+    saveLocalReels(local);
+    renderReels(local);
+    return;
+  }
+  var res = await sb.from('reels').select('id,sort_order').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+  var reels = res.data || [];
+  if (idx === 0 || !reels.length) return;
+  var cur = reels[idx];
+  var prev = reels[idx - 1];
+  var tmpOrder = prev.sort_order;
+  await sb.from('reels').update({ sort_order: cur.sort_order !== null ? cur.sort_order : idx }).eq('id', prev.id);
+  await sb.from('reels').update({ sort_order: tmpOrder !== null ? tmpOrder : idx - 1 }).eq('id', cur.id);
+  await render();
+}
+
+// ── MOVE DOWN ──
+async function moveDown(id, idx) {
+  if (!sb) {
+    var local = loadLocalReels();
+    if (idx >= local.length - 1) return;
+    var tmp = local[idx + 1];
+    local[idx + 1] = local[idx];
+    local[idx] = tmp;
+    saveLocalReels(local);
+    renderReels(local);
+    return;
+  }
+  var res = await sb.from('reels').select('id,sort_order').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+  var reels = res.data || [];
+  if (idx >= reels.length - 1 || !reels.length) return;
+  var cur = reels[idx];
+  var next = reels[idx + 1];
+  var tmpOrder = next.sort_order;
+  await sb.from('reels').update({ sort_order: cur.sort_order !== null ? cur.sort_order : idx }).eq('id', next.id);
+  await sb.from('reels').update({ sort_order: tmpOrder !== null ? tmpOrder : idx + 1 }).eq('id', cur.id);
+  await render();
+}
+
+// ── CLEAR ALL ──
+async function clearAllReels() {
+  if (!confirm('هل أنت متأكد؟ سيتم مسح كل الريلز من Supabase!\nAre you sure? This clears ALL reels!')) return;
+  if (!sb) {
+    saveLocalReels([]);
+    renderReels([]);
+    toast('✓ تم المسح محلياً / Cleared locally');
+    return;
+  }
+  // Delete all rows
+  var res = await sb.from('reels').delete().gte('created_at', '2000-01-01');
+  if (res.error) { toast('خطأ / Error: ' + res.error.message, 'err'); return; }
+  await render();
+  toast('✓ تم المسح / Cleared');
+}
+
+// ── MODAL ──
+function openModal() {
+  editingId = null; imgFile = null; videoFile = null;
+  document.getElementById('modalTitle').textContent = 'إضافة ريل / Add Reel';
+  ['fTitle','fDesc','fVideo','fMission','fTags'].forEach(function(id){ document.getElementById(id).value = ''; });
+  clearGeneratedTags();
+  document.getElementById('fCat').value = 'توثيق معماري';
+  document.getElementById('fStatus').value = 'published';
+  var prev = document.getElementById('imgPreview');
+  prev.style.display = 'none';
+  prev.src = '';
+  document.getElementById('imgInput').value = '';
+  document.getElementById('videoInput').value = '';
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('videoUploadProgress').style.display = 'none';
+  document.getElementById('videoName').textContent = 'اضغط لاختيار فيديو — يُرفع مباشرة إلى Supabase';
+  document.querySelector('.img-upload .u-icon').style.display = 'block';
+  document.querySelector('.img-upload p').style.display = 'block';
+  document.getElementById('modal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function(){ document.getElementById('fTitle').focus(); }, 100);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function closeOnBg(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+function previewImg(input) {
+  if (!input.files[0]) return;
+  imgFile = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var prev = document.getElementById('imgPreview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    document.querySelector('.img-upload .u-icon').style.display = 'none';
+    document.querySelector('.img-upload p').style.display = 'none';
+  };
+  reader.readAsDataURL(imgFile);
+}
+
+function previewVideo(input) {
+  if (!input.files[0]) return;
+  videoFile = input.files[0];
+  document.getElementById('videoName').textContent = videoFile.name;
+  document.getElementById('fVideo').value = '';
+}
+
+// ── TABS ──
+function sw(tab, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('tab-' + tab).classList.add('on');
+}
+
+// ── HELPERS ──
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type === 'err' ? '#E8221F' : (type === 'warn' ? '#ffb347' : '#00b954');
+  t.style.color = '#fff';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+function clearGeneratedTags() {
+  var hidden = document.getElementById('mTags');
+  var output = document.getElementById('aiTagsOutput');
+  if (hidden) hidden.value = '';
+  if (output) {
+    output.innerHTML = '';
+    output.classList.add('is-empty');
+  }
+}
+
+function loadLocalReels() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_REELS_KEY) || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveLocalReels(reels) {
+  localStorage.setItem(LOCAL_REELS_KEY, JSON.stringify(reels || []));
+}
+
+function saveLocalReel(payload, id) {
+  var reels = loadLocalReels();
+  if (id) {
+    reels = reels.map(function(r) {
+      return r.id === id ? Object.assign({}, r, payload, { updated_at: new Date().toISOString() }) : r;
+    });
+  } else {
+    reels.unshift(Object.assign({
+      id: 'local_' + Date.now(),
+      username: 'local-admin',
+      created_at: new Date().toISOString(),
+      sort_order: reels.length
+    }, payload));
+  }
+  saveLocalReels(reels);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──
+init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="rewards-system.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>المهام | FALASTEEN.INK</title>
+<style>
+:root{
+  --bg:#0e0e0e;--s1:#131313;--s2:#1c1b1b;--s3:#201f1f;--s4:#353534;
+  --red:#E8221F;--red2:#930006;--green:#00b954;--text:#e5e2e1;--dim:#9a9898;
+  --border:rgba(93,63,59,.15);
+  --font-mono:"IBM Plex Mono","Courier New",monospace;
+  --font-body:Arial,"Segoe UI",Tahoma,sans-serif;
+}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);padding-bottom:80px;}
+.topnav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(14,14,14,.97);border-bottom:1px solid var(--border);}
+/* HERO */
+.g-hero{padding:80px 18px 28px;background:radial-gradient(ellipse at 30% 50%,rgba(232,34,31,.08),transparent 60%);position:relative;overflow:hidden;}
+.g-hero::before{content:'GUARDIAN';position:absolute;bottom:-20px;left:-10px;font-size:clamp(5rem,18vw,11rem);font-weight:900;color:rgba(232,34,31,.04);pointer-events:none;font-family:var(--font-mono);}
+.g-tag{font-family:var(--font-mono);font-size:.54rem;color:var(--red);letter-spacing:.28em;margin-bottom:10px;display:block;}
+.g-title{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;line-height:1.1;margin-bottom:8px;}
+.g-title .r{color:var(--red);}
+.g-desc{font-size:.86rem;color:var(--dim);line-height:1.7;max-width:480px;margin-bottom:20px;}
+/* STATS */
+.g-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px;}
+.g-stat{background:var(--s2);padding:18px 12px;text-align:center;}
+.g-stat-n{font-family:var(--font-mono);font-size:1.4rem;font-weight:900;margin-bottom:3px;}
+.g-stat-l{font-family:var(--font-mono);font-size:.48rem;color:var(--dim);letter-spacing:.1em;}
+/* LEVEL */
+.level-bar{background:var(--s2);padding:16px 18px;margin-bottom:2px;}
+.level-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.level-name{font-size:.88rem;font-weight:700;}
+.level-pts{font-family:var(--font-mono);font-size:.7rem;color:var(--red);}
+.level-track{height:6px;background:var(--s4);border-radius:3px;overflow:hidden;}
+.level-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b35);border-radius:3px;transition:width 1s ease;}
+.level-range{font-family:var(--font-mono);font-size:.5rem;color:var(--dim);display:flex;justify-content:space-between;margin-top:5px;}
+/* SECTION */
+.sec-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px;}
+.sec-hdr-icon{font-size:1.3rem;}
+.sec-hdr-title{font-size:.96rem;font-weight:900;}
+.sec-hdr-sub{font-size:.74rem;color:var(--dim);margin-top:2px;}
+/* MISSIONS */
+.missions{padding:0 18px;display:flex;flex-direction:column;gap:2px;margin-bottom:4px;}
+.mission-card{width:100%;background:var(--s2);color:var(--text);font:inherit;text-align:inherit;padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:background .2s;border:0;border-right:3px solid transparent;position:relative;z-index:1;}
+.mission-card:hover{background:var(--s3);}
+.mission-card:focus{outline:2px solid rgba(232,34,31,.55);outline-offset:2px;}
+.mission-card.active{border-right-color:var(--red);}
+.mission-card.done{border-right-color:var(--green);opacity:.7;}
+.m-icon{width:44px;height:44px;background:var(--s4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.m-body{flex:1;min-width:0;}
+.m-title{font-size:.88rem;font-weight:700;margin-bottom:3px;}
+.m-desc{font-size:.74rem;color:var(--dim);line-height:1.5;margin-bottom:6px;}
+.m-footer{display:flex;align-items:center;gap:8px;}
+.m-pts{font-family:var(--font-mono);font-size:.56rem;color:var(--red);}
+.m-prog{flex:1;height:3px;background:var(--s4);}
+.m-prog-fill{height:100%;background:var(--red);transition:width .5s;}
+.m-pct{font-family:var(--font-mono);font-size:.5rem;color:var(--dim);}
+.m-status{font-size:.7rem;flex-shrink:0;padding:3px 10px;font-family:var(--font-mono);}
+.m-status.todo{color:var(--dim);background:var(--s4);}
+.m-status.active{color:var(--red);background:rgba(232,34,31,.1);}
+.m-status.done{color:var(--green);background:rgba(0,185,84,.1);}
+/* BADGES */
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:0 18px;margin-bottom:4px;}
+.badge{background:var(--s2);padding:14px 8px;text-align:center;cursor:pointer;transition:background .2s;}
+.badge:hover{background:var(--s3);}
+.badge.locked{opacity:.35;cursor:default;}
+.b-icon{font-size:1.8rem;margin-bottom:6px;display:block;}
+.b-name{font-family:var(--font-mono);font-size:.46rem;color:var(--dim);line-height:1.4;}
+.badge.unlocked .b-name{color:var(--green);}
+/* ACTIONS */
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 18px;margin-bottom:4px;}
+.action-btn-big{background:var(--s2);padding:18px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer;transition:background .2s;border:2px solid transparent;text-decoration:none;}
+.action-btn-big:hover{background:var(--s3);border-color:rgba(232,34,31,.2);}
+.ab-icon{font-size:1.6rem;}
+.ab-title{font-size:.86rem;font-weight:700;color:var(--text);}
+.ab-sub{font-size:.7rem;color:var(--dim);line-height:1.5;}
+/* LEADERBOARD */
+.leaders{padding:0 18px;display:flex;flex-direction:column;gap:2px;margin-bottom:24px;}
+.leader{background:var(--s2);padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.leader.me{border-right:3px solid var(--red);background:rgba(232,34,31,.05);}
+.l-rank{font-size:1rem;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
+.r1{color:#FFD700;}.r2{color:#C0C0C0;}.r3{color:#CD7F32;}
+.l-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;color:#fff;flex-shrink:0;}
+.l-info{flex:1;min-width:0;}
+.l-name{font-family:var(--font-mono);font-size:.78rem;font-weight:700;}
+.l-role{font-size:.68rem;color:var(--dim);}
+.l-pts{font-family:var(--font-mono);font-size:.9rem;font-weight:700;color:var(--red);}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:none;align-items:flex-end;justify-content:center;}
+.overlay.on{display:flex;}
+.modal{background:var(--s1);width:100%;max-width:540px;padding:22px 18px 32px;border-top:3px solid var(--red);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-title{font-size:1rem;font-weight:900;}
+.modal-close{background:none;border:none;color:var(--dim);font-size:1.4rem;cursor:pointer;}
+.modal-body{font-size:.86rem;color:var(--dim);line-height:1.7;margin-bottom:14px;}
+.modal-pts{font-family:var(--font-mono);font-size:1.1rem;color:var(--red);margin-bottom:16px;}
+.modal-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:none;cursor:pointer;font-size:.88rem;font-weight:700;}
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 22px;font-size:.78rem;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+.nav-icon{font-size:1.25rem;line-height:1;}
+
+/* MISSIONS PAGE EXTRAS */
+.filter-wrap{padding:10px 18px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;background:var(--s1);border-bottom:1px solid rgba(93,63,59,.1);}
+.filter-wrap::-webkit-scrollbar{display:none;}
+.fchip{font-size:.72rem;font-weight:600;padding:6px 14px;background:var(--s2);color:var(--dim);border:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:var(--font-body);}
+.fchip.on{color:var(--red);border-bottom-color:var(--red);background:rgba(232,34,31,.06);}
+.mission-card.urgent{border-right-color:var(--red)!important;}
+.mission-card.digital{border-right-color:var(--green)!important;}
+.mission-card.verify{border-right-color:#ffb347!important;}
+.mission-card.audio{border-right-color:#7eb8ff!important;}
+.mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.mc-badge{font-family:var(--font-mono);font-size:.5rem;padding:3px 9px;letter-spacing:.1em;}
+.badge-urgent{color:var(--red);background:rgba(232,34,31,.1);border:1px solid rgba(232,34,31,.25);}
+.badge-digital{color:var(--green);background:rgba(0,185,84,.1);border:1px solid rgba(0,185,84,.25);}
+.badge-verify{color:#ffb347;background:rgba(255,179,71,.1);border:1px solid rgba(255,179,71,.25);}
+.badge-audio{color:#7eb8ff;background:rgba(126,184,255,.1);border:1px solid rgba(126,184,255,.25);}
+.mc-reward{font-family:var(--font-mono);font-size:.72rem;color:var(--red);font-weight:700;}
+.mission-open-btn{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;padding:7px 12px;background:rgba(232,34,31,.14);border:1px solid rgba(232,34,31,.35);color:var(--text);font-size:.72rem;font-weight:800;cursor:pointer;pointer-events:auto;}
+.mission-open-btn:hover{background:var(--red);color:#fff;}
+.mission-state{padding:24px 18px;text-align:center;color:var(--dim);font-size:.86rem;background:var(--s2);border:1px solid rgba(255,255,255,.04);}
+.mission-state strong{display:block;color:var(--text);font-size:.95rem;margin-bottom:6px;}
+.mission-state.error{border-color:rgba(232,34,31,.35);color:#ffb4b4;}
+.modal-btn:disabled{opacity:.7;cursor:wait;}
+@media(max-width:520px){
+  .mission-card{align-items:flex-start;padding:14px 12px;}
+  .mc-top{flex-wrap:wrap;gap:8px;}
+  .m-footer{flex-wrap:wrap;}
+  .filter-wrap{padding-inline:12px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="r">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</nav>
+
+<div class="g-hero">
+  <span class="g-tag" id="gTag">المهام — MISSIONS</span>
+  <h1 class="g-title">مهام <span class="r">الحماية</span></h1>
+  <p class="g-desc" id="gDesc">حفظ الهوية عمل جماعي. أكمل المهام واكسب نقاط الحراس.</p>
+</div>
+
+<div class="filter-wrap">
+  <button class="fchip on" onclick="filterM('all',this)" id="fAll">الكل / All</button>
+  <button class="fchip" onclick="filterM('urgent',this)">🔴 عاجل</button>
+  <button class="fchip" onclick="filterM('digital',this)">💾 رقمنة</button>
+  <button class="fchip" onclick="filterM('verify',this)">✅ تحقق</button>
+  <button class="fchip" onclick="filterM('audio',this)">🎙 صوتي</button>
+</div>
+
+<div class="sec-hdr">
+  <span class="sec-hdr-icon">🎯</span>
+  <div><div class="sec-hdr-title" id="activeTitle">المهام النشطة / Active</div></div>
+</div>
+<div class="missions" id="missionsList"></div>
+
+<div class="sec-hdr" id="doneHdr" style="display:none;">
+  <span class="sec-hdr-icon">✓</span>
+  <div><div class="sec-hdr-title" id="doneTitle">المكتملة / Completed</div></div>
+</div>
+<div class="missions" id="doneList"></div>
+
+<!-- MODAL — نفس Guardian تماماً -->
+<div class="overlay" id="missionModal" onclick="if(event.target===this)closeMission()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="mModalTitle">—</div>
+      <button class="modal-close" onclick="closeMission()" aria-label="إغلاق المهمة">✕</button>
+    </div>
+    <div class="modal-body" id="mModalBody">—</div>
+    <div class="modal-pts" id="mModalPts">+0 XP</div>
+    <button class="modal-btn" id="mModalBtn" onclick="completeMission()">ابدأ المهمة / Start Mission</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="missionDebug" style="position:fixed;top:62px;left:12px;z-index:100000;background:#111;color:#00b954;border:1px solid rgba(0,185,84,.35);font-family:Courier New,monospace;font-size:10px;padding:6px 8px;display:none;direction:ltr;"></div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Guardian_hub1.html" data-page="Missions"><span class="nav-icon">🛡</span>Guardian</a>
+</nav>
+
+<script>
+var isAr = true;
+try { isAr = (localStorage.getItem('fl_lang') || 'ar') !== 'en'; } catch (e) {}
+var currentFilter = 'all';
+var activeMission = null;
+var isClaimingMission = false;
+var missionEventsBound = false;
+var PROFILE_KEY = 'fl_guardian_profile';
+
+// Local mission catalog. This remains independent from Rewards.html so the page
+// can keep working offline, while syncing to FLRewards when that module exists.
+var MISSIONS = [
+  {id:'M1',type:'urgent',icon:'🕊',
+    title:'سجّل شهيداً',titleEn:'Register a Martyr',
+    desc:'أضف اسم شهيد في سجل الشهداء. كل اسم يُحفظ للأبد.',
+    descEn:'Add a martyr name to the registry forever.',
+    pts:100,points:20,token:1,badge:'Archivist',rewardType:'document',link:'Martyrs.html'},
+  {id:'M2',type:'digital',icon:'🏛',
+    title:'وثّق معلماً',titleEn:'Document a Landmark',
+    desc:'أضف معلماً تاريخياً مع صور قبل وبعد التدمير.',
+    descEn:'Add a landmark with before/after photos.',
+    pts:150,points:30,token:1.5,badge:'Archivist',rewardType:'document',link:'Landmarks.html'},
+  {id:'M3',type:'urgent',icon:'🔴',
+    title:'ابث مباشرة',titleEn:'Go Live',
+    desc:'شارك ما يحدث الآن مباشرة للجميع.',
+    descEn:'Share what is happening now live.',
+    pts:200,points:40,token:2,badge:'Witness',rewardType:'share',link:'live.html'},
+  {id:'M4',type:'audio',icon:'🎙',
+    title:'ارفع رواية صوتية',titleEn:'Upload Audio Testimony',
+    desc:'سجّل شهادة صوتية وارفعها في القبو الرقمي.',
+    descEn:'Record and upload an audio testimony.',
+    pts:120,points:24,token:1.2,badge:'Witness',rewardType:'upload',link:'Vault.html'},
+  {id:'M5',type:'verify',icon:'✅',
+    title:'تحقق من أسماء',titleEn:'Verify Names',
+    desc:'راجع بيانات الشهداء وأضف أي معلومات ناقصة.',
+    descEn:'Review martyr data and add missing info.',
+    pts:80,points:16,token:0.8,badge:'Guardian',rewardType:'document',link:'Martyrs.html'},
+  {id:'M6',type:'digital',icon:'📁',
+    title:'ارفع وثائق',titleEn:'Upload Documents',
+    desc:'ارفع صوراً أو فيديوهات في القبو الرقمي.',
+    descEn:'Upload photos or videos to the Vault.',
+    pts:90,points:18,token:0.9,badge:'Archivist',rewardType:'upload',link:'Vault.html'},
+];
+
+function missionLog() {
+  if (window.console) console.log.apply(console, ['[FLMissions]'].concat([].slice.call(arguments)));
+}
+
+function missionWarn() {
+  if (window.console) console.warn.apply(console, ['[FLMissions]'].concat([].slice.call(arguments)));
+}
+
+function missionDebug(message) {
+  missionLog(message);
+  var box = document.getElementById('missionDebug');
+  if (!box) return;
+  box.textContent = String(message || '');
+  box.style.display = 'block';
+  clearTimeout(window.__missionDebugTimer);
+  window.__missionDebugTimer = setTimeout(function() { box.style.display = 'none'; }, 3500);
+}
+
+function escapeHtml(value) {
+  if (window.FL && typeof window.FL.esc === 'function') return window.FL.esc(value);
+  return String(value || '').replace(/[&<>"']/g, function(ch) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+  });
+}
+
+function getProfile() {
+  try {
+    var parsed = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    parsed.missions = parsed.missions || {};
+    parsed.pts = Number(parsed.pts || 0);
+    return parsed;
+  } catch (e) {
+    missionWarn('Could not read local guardian profile. Using fallback.', e);
+    return { pts: 0, missions: {} };
+  }
+}
+
+function saveProfile(profile) {
+  try {
+    profile.missions = profile.missions || {};
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    return true;
+  } catch (e) {
+    missionWarn('Could not save local guardian profile.', e);
+    toast(isAr ? 'تعذر حفظ التقدم محليًا' : 'Could not save progress', true);
+    return false;
+  }
+}
+
+function stateHtml(kind, title, body) {
+  return '<div class="mission-state ' + escapeHtml(kind || '') + '">' +
+    '<strong>' + escapeHtml(title) + '</strong>' +
+    '<span>' + escapeHtml(body || '') + '</span>' +
+  '</div>';
+}
+
+function createMissionCard(mission, isDone) {
+   var typeLabel = { urgent:'🔴 عاجل', digital:'💾 رقمنة', verify:'✅ تحقق', audio:'🎙 صوتي' };
+   var card = document.createElement('div');
+   card.className = 'mission-card ' + mission.type + (isDone ? ' done' : '');
+   card.setAttribute('role', 'button');
+   card.setAttribute('tabindex', '0');
+   card.setAttribute('data-mission-id', mission.id);
+   card.setAttribute('onclick', 'openMission("' + mission.id + '")');
+   card.setAttribute('aria-label', isAr ? mission.title : mission.titleEn);
+   card.innerHTML =
+     '<div class="mc-top"><span class="mc-badge badge-' + mission.type + '">' + escapeHtml(typeLabel[mission.type] || mission.type) + '</span><span class="mc-reward">+' + mission.pts + ' XP</span></div>' +
+     '<div class="m-icon">' + mission.icon + '</div>' +
+     '<div class="m-body">' +
+       '<div class="m-title">' + escapeHtml(isAr ? mission.title : mission.titleEn) + '</div>' +
+         '<div class="m-desc">' + escapeHtml(isAr ? mission.desc : mission.descEn) + '</div>' +
+         '<div class="m-footer">' +
+           '<span class="m-pts">+' + mission.pts + ' XP</span>' +
+           '<span class="m-status ' + (isDone ? 'done' : 'active') + '">' + (isDone ? (isAr ? '✓ مكتملة' : '✓ Done') : (isAr ? 'جاهزة' : 'Ready')) + '</span>' +
+         '</div>' +
+         '<button type="button" class="mission-open-btn" data-open-mission="' + mission.id + '" onclick="event.stopPropagation();openMission(this.dataset.openMission)">' + (isAr ? 'فتح التفاصيل' : 'Open Details') + '</button>' +
+       '</div>';
+   return card;
+ }
+
+function handleMissionCardAction(card) {
+  if (!card) return;
+  var missionId = card.getAttribute('data-mission-id');
+  missionLog('Mission card action received.', missionId);
+  if (!missionId) {
+    missionWarn('Clicked mission card has no data-mission-id.', card);
+    return;
+  }
+  openMission(missionId);
+}
+
+function bindMissionEvents() {
+   if (missionEventsBound) return;
+   missionEventsBound = true;
+
+   document.addEventListener('click', function(e) {
+     var target = e.target;
+     var closestFn = target.closest || (Element.prototype.closest && target.closest.bind(target));
+     if (!closestFn) return;
+
+     // Handle direct button clicks
+     var directBtn = closestFn('[data-open-mission]');
+     if (directBtn) {
+       e.preventDefault();
+       e.stopPropagation();
+       missionDebug('direct mission button: ' + directBtn.getAttribute('data-open-mission'));
+       openMission(directBtn.getAttribute('data-open-mission'));
+       return;
+     }
+
+     // Handle card clicks - also handle when clicking inside card children
+     var card = closestFn('.mission-card');
+     if (!card) return;
+     e.preventDefault();
+     e.stopPropagation();
+     missionDebug('mission card clicked: ' + card.getAttribute('data-mission-id'));
+     handleMissionCardAction(card);
+   }, true);
+
+   document.addEventListener('keydown', function(e) {
+     if (e.key === 'Escape') {
+       closeMission();
+       return;
+     }
+     if (e.key !== 'Enter' && e.key !== ' ') return;
+     var target = e.target;
+     var closestFn = target.closest || (Element.prototype.closest && target.closest.bind(target));
+     if (!closestFn) return;
+     var card = closestFn('.mission-card');
+     if (!card) return;
+     e.preventDefault();
+     handleMissionCardAction(card);
+   });
+
+   missionLog('Mission event delegation bound.');
+ }
+
+ function bindRenderedMissionCards() {
+   document.querySelectorAll('.mission-card[data-mission-id]').forEach(function(card) {
+     if (card.getAttribute('data-bound') === '1') return;
+     card.setAttribute('data-bound', '1');
+     // Add explicit click handler for immediate response
+     card.addEventListener('click', function(e) {
+       e.preventDefault();
+       e.stopPropagation();
+       handleMissionCardAction(card);
+     });
+     card.addEventListener('keydown', function(e) {
+       if (e.key !== 'Enter' && e.key !== ' ') return;
+       e.preventDefault();
+       handleMissionCardAction(card);
+     });
+   });
+   missionLog('Direct mission card handlers rebound:', document.querySelectorAll('.mission-card[data-mission-id]').length);
+ }
+
+function renderMissions() {
+  bindMissionEvents();
+  var list = document.getElementById('missionsList');
+  var doneList = document.getElementById('doneList');
+  var doneHdr = document.getElementById('doneHdr');
+  if (!list || !doneList || !doneHdr) {
+    missionWarn('Mission containers are missing from the DOM.');
+    return;
+  }
+
+  list.innerHTML = stateHtml('', isAr ? 'جاري تحميل المهام...' : 'Loading missions...', '');
+  doneList.innerHTML = '';
+  doneHdr.style.display = 'none';
+
+  try {
+    var profile = getProfile();
+    var done = profile.missions || {};
+    var filtered = currentFilter === 'all' ? MISSIONS : MISSIONS.filter(function(m) { return m.type === currentFilter; });
+    list.innerHTML = '';
+
+    filtered.forEach(function(mission) {
+      var isDone = done[mission.id] === 'done';
+      var card = createMissionCard(mission, isDone);
+      if (isDone) doneList.appendChild(card);
+      else list.appendChild(card);
+    });
+
+    if (!filtered.length) {
+      list.innerHTML = stateHtml('', isAr ? 'لا توجد مهام في هذا التصنيف' : 'No missions in this filter', isAr ? 'جرّب تصنيفًا آخر.' : 'Try another filter.');
+    } else if (!list.children.length) {
+      list.innerHTML = stateHtml('', isAr ? 'أحسنت! أكملت كل المهام' : 'All missions complete', isAr ? 'يمكنك فتح المهام المكتملة من الأسفل.' : 'Completed missions are listed below.');
+    }
+
+    doneHdr.style.display = doneList.children.length ? 'flex' : 'none';
+    bindRenderedMissionCards();
+    missionLog('Rendered missions.', { filter: currentFilter, active: list.children.length, completed: doneList.children.length });
+  } catch (e) {
+    missionWarn('Mission render failed.', e);
+    list.innerHTML = stateHtml('error', isAr ? 'تعذر عرض المهام' : 'Could not render missions', isAr ? 'تحقق من Console للتفاصيل.' : 'Check Console for details.');
+  }
+}
+
+function openMission(id) {
+  missionDebug('openMission: ' + id);
+  missionLog('openMission called.', id);
+  var mission = MISSIONS.find(function(x) { return x.id === id; });
+  if (!mission) {
+    missionWarn('Unknown mission id:', id);
+    return;
+  }
+  activeMission = mission;
+
+  var profile = getProfile();
+  var isDone = profile.missions && profile.missions[mission.id] === 'done';
+  document.getElementById('mModalTitle').textContent = isAr ? mission.title : mission.titleEn;
+  document.getElementById('mModalBody').textContent = isAr ? mission.desc : mission.descEn;
+  document.getElementById('mModalPts').textContent = '+' + mission.pts + ' XP';
+
+  var btn = document.getElementById('mModalBtn');
+  btn.disabled = false;
+  btn.style.background = isDone ? 'var(--green)' : '';
+  btn.textContent = isDone ? (isAr ? 'فتح صفحة المهمة ←' : 'Open Mission Page ←') : (isAr ? 'تحصيل المكافأة' : 'Claim Reward');
+
+  var modal = document.getElementById('missionModal');
+  if (!modal) {
+    missionWarn('Mission modal is missing from DOM.');
+    return;
+  }
+  modal.classList.add('on');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  missionLog('Opened mission.', mission.id, 'completed:', isDone);
+}
+
+function closeMission() {
+   var modal = document.getElementById('missionModal');
+   if (modal) {
+     modal.classList.remove('on');
+     modal.style.display = '';
+   }
+   document.body.style.overflow = '';
+   activeMission = null;
+ }
+
+async function syncRewardsSystem(mission) {
+  if (!window.FLRewards) {
+    missionWarn('FLRewards is unavailable. Local mission progress only.');
+    return null;
+  }
+
+  try {
+    var profile;
+    if (typeof window.FLRewards.awardCustomMission === 'function') {
+      profile = await window.FLRewards.awardCustomMission(null, {
+        id: mission.id,
+        xp: mission.pts,
+        points: mission.points || Math.max(1, Math.round(mission.pts / 5)),
+        token: mission.token || 0,
+        badge: mission.badge,
+        trackType: mission.rewardType
+      });
+    } else {
+      profile = await window.FLRewards.addXP(null, mission.pts, 'mission:' + mission.id);
+      await window.FLRewards.addPoints(null, mission.points || Math.max(1, Math.round(mission.pts / 5)));
+      if (mission.token) await window.FLRewards.addTokenReward(null, mission.token);
+      if (mission.badge) await window.FLRewards.unlockBadge(null, mission.badge);
+    }
+    missionLog('Synced mission reward to FLRewards.', mission.id);
+    return profile;
+  } catch (e) {
+    missionWarn('FLRewards sync failed. Keeping local fallback.', e);
+    toast(isAr ? 'تم حفظ المهمة محليًا — تعذر مزامنة المكافآت' : 'Saved locally — reward sync failed', true);
+    return null;
+  }
+}
+
+async function completeMission() {
+  missionLog('Claim reward clicked.', activeMission && activeMission.id);
+  if (!activeMission || isClaimingMission) return;
+  var mission = activeMission;
+  var profile = getProfile();
+  profile.missions = profile.missions || {};
+
+  if (profile.missions[mission.id] === 'done') {
+    missionLog('Mission already complete. Opening page.', mission.link);
+    window.location.href = mission.link;
+    return;
+  }
+
+  isClaimingMission = true;
+  var btn = document.getElementById('mModalBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = isAr ? 'جاري حفظ المكافأة...' : 'Saving reward...';
+  }
+
+  try {
+    profile.missions[mission.id] = 'done';
+    profile.pts = Number(profile.pts || 0) + Number(mission.pts || 0);
+    saveProfile(profile);
+    await syncRewardsSystem(mission);
+    toast('+' + mission.pts + ' XP — ' + (isAr ? 'تمت إضافة المكافأة' : 'Reward added'));
+    missionLog('Mission completed.', mission.id, profile);
+    closeMission();
+    renderMissions();
+  } catch (e) {
+    missionWarn('Completing mission failed.', e);
+    toast(isAr ? 'تعذر إكمال المهمة' : 'Could not complete mission', true);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = isAr ? 'حاول مرة أخرى' : 'Try Again';
+    }
+  } finally {
+    isClaimingMission = false;
+  }
+}
+
+function filterM(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.fchip').forEach(function(c) { c.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  missionLog('Filter changed:', type);
+  renderMissions();
+}
+
+function applyMissionLang(lang) {
+  isAr = lang !== 'en';
+  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', isAr ? 'ar' : 'en');
+  document.getElementById('langBtn').textContent = isAr ? 'EN' : 'AR';
+  document.getElementById('gTag').textContent = isAr ? 'المهام — MISSIONS' : 'MISSIONS — المهام';
+  document.getElementById('gDesc').textContent = isAr ? 'حفظ الهوية عمل جماعي. أكمل المهام واكسب نقاط الحراس.' : 'Preserving identity is collective work. Complete missions and earn points.';
+  renderMissions();
+}
+
+function toggleLang() {
+  var next = isAr ? 'en' : 'ar';
+  try { localStorage.setItem('fl_lang', next); } catch (e) {}
+  applyMissionLang(next);
+}
+
+// app.js calls this hook after its global language toggle runs. Keeping the
+// page-specific rendering here avoids duplicate/overwritten toggle handlers.
+window.__onLangChange = applyMissionLang;
+
+function toast(msg, isError) {
+   var t = document.getElementById('toast');
+   if (!t) return;
+   t.textContent = msg;
+   t.style.background = isError ? '#E8221F' : '#00b954';
+   t.style.color = '#fff';
+   t.classList.add('show');
+   setTimeout(function() { t.classList.remove('show'); }, 3200);
+ }
+
+ function initMissionsPage() {
+   missionLog('Initializing Missions page.');
+   renderMissions();
+   // Ensure event listeners are bound after render
+   setTimeout(bindMissionEvents, 0);
+ }
+
+window.openMission = openMission;
+window.closeMission = closeMission;
+window.completeMission = completeMission;
+window.filterM = filterM;
+window.toggleLang = toggleLang;
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMissionsPage);
+else initMissionsPage();
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

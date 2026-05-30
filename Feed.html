@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>نبض غزة | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="rewards-system.js" defer></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+html, body { height:100%; overflow:hidden; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; }
+
+/* TOPBAR */
+.topbar { position:fixed; top:0; width:100%; z-index:500; display:flex; align-items:center; justify-content:space-between; padding:13px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.1); pointer-events:auto; }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+.ttabs { display:flex; gap:2px; background:rgba(0,0,0,.5); padding:3px; }
+.ttab { font-size:.68rem; font-weight:600; padding:5px 12px; border:none; cursor:pointer; background:transparent; color:var(--dim); transition:all .2s; font-family:Arial,sans-serif; text-decoration:none; display:inline-flex; align-items:center; }
+.ttab.on, .ttab:hover { background:var(--red); color:#fff; }
+.ticons { display:flex; gap:8px; }
+.ticon { background:none; border:none; cursor:pointer; color:var(--text); font-size:1.1rem; padding:4px; }
+
+/* REELS SCROLL */
+.reels { height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; scrollbar-width:none; }
+.reels::-webkit-scrollbar { display:none; }
+
+/* SINGLE REEL */
+.reel { height:100vh; scroll-snap-align:start; position:relative; display:flex; align-items:flex-end; overflow:hidden; }
+
+/* BG IMAGE */
+.reel-bg { position:absolute; inset:0; }
+.reel-bg img { width:100%; height:100%; object-fit:cover; }
+.reel-bg-fallback { width:100%; height:100%; }
+.reel-gradient { position:absolute; inset:0; background:linear-gradient(180deg, transparent 20%, rgba(14,14,14,.5) 55%, rgba(14,14,14,.97) 100%); }
+
+/* PLAY ICON OVERLAY */
+.reel-play-area { position:absolute; top:56px; left:0; right:0; height:calc(65% - 56px); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; }
+.play-circle { width:64px; height:64px; border-radius:50%; background:rgba(232,34,31,.8); display:flex; align-items:center; justify-content:center; font-size:1.5rem; transition:transform .2s, opacity .2s; opacity:.85; }
+.reel:hover .play-circle { transform:scale(1.1); opacity:1; }
+
+/* BADGES */
+.reel-cat-badge { position:absolute; top:72px; left:16px; font-family:"Courier New",monospace; font-size:.52rem; color:var(--green); background:rgba(0,185,84,.1); border:1px solid rgba(0,185,84,.22); padding:4px 10px; z-index:10; }
+.reel-live-badge { position:absolute; top:72px; right:16px; display:flex; align-items:center; gap:5px; background:rgba(232,34,31,.9); padding:4px 10px; font-family:"Courier New",monospace; font-size:.52rem; letter-spacing:.16em; color:#fff; z-index:10; }
+.live-dot { width:5px; height:5px; border-radius:50%; background:#fff; animation:blink 1.3s infinite; }
+@keyframes blink { 0%,100%{opacity:1;}50%{opacity:.2;} }
+
+/* CONTENT AREA */
+.reel-content { position:relative; z-index:10; width:100%; padding:14px 14px 80px; display:flex; gap:12px; align-items:flex-end; }
+.reel-main { flex:1; }
+.author-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--red),var(--red2)); display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:700; color:#fff; flex-shrink:0; }
+.author-name { font-size:.8rem; font-weight:600; }
+.follow-btn { font-size:.62rem; font-weight:600; background:transparent; border:1px solid rgba(232,34,31,.5); color:var(--red); padding:3px 10px; cursor:pointer; margin-right:auto; transition:all .2s; }
+.follow-btn.following { background:rgba(232,34,31,.15); }
+.reel-title { font-size:1rem; font-weight:700; line-height:1.35; margin-bottom:5px; }
+.reel-desc { font-size:.78rem; color:var(--dim); line-height:1.55; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.reel-tags { display:flex; gap:6px; flex-wrap:wrap; direction:ltr; margin-bottom:8px; }
+.rtag { font-family:"Courier New",monospace; font-size:.52rem; color:var(--dim); }
+.mission-box { background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.24); padding:9px 12px; }
+.mission-lbl { font-family:"Courier New",monospace; font-size:.48rem; color:var(--red); letter-spacing:.22em; margin-bottom:3px; display:flex; align-items:center; gap:5px; }
+.mission-lbl::before { content:''; width:5px; height:5px; background:var(--red); border-radius:50%; animation:blink 1.5s infinite; }
+.mission-txt { font-size:.76rem; color:var(--text); line-height:1.5; }
+
+/* ACTIONS */
+.reel-actions { display:flex; flex-direction:column; align-items:center; gap:16px; padding-bottom:4px; }
+.action-item { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
+.action-btn { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.08); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:all .2s; color:var(--text); }
+.action-btn:hover, .action-btn.on { background:var(--red); }
+.action-count { font-family:"Courier New",monospace; font-size:.54rem; color:var(--dim); }
+
+/* DOTS */
+.dots { position:fixed; left:50%; transform:translateX(-50%); bottom:76px; z-index:200; display:flex; gap:5px; pointer-events:none; }
+.dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.2); transition:all .3s; }
+.dot.on { background:var(--red); width:14px; border-radius:3px; }
+
+/* EMPTY STATE */
+.empty-feed { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; scroll-snap-align:start; }
+.empty-feed .icon { font-size:3rem; opacity:.3; }
+.empty-feed p { font-size:.88rem; color:var(--dim); text-align:center; line-height:1.7; }
+.empty-feed a { background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; text-decoration:none; font-size:.8rem; font-weight:700; padding:11px 24px; }
+
+/* BOTTOM NAV */
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; align-items:center; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:.54rem; }
+.bottom-nav a:hover, .bottom-nav a.active { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+
+/* UPLOAD BUTTON — TikTok style */
+.upload-fab { width:48px; height:32px; background:linear-gradient(135deg,var(--red),var(--red2)); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#fff; border-radius:10px; box-shadow:0 2px 12px rgba(232,34,31,.4); flex-shrink:0; }
+
+/* UPLOAD MODAL */
+.up-overlay { position:fixed; inset:0; z-index:700; background:rgba(0,0,0,.92); display:none; align-items:flex-end; justify-content:center; }
+.up-overlay.on { display:flex; }
+.up-sheet { background:var(--s1); width:100%; max-width:560px; max-height:94vh; overflow-y:auto; padding:22px 18px 36px; border-top:3px solid var(--red); scrollbar-width:none; }
+.up-sheet::-webkit-scrollbar { display:none; }
+.up-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.up-title { font-size:1rem; font-weight:900; }
+.up-close { background:none; border:none; color:var(--dim); font-size:1.4rem; cursor:pointer; }
+.up-field { margin-bottom:14px; }
+.up-lbl { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:6px; }
+.up-inp, .up-sel, .up-ta { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.88rem; padding:11px 13px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; appearance:none; }
+.up-inp:focus, .up-sel:focus, .up-ta:focus { border-color:var(--red); }
+.up-inp::placeholder, .up-ta::placeholder { color:var(--dim); }
+.up-ta { resize:vertical; min-height:70px; }
+.up-sel option { background:var(--s3); }
+.up-img-wrap { border:2px dashed rgba(93,63,59,.3); padding:18px; text-align:center; cursor:pointer; position:relative; transition:border-color .2s; }
+.up-img-wrap:hover { border-color:var(--red); }
+.up-img-wrap input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.up-img-wrap .u-icon { font-size:1.5rem; display:block; margin-bottom:4px; }
+.up-img-wrap p { font-size:.72rem; color:var(--dim); }
+.up-preview { width:100%; max-height:160px; object-fit:cover; display:none; margin-top:8px; }
+.up-submit { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.9rem; font-weight:700; margin-top:4px; }
+.up-submit:disabled { opacity:.5; cursor:not-allowed; }
+.up-login-notice { background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.2); padding:14px; text-align:center; }
+.up-login-notice p { font-size:.82rem; color:var(--dim); margin-bottom:10px; }
+.up-login-notice a { background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; text-decoration:none; font-size:.8rem; font-weight:700; padding:9px 22px; display:inline-block; }
+.up-progress { margin-top:8px; font-size:.72rem; color:var(--dim); text-align:center; display:none; }
+
+/* VIDEO PLAYER — FULLSCREEN */
+.v-overlay { position:fixed; inset:0; z-index:1000; background:#000; display:none; flex-direction:column; }
+.v-overlay.on { display:flex; }
+
+/* Top bar */
+.v-topbar { position:absolute; top:0; left:0; right:0; z-index:20; padding:env(safe-area-inset-top,14px) 18px 14px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg,rgba(0,0,0,.85),transparent); }
+.v-close-btn { width:42px; height:42px; border-radius:50%; background:rgba(0,0,0,.5); border:none; color:#fff; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.v-topbar-title { font-size:.84rem; font-weight:700; color:#fff; flex:1; text-align:center; padding:0 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Player area */
+.v-player-wrap { flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.v-player-wrap iframe { width:100%; height:100%; border:none; }
+.v-player-wrap video { width:100%; height:100%; object-fit:contain; background:#000; }
+
+/* Custom controls for HTML5 video */
+.v-controls { position:absolute; bottom:0; left:0; right:0; padding:0 16px 16px; background:linear-gradient(0deg,rgba(0,0,0,.8),transparent); z-index:10; }
+.v-controls-row { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.v-ctrl-btn { background:none; border:none; color:#fff; font-size:1.3rem; cursor:pointer; padding:4px; flex-shrink:0; opacity:.9; }
+.v-ctrl-btn:hover { opacity:1; }
+.v-progress { flex:1; height:4px; background:rgba(255,255,255,.25); border-radius:4px; cursor:pointer; position:relative; }
+.v-progress-fill { height:100%; background:var(--red); border-radius:4px; width:0%; transition:width .1s linear; pointer-events:none; }
+.v-time { font-family:"Courier New",monospace; font-size:.6rem; color:rgba(255,255,255,.7); flex-shrink:0; min-width:70px; text-align:left; }
+.v-fs-btn { background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer; padding:4px; flex-shrink:0; }
+
+/* Mute hint (shown on load for YouTube) */
+.v-mute-hint { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.75); color:#fff; padding:12px 22px; border-radius:30px; font-size:.82rem; font-weight:700; pointer-events:none; opacity:0; transition:opacity .4s; z-index:15; text-align:center; }
+.v-mute-hint.show { opacity:1; }
+
+/* Bottom info */
+.v-infobar { padding:12px 18px env(safe-area-inset-bottom,16px); background:rgba(14,14,14,.95); border-top:1px solid rgba(255,255,255,.06); }
+.v-title { font-size:.92rem; font-weight:700; margin-bottom:3px; }
+.v-meta { font-family:"Courier New",monospace; font-size:.52rem; color:var(--dim); }
+
+/* No video state */
+.v-no-video { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+.v-no-video .icon { font-size:3rem; opacity:.3; }
+.v-no-video p { font-size:.84rem; color:var(--dim); text-align:center; line-height:1.7; padding:0 24px; }
+
+/* COMMENT SHEET */
+.c-overlay { position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.88); display:none; align-items:flex-end; }
+.c-overlay.on { display:flex; }
+.c-sheet { background:var(--s1); width:100%; max-width:600px; margin:0 auto; max-height:80vh; display:flex; flex-direction:column; border-top:3px solid var(--red); }
+.c-hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(93,63,59,.15); }
+.c-hdr-title { font-size:.92rem; font-weight:700; }
+.c-close { background:none; border:none; color:var(--dim); font-size:1.3rem; cursor:pointer; }
+.c-list { flex:1; overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+.c-item { display:flex; gap:10px; }
+.c-av { width:30px; height:30px; border-radius:50%; background:var(--s4); display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; }
+.c-body { flex:1; }
+.c-name { font-size:.76rem; font-weight:700; margin-bottom:2px; }
+.c-text { font-size:.8rem; color:var(--dim); line-height:1.6; }
+.c-time { font-family:"Courier New",monospace; font-size:.5rem; color:var(--dim); margin-top:2px; }
+.c-empty { text-align:center; padding:32px; color:var(--dim); font-size:.82rem; }
+.c-input-row { padding:12px 18px; border-top:1px solid rgba(93,63,59,.15); display:flex; gap:8px; }
+.c-input { flex:1; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.86rem; padding:10px 12px; outline:none; font-family:Arial,sans-serif; }
+.c-input:focus { border-color:var(--red); }
+.c-send { background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; padding:10px 16px; cursor:pointer; font-size:.78rem; font-weight:700; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <div class="ttabs">
+    <a href="Feed.html" class="ttab on">نبض غزة</a>
+    <a href="live.html" class="ttab">📡 مباشر</a>
+    <a href="Archive.html" class="ttab">🗂 أرشيف</a>
+  </div>
+  <div class="ticons">
+    <a href="Admin.html" style="color:var(--text);text-decoration:none;font-size:1rem;padding:4px;" title="Admin">⚙</a>
+  </div>
+</header>
+
+<div class="reels" id="reelsContainer">
+  <div class="empty-feed">
+    <span class="icon">⏳</span>
+    <p>جارٍ تحميل الريلز...<br/>Loading reels from Supabase...</p>
+  </div>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<!-- VIDEO PLAYER FULLSCREEN -->
+<div class="v-overlay" id="vOverlay">
+  <!-- Top bar -->
+  <div class="v-topbar">
+    <button class="v-close-btn" onclick="closeVideo()">✕</button>
+    <div class="v-topbar-title" id="vTitle"></div>
+    <button class="v-close-btn" id="vMuteBtn" onclick="toggleMute()" title="كتم / رفع الصوت">🔊</button>
+  </div>
+
+  <!-- Player -->
+  <div class="v-player-wrap" id="vPlayerWrap">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- Custom controls (shown for HTML5 video only) -->
+  <div class="v-controls" id="vControls" style="display:none;">
+    <div class="v-controls-row">
+      <button class="v-ctrl-btn" id="vPlayBtn" onclick="togglePlay()">⏸</button>
+      <div class="v-progress" id="vProgress" onclick="seekVideo(event)">
+        <div class="v-progress-fill" id="vProgressFill"></div>
+      </div>
+      <div class="v-time" id="vTime">0:00 / 0:00</div>
+      <button class="v-fs-btn" onclick="requestFullscreen()">⛶</button>
+    </div>
+  </div>
+
+  <!-- Mute hint overlay -->
+  <div class="v-mute-hint" id="vMuteHint">اضغط 🔊 لتشغيل الصوت</div>
+
+  <!-- Bottom info -->
+  <div class="v-infobar">
+    <div class="v-title" id="vSubtitle"></div>
+    <div class="v-meta" id="vMeta"></div>
+  </div>
+</div>
+
+<!-- COMMENT SHEET -->
+<div class="c-overlay" id="cOverlay" onclick="if(event.target===this)closeComments()">
+  <div class="c-sheet">
+    <div class="c-hdr">
+      <div class="c-hdr-title">التعليقات / Comments</div>
+      <button class="c-close" onclick="closeComments()">✕</button>
+    </div>
+    <div class="c-list" id="cList"></div>
+    <div class="c-input-row">
+      <input type="text" class="c-input" id="cInput" placeholder="اكتب تعليقاً / Write a comment..."/>
+      <button class="c-send" onclick="sendComment()">إرسال</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="Map.html"><span class="nav-icon">🗺</span>Map</a>
+  <button type="button" class="upload-fab" onclick="openUpload()" title="أضف ريل">＋</button>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+</nav>
+
+<!-- UPLOAD MODAL -->
+<div class="up-overlay" id="upOverlay" onclick="if(event.target===this)closeUpload()">
+  <div class="up-sheet">
+    <div class="up-hdr">
+      <div class="up-title">📹 أضف ريل توثيقي</div>
+      <button type="button" class="up-close" onclick="closeUpload()">✕</button>
+    </div>
+
+    <!-- Public upload notice -->
+    <div class="up-login-notice" id="upLoginNotice" style="display:none;">
+      <p>النشر متاح للجميع. سيتم حفظ الريل مباشرة إذا كان الاتصال متاحاً.</p>
+    </div>
+
+    <!-- Upload form -->
+    <div id="upForm">
+      <div class="up-field">
+        <label class="up-lbl">صورة الغلاف / Cover Image</label>
+        <div class="up-img-wrap">
+          <input type="file" accept="image/*" id="upImgInput" onchange="upPreviewImg(this)"/>
+          <span class="u-icon">🖼</span>
+          <p>اضغط لاختيار صورة غلاف</p>
+        </div>
+        <img class="up-preview" id="upImgPreview" alt=""/>
+        <div id="upImgProgress" class="up-progress">⏳ جارٍ رفع الصورة...</div>
+      </div>
+
+      <div class="up-field">
+        <label class="up-lbl">العنوان / Title *</label>
+        <input type="text" class="up-inp" id="upTitle" placeholder="اكتب عنوان الريل..." maxlength="120"/>
+      </div>
+
+      <div class="up-field">
+        <label class="up-lbl">الوصف / Description</label>
+        <textarea class="up-ta" id="upDesc" placeholder="وصف مختصر..."></textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div class="up-field" style="margin-bottom:0;">
+          <label class="up-lbl">التصنيف / Category</label>
+          <select class="up-sel" id="upCat">
+            <option value="توثيق معماري">🕌 توثيق معماري</option>
+            <option value="تراث طبيعي">🌿 تراث طبيعي</option>
+            <option value="شهادة حية">🎙 شهادة حية</option>
+            <option value="بنية تحتية">🏥 بنية تحتية</option>
+            <option value="تراث ثقافي">🎭 تراث ثقافي</option>
+            <option value="مقاومة">✊ مقاومة</option>
+            <option value="أخرى">◈ أخرى</option>
+          </select>
+        </div>
+        <div class="up-field" style="margin-bottom:0;">
+          <label class="up-lbl">الكلمات المفتاحية</label>
+          <input type="text" class="up-inp" id="upTags" placeholder="#غزة, #تراث" dir="ltr"/>
+        </div>
+      </div>
+      <div class="up-field fl-ai-tags-panel">
+        <input type="hidden" id="mTags"/>
+        <div class="fl-ai-tags-actions">
+          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
+        </div>
+        <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
+      </div>
+
+      <div class="up-field">
+        <label class="up-lbl">رابط الفيديو / Video URL (يوتيوب أو mp4)</label>
+        <input type="url" class="up-inp" id="upVideo" placeholder="https://youtube.com/watch?v=..." dir="ltr"/>
+      </div>
+
+      <div class="up-field">
+        <label class="up-lbl">أو ارفع فيديو من جهازك / Upload Video</label>
+        <div class="up-img-wrap">
+          <input type="file" accept="video/mp4,video/webm,video/quicktime,video/*" id="upVideoInput" onchange="upPreviewVideo(this)"/>
+          <span class="u-icon">🎬</span>
+          <p id="upVideoName">اضغط لاختيار فيديو</p>
+        </div>
+        <div id="upVideoProgress" class="up-progress">⏳ جارٍ رفع الفيديو...</div>
+      </div>
+
+      <div class="up-field">
+        <label class="up-lbl">مهمة التوثيق (اختياري)</label>
+        <textarea class="up-ta" id="upMission" placeholder="اطرح سؤالاً أو مهمة على المشاهدين..." style="min-height:55px;"></textarea>
+      </div>
+
+      <button type="button" class="up-submit" id="upSubmitBtn" onclick="submitReel()">📤 نشر الريل</button>
+    </div>
+  </div>
+</div>
+
+<script src="ollama-auto-tagging.js" defer></script>
+<script>
+var SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
+var SB_KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb';
+var sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+var COMMENTS_KEY = 'fl_comments';
+var LOCAL_REELS_KEY = 'fl_local_reels';
+var currentReel = 0;
+var activeReelId = null;
+var container = document.getElementById('reelsContainer');
+var dotsEl = document.getElementById('dots');
+
+// In-memory store of loaded reels for video modal lookup
+var _reels = [];
+
+// BG COLORS fallback per index
+var BG_COLORS = [
+  'radial-gradient(ellipse at 30% 40%,rgba(232,34,31,.18),transparent 60%),linear-gradient(135deg,#1a0808,#0e0e0e)',
+  'radial-gradient(ellipse at 70% 30%,rgba(0,80,40,.22),transparent 60%),linear-gradient(135deg,#080e08,#0e0e0e)',
+  'radial-gradient(ellipse at 50% 50%,rgba(100,80,200,.1),transparent 60%),linear-gradient(135deg,#08080e,#0e0e0e)',
+  'radial-gradient(ellipse at 20% 60%,rgba(180,120,0,.18),transparent 60%),linear-gradient(135deg,#100e00,#0e0e0e)',
+  'radial-gradient(ellipse at 80% 20%,rgba(0,100,180,.15),transparent 60%),linear-gradient(135deg,#000a10,#0e0e0e)',
+];
+
+async function buildFeed() {
+  var data = null;
+  var error = null;
+
+  if (!sb) {
+    data = loadLocalReels().filter(function(r){ return r.status === 'published'; });
+  } else {
+  // Fetch published reels from Supabase
+    var res = await sb.from('reels')
+      .select('*')
+      .eq('status', 'published')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+    data = res.data;
+    error = res.error;
+  }
+
+  container.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  if (error) {
+    data = loadLocalReels().filter(function(r){ return r.status === 'published'; });
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML =
+      '<div class="empty-feed">' +
+      '<span class="icon">📹</span>' +
+      '<p>لا توجد ريلز بعد.<br/>كن أول من ينشر توثيقاً.</p>' +
+      '<button type="button" onclick="openUpload()" style="background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:none;text-decoration:none;font-size:.8rem;font-weight:700;padding:11px 24px;cursor:pointer;">+ أضف ريل</button>' +
+      '</div>';
+    return;
+  }
+
+  _reels = data;
+
+  _reels.forEach(function(r, idx) {
+    var reel = document.createElement('div');
+    reel.className = 'reel';
+    reel.dataset.idx = idx;
+    reel.dataset.id = r.id;
+
+    // Background
+    var bgHtml = '';
+    if (r.cover_url) {
+      bgHtml = '<div class="reel-bg"><img src="' + esc(r.cover_url) + '" alt="" loading="lazy"/><div class="reel-gradient"></div></div>';
+    } else {
+      bgHtml = '<div class="reel-bg"><div class="reel-bg-fallback" style="background:' + BG_COLORS[idx % BG_COLORS.length] + '"></div><div class="reel-gradient"></div></div>';
+    }
+
+    // Tags
+    var tagsHtml = '';
+    if (r.tags) {
+      tagsHtml = r.tags.split(',').map(function(t){
+        return '<span class="rtag">' + esc(t.trim()) + '</span>';
+      }).join('');
+    }
+
+    // Mission
+    var missionHtml = r.mission
+      ? '<div class="mission-box"><div class="mission-lbl">مهمة التوثيق</div><p class="mission-txt">' + esc(r.mission) + '</p></div>'
+      : '';
+
+    var likes = getLikes(r.id);
+    var comments = getComments(r.id);
+
+    reel.innerHTML =
+      bgHtml +
+      '<div class="reel-play-area" onclick="openVideo(\'' + r.id + '\')">' +
+        '<div class="play-circle">▶</div>' +
+      '</div>' +
+      '<span class="reel-cat-badge">' + esc(r.category || '') + '</span>' +
+      '<div class="reel-content">' +
+        '<div class="reel-main">' +
+          '<div class="author-row">' +
+            '<div class="avatar">' + esc((r.username||'FL')[0].toUpperCase()) + '</div>' +
+            '<span class="author-name">@' + esc(r.username || 'FALASTEEN.INK') + '</span>' +
+            '<button class="follow-btn" onclick="toggleFollow(this)">تابع</button>' +
+          '</div>' +
+          '<h2 class="reel-title">' + esc(r.title) + '</h2>' +
+          (r.description ? '<p class="reel-desc">' + esc(r.description) + '</p>' : '') +
+          (tagsHtml ? '<div class="reel-tags">' + tagsHtml + '</div>' : '') +
+          missionHtml +
+        '</div>' +
+        '<div class="reel-actions">' +
+          '<div class="action-item" onclick="toggleLike(this,\'' + r.id + '\')">' +
+            '<button class="action-btn' + (likes.liked ? ' on' : '') + '">♥</button>' +
+            '<span class="action-count" id="lc-' + r.id + '">' + fmtNum(likes.count) + '</span>' +
+          '</div>' +
+          '<div class="action-item" onclick="openComments(\'' + r.id + '\')">' +
+            '<button class="action-btn">💬</button>' +
+            '<span class="action-count">' + comments.length + '</span>' +
+          '</div>' +
+          '<div class="action-item" onclick="shareReel(\'' + r.id + '\',\'' + esc(r.title) + '\')">' +
+            '<button class="action-btn">↗</button>' +
+            '<span class="action-count">شارك</span>' +
+          '</div>' +
+          '<div class="action-item" onclick="toggleSave(this,\'' + r.id + '\')">' +
+            '<button class="action-btn">🔖</button>' +
+            '<span class="action-count">حفظ</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    container.appendChild(reel);
+
+    // Dot indicator
+    var dot = document.createElement('div');
+    dot.className = 'dot' + (idx === 0 ? ' on' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  // Scroll listener for dot tracking
+  container.addEventListener('scroll', function() {
+    var i = Math.round(container.scrollTop / window.innerHeight);
+    if (i !== currentReel) {
+      currentReel = i;
+      document.querySelectorAll('.dot').forEach(function(d, j){ d.classList.toggle('on', j === i); });
+    }
+  });
+}
+
+// ── VIDEO PLAYER ──
+var _activeVideo = null; // reference to current <video> element
+var _progressTimer = null;
+var _isMuted = false;
+
+function openVideo(id) {
+  var r = _reels.find(function(x){ return x.id === id; });
+  if (!r) return;
+
+  var wrap = document.getElementById('vPlayerWrap');
+  var controls = document.getElementById('vControls');
+  var muteBtn = document.getElementById('vMuteBtn');
+  var muteHint = document.getElementById('vMuteHint');
+
+  document.getElementById('vTitle').textContent = r.title || '';
+  document.getElementById('vSubtitle').textContent = r.title || '';
+  document.getElementById('vMeta').textContent = r.category || '';
+
+  wrap.innerHTML = '';
+  controls.style.display = 'none';
+  muteBtn.textContent = '🔊';
+  _activeVideo = null;
+  _isMuted = false;
+  clearInterval(_progressTimer);
+
+  if (r.video_url) {
+    var url = r.video_url;
+    var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/);
+
+    if (ytMatch) {
+      // YouTube — embed with all controls enabled
+      var ytId = ytMatch[1];
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + ytId +
+        '?autoplay=1&controls=1&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3';
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.style.cssText = 'width:100%;height:100%;border:none;';
+      wrap.appendChild(iframe);
+      muteBtn.style.display = 'none'; // YouTube has its own controls
+      // Show mute hint briefly
+      muteHint.classList.add('show');
+      setTimeout(function(){ muteHint.classList.remove('show'); }, 2500);
+
+    } else if (url.match(/\.(mp4|webm|ogg|mov)$/i)) {
+      // HTML5 video — custom controls
+      var video = document.createElement('video');
+      video.src = url;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = false;
+      video.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;';
+      wrap.appendChild(video);
+      _activeVideo = video;
+      controls.style.display = 'block';
+      muteBtn.style.display = 'flex';
+      muteBtn.textContent = '🔊';
+
+      // Wire up events
+      video.addEventListener('play', function(){ document.getElementById('vPlayBtn').textContent = '⏸'; });
+      video.addEventListener('pause', function(){ document.getElementById('vPlayBtn').textContent = '▶'; });
+      video.addEventListener('ended', function(){ document.getElementById('vPlayBtn').textContent = '↺'; });
+      video.addEventListener('timeupdate', updateProgress);
+      video.addEventListener('loadedmetadata', updateProgress);
+
+      // Start progress ticker
+      _progressTimer = setInterval(updateProgress, 500);
+
+      // Handle autoplay block
+      video.play().catch(function() {
+        video.muted = true;
+        _isMuted = true;
+        muteBtn.textContent = '🔇';
+        video.play().catch(function(){});
+        muteHint.classList.add('show');
+        setTimeout(function(){ muteHint.classList.remove('show'); }, 3000);
+      });
+
+    } else {
+      // Unknown URL — try as iframe
+      var iframe2 = document.createElement('iframe');
+      iframe2.src = url;
+      iframe2.allow = 'autoplay; fullscreen';
+      iframe2.allowFullscreen = true;
+      iframe2.style.cssText = 'width:100%;height:100%;border:none;';
+      wrap.appendChild(iframe2);
+      muteBtn.style.display = 'none';
+    }
+
+  } else {
+    // No video URL
+    wrap.innerHTML =
+      '<div class="v-no-video">' +
+        '<span class="icon">🎬</span>' +
+        '<p>لم يُضف رابط فيديو بعد.<br/>No video URL added yet.<br/>' +
+        '<small style="color:var(--dim);font-size:.76rem;">أضف رابط يوتيوب أو mp4 من لوحة الأدمن</small></p>' +
+      '</div>';
+    muteBtn.style.display = 'none';
+    controls.style.display = 'none';
+  }
+
+  document.getElementById('vOverlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideo() {
+  clearInterval(_progressTimer);
+  if (_activeVideo) {
+    _activeVideo.pause();
+    _activeVideo.src = '';
+    _activeVideo = null;
+  }
+  document.getElementById('vPlayerWrap').innerHTML = '';
+  document.getElementById('vOverlay').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function togglePlay() {
+  if (!_activeVideo) return;
+  if (_activeVideo.paused) {
+    _activeVideo.play();
+  } else {
+    _activeVideo.pause();
+  }
+}
+
+function toggleMute() {
+  var muteBtn = document.getElementById('vMuteBtn');
+  if (_activeVideo) {
+    _isMuted = !_isMuted;
+    _activeVideo.muted = _isMuted;
+    muteBtn.textContent = _isMuted ? '🔇' : '🔊';
+  }
+}
+
+function updateProgress() {
+  if (!_activeVideo) return;
+  var dur = _activeVideo.duration || 0;
+  var cur = _activeVideo.currentTime || 0;
+  var pct = dur > 0 ? (cur / dur * 100) : 0;
+  document.getElementById('vProgressFill').style.width = pct + '%';
+  document.getElementById('vTime').textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
+}
+
+function seekVideo(e) {
+  if (!_activeVideo || !_activeVideo.duration) return;
+  var bar = document.getElementById('vProgress');
+  var rect = bar.getBoundingClientRect();
+  var pct = (e.clientX - rect.left) / rect.width;
+  _activeVideo.currentTime = pct * _activeVideo.duration;
+}
+
+function requestFullscreen() {
+  var wrap = document.getElementById('vPlayerWrap');
+  if (wrap.requestFullscreen) wrap.requestFullscreen();
+  else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+}
+
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  var m = Math.floor(s / 60);
+  var sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeVideo();
+});
+
+// ── LIKES (localStorage) ──
+function getLikes(id) {
+  var data = {};
+  try { data = JSON.parse(localStorage.getItem('fl_likes') || '{}'); } catch(e){}
+  return { liked: !!data[id], count: (data[id + '_count'] || 0) };
+}
+
+function toggleLike(el, id) {
+  var btn = el.querySelector('.action-btn');
+  var countEl = document.getElementById('lc-' + id);
+  var data = {};
+  try { data = JSON.parse(localStorage.getItem('fl_likes') || '{}'); } catch(e){}
+  var liked = !!data[id];
+  data[id] = !liked;
+  var count = data[id + '_count'] || 0;
+  data[id + '_count'] = liked ? Math.max(0, count - 1) : count + 1;
+  localStorage.setItem('fl_likes', JSON.stringify(data));
+  btn.classList.toggle('on', !liked);
+  countEl.textContent = fmtNum(data[id + '_count']);
+  countEl.style.color = !liked ? 'var(--red)' : 'var(--dim)';
+}
+
+// ── SAVE ──
+function toggleSave(el, id) {
+  var btn = el.querySelector('.action-btn');
+  var count = el.querySelector('.action-count');
+  btn.classList.toggle('on');
+  if (btn.classList.contains('on')) { count.textContent = 'محفوظ ✓'; count.style.color = 'var(--green)'; }
+  else { count.textContent = 'حفظ'; count.style.color = 'var(--dim)'; }
+}
+
+// ── FOLLOW ──
+function toggleFollow(btn) {
+  var following = btn.classList.contains('following');
+  btn.classList.toggle('following', !following);
+  btn.textContent = following ? 'تابع' : 'متابَع ✓';
+  btn.style.background = following ? 'transparent' : 'rgba(232,34,31,.15)';
+}
+
+// ── SHARE ──
+function shareReel(id, title) {
+  var url = window.location.origin + '/Feed.html';
+  if (navigator.share) {
+    navigator.share({ title: title, text: 'من نبض غزة — FALASTEEN.INK', url: url }).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url + ' — ' + title).then(function(){ alert('تم نسخ الرابط / Copied'); });
+  }
+}
+
+// ── COMMENTS (localStorage) ──
+function getComments(id) {
+  var data = {};
+  try { data = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '{}'); } catch(e){}
+  return data[id] || [];
+}
+
+function openComments(id) {
+  activeReelId = id;
+  renderComments(id);
+  document.getElementById('cOverlay').classList.add('on');
+  setTimeout(function(){ document.getElementById('cInput').focus(); }, 100);
+}
+
+function closeComments() {
+  document.getElementById('cOverlay').classList.remove('on');
+  document.getElementById('cInput').value = '';
+}
+
+function renderComments(id) {
+  var comments = getComments(id);
+  var list = document.getElementById('cList');
+  if (comments.length === 0) {
+    list.innerHTML = '<div class="c-empty">لا توجد تعليقات بعد.<br/>Be the first to comment!</div>';
+    return;
+  }
+  list.innerHTML = '';
+  comments.slice().reverse().forEach(function(c) {
+    var item = document.createElement('div');
+    item.className = 'c-item';
+    item.innerHTML =
+      '<div class="c-av">' + esc((c.name || '?')[0]) + '</div>' +
+      '<div class="c-body">' +
+        '<div class="c-name">' + esc(c.name || 'زائر') + '</div>' +
+        '<div class="c-text">' + esc(c.text) + '</div>' +
+        '<div class="c-time">' + esc(c.time || '') + '</div>' +
+      '</div>';
+    list.appendChild(item);
+  });
+}
+
+async function sendComment() {
+  var input = document.getElementById('cInput');
+  var text = input.value.trim();
+  if (!text || !activeReelId) return;
+
+  var name = 'زائر';
+  try {
+    var user = await FL.getUser();
+    if (user) {
+      name = (user.user_metadata && user.user_metadata.name) || (user.email ? user.email.split('@')[0] : name);
+    }
+  } catch(e) {}
+
+  var data = {};
+  try { data = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '{}'); } catch(e){}
+  if (!data[activeReelId]) data[activeReelId] = [];
+  data[activeReelId].push({ name: name, text: text, time: new Date().toLocaleTimeString('ar') });
+  localStorage.setItem(COMMENTS_KEY, JSON.stringify(data));
+  input.value = '';
+  renderComments(activeReelId);
+}
+
+// ── HELPERS ──
+function fmtNum(n) {
+  if (!n) return '0';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return String(n);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function loadLocalReels() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_REELS_KEY) || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveLocalReels(reels) {
+  localStorage.setItem(LOCAL_REELS_KEY, JSON.stringify(reels || []));
+}
+
+function saveLocalReel(payload) {
+  var reels = loadLocalReels();
+  reels.unshift(Object.assign({
+    id: 'public_' + Date.now(),
+    username: payload.username || 'زائر',
+    created_at: new Date().toISOString(),
+    sort_order: reels.length
+  }, payload));
+  saveLocalReels(reels);
+}
+
+// ── UPLOAD SYSTEM ──
+var _currentUser = null;
+var _upImgFile = null;
+var _upVideoFile = null;
+
+// Check auth on load
+async function refreshCurrentUser() {
+  if (!sb || !sb.auth) {
+    _currentUser = null;
+    return _currentUser;
+  }
+  try {
+    var res = await sb.auth.getSession();
+    _currentUser = res.data && res.data.session ? res.data.session.user : null;
+  } catch(e) {
+    _currentUser = null;
+  }
+  return _currentUser;
+}
+
+refreshCurrentUser();
+
+// Listen for auth changes
+if (sb && sb.auth) {
+  sb.auth.onAuthStateChange(function(event, session) {
+    _currentUser = session ? session.user : null;
+  });
+}
+
+async function openUpload() {
+  document.getElementById('upOverlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  _upImgFile = null;
+  _upVideoFile = null;
+  await refreshCurrentUser();
+
+  document.getElementById('upLoginNotice').style.display = _currentUser ? 'none' : 'block';
+  document.getElementById('upForm').style.display = 'block';
+}
+
+function closeUpload() {
+  document.getElementById('upOverlay').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function upPreviewImg(input) {
+  if (!input.files[0]) return;
+  _upImgFile = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var prev = document.getElementById('upImgPreview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    var imgWrap = document.getElementById('upImgInput').closest('.up-img-wrap');
+    if (imgWrap) { imgWrap.querySelector('.u-icon').style.display = 'none'; imgWrap.querySelector('p').style.display = 'none'; }
+  };
+  reader.readAsDataURL(_upImgFile);
+}
+
+function upPreviewVideo(input) {
+  if (!input.files[0]) return;
+  _upVideoFile = input.files[0];
+  document.getElementById('upVideoName').textContent = _upVideoFile.name;
+  document.getElementById('upVideo').value = '';
+}
+
+async function submitReel() {
+  var title = document.getElementById('upTitle').value.trim();
+  if (!title) { alert('الرجاء إدخال العنوان'); return; }
+
+  var btn = document.getElementById('upSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ النشر...';
+
+  // Upload cover image if selected and Supabase is available.
+  var cover_url = null;
+  if (_upImgFile && sb) {
+    document.getElementById('upImgProgress').style.display = 'block';
+    var ext = _upImgFile.name.split('.').pop().toLowerCase();
+    var owner = _currentUser ? _currentUser.id : 'public';
+    var fname = 'covers/' + owner + '_' + Date.now() + '.' + ext;
+    var upRes = await sb.storage.from('reels').upload(fname, _upImgFile, { upsert: true });
+    document.getElementById('upImgProgress').style.display = 'none';
+    if (!upRes.error) {
+      cover_url = sb.storage.from('reels').getPublicUrl(fname).data.publicUrl;
+    }
+  } else if (_upImgFile) {
+    cover_url = document.getElementById('upImgPreview').src || null;
+  }
+
+  var video_url = document.getElementById('upVideo').value.trim() || null;
+  if (_upVideoFile && sb) {
+    document.getElementById('upVideoProgress').style.display = 'block';
+    var vext = _upVideoFile.name.split('.').pop().toLowerCase();
+    var vowner = _currentUser ? _currentUser.id : 'public';
+    var vname = 'videos/' + vowner + '_' + Date.now() + '.' + vext;
+    var vRes = await sb.storage.from('reels').upload(vname, _upVideoFile, {
+      upsert: true,
+      contentType: _upVideoFile.type || 'video/mp4'
+    });
+    document.getElementById('upVideoProgress').style.display = 'none';
+    if (!vRes.error) {
+      video_url = sb.storage.from('reels').getPublicUrl(vname).data.publicUrl;
+    } else {
+      alert('خطأ في رفع الفيديو: ' + vRes.error.message);
+      btn.disabled = false;
+      btn.textContent = '📤 نشر الريل';
+      return;
+    }
+  } else if (_upVideoFile) {
+    video_url = URL.createObjectURL(_upVideoFile);
+  }
+
+  // Get user display name
+  var userMeta = _currentUser && _currentUser.user_metadata ? _currentUser.user_metadata : {};
+  var username = _currentUser
+    ? (userMeta.full_name || userMeta.name || userMeta.username || (_currentUser.email ? _currentUser.email.split('@')[0] : 'guardian'))
+    : 'زائر';
+
+  var payload = {
+    title: title,
+    description: document.getElementById('upDesc').value.trim() || null,
+    category: document.getElementById('upCat').value,
+    status: 'published',
+    video_url: video_url,
+    mission: document.getElementById('upMission').value.trim() || null,
+    tags: document.getElementById('upTags').value.trim() || null,
+    cover_url: cover_url,
+    user_id: _currentUser ? _currentUser.id : null,
+    username: username,
+    sort_order: 0
+  };
+
+  var res = sb ? await sb.from('reels').insert(payload) : { error: { message: 'Supabase unavailable' } };
+
+  btn.disabled = false;
+  btn.textContent = '📤 نشر الريل';
+
+  if (res.error) {
+    saveLocalReel(payload);
+    alert('تم حفظ الريل على هذا الجهاز. إذا أردت أن يظهر لكل الزوار، يجب تفعيل صلاحية الإضافة العامة في Supabase.');
+  } else {
+    alert('تم نشر الريل بنجاح');
+  }
+
+  // Reset form
+  ['upTitle','upDesc','upVideo','upMission','upTags'].forEach(function(id){ document.getElementById(id).value=''; });
+  clearGeneratedTags();
+  document.getElementById('upImgPreview').style.display = 'none';
+  document.getElementById('upImgInput').value = '';
+  document.getElementById('upVideoInput').value = '';
+  document.getElementById('upVideoName').textContent = 'اضغط لاختيار فيديو';
+  _upImgFile = null;
+  _upVideoFile = null;
+
+  closeUpload();
+  await buildFeed(); // refresh the feed
+}
+
+function clearGeneratedTags() {
+  var hidden = document.getElementById('mTags');
+  var output = document.getElementById('aiTagsOutput');
+  if (hidden) hidden.value = '';
+  if (output) {
+    output.innerHTML = '';
+    output.classList.add('is-empty');
+  }
+}
+
+// ── INIT ──
+buildFeed();
+</script>
+
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

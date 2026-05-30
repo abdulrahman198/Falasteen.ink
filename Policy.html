@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#E8221F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>السياسة القانونية | FALASTEEN.INK</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:80px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+.hero { padding:90px 18px 28px; }
+.hero-tag { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(2rem,5vw,3rem); font-weight:900; margin-bottom:8px; }
+.hero-title .red { color:var(--red); }
+.hero-date { font-family:"Courier New",monospace; font-size:.54rem; color:var(--dim); }
+
+.policy-body { padding:0 18px 32px; }
+.pol-section { margin-bottom:28px; }
+.pol-title { font-family:"Courier New",monospace; font-size:.58rem; color:var(--red); letter-spacing:.22em; text-transform:uppercase; margin-bottom:12px; padding-top:24px; border-top:1px solid rgba(93,63,59,.15); display:flex; align-items:center; justify-content:space-between; }
+.pol-title-en { font-size:.52rem; color:var(--dim); font-family:"Courier New",monospace; letter-spacing:.15em; }
+.pol-text { font-size:.86rem; color:var(--dim); line-height:1.8; margin-bottom:10px; }
+.pol-text strong { color:var(--text); }
+.pol-highlight { background:rgba(232,34,31,.06); border-right:3px solid var(--red); padding:14px 16px; margin:14px 0; }
+.pol-highlight p { font-size:.84rem; color:var(--text); line-height:1.7; }
+.pol-list { list-style:none; display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.pol-list li { font-size:.84rem; color:var(--dim); line-height:1.7; padding-right:16px; position:relative; }
+.pol-list li::before { content:'◈'; position:absolute; right:0; color:var(--red); font-size:.6rem; top:4px; }
+
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:.54rem; }
+.bottom-nav a:hover { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <a href="Index.html" style="font-family:'Courier New',monospace;font-size:.62rem;color:var(--dim);text-decoration:none;">← رجوع / Back</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">السياسة القانونية — LEGAL POLICY</span>
+  <h1 class="hero-title">الشفافية <span class="red">أولاً</span></h1>
+  <p class="hero-date">آخر تحديث / Last Updated: 2024 — FALASTEEN.INK</p>
+</div>
+
+<div class="policy-body">
+
+  <div class="pol-section">
+    <div class="pol-title">المبدأ الأساسي <span class="pol-title-en">CORE PRINCIPLE</span></div>
+    <div class="pol-highlight">
+      <p>FALASTEEN.INK منصة لامركزية مخصصة للحفاظ على التاريخ الفلسطيني. نؤمن بأن التوثيق فعل مقاومة، وأن الذاكرة حق من حقوق الإنسان.</p>
+      <p style="margin-top:8px;direction:ltr;font-style:italic;font-size:.82rem;color:var(--dim);">FALASTEEN.INK is a decentralized platform dedicated to preserving Palestinian history. We believe documentation is an act of resistance, and memory is a human right.</p>
+    </div>
+  </div>
+
+  <div class="pol-section">
+    <div class="pol-title">البيانات واللامركزية <span class="pol-title-en">DATA & DECENTRALIZATION</span></div>
+    <p class="pol-text"><strong>لا نملك بياناتك.</strong> البيانات المُرفوعة على المنصة تُحفظ على شبكات لامركزية (Arweave, IPFS) — لا سيرفر مركزي نملكه يخزن بياناتك الشخصية.</p>
+    <p class="pol-text" style="direction:ltr;">We do not own your data. Content uploaded to the platform is stored on decentralized networks (Arweave, IPFS) — we have no central server that stores your personal data.</p>
+    <ul class="pol-list">
+      <li>البيانات المحلية تُحفظ في متصفحك فقط (localStorage)</li>
+      <li>لا نشارك بياناتك مع أطراف ثالثة</li>
+      <li>ما يُرفع على البلوكشين لا يمكن حذفه — حتى منّا</li>
+    </ul>
+  </div>
+
+  <div class="pol-section">
+    <div class="pol-title">معايير المحتوى <span class="pol-title-en">CONTENT STANDARDS</span></div>
+    <p class="pol-text">المحتوى المسموح به على المنصة:</p>
+    <ul class="pol-list">
+      <li>توثيق أسماء الشهداء الفلسطينيين بمعلومات دقيقة وموثوقة</li>
+      <li>توثيق المعالم والمباني المدمرة مع صور تاريخية</li>
+      <li>البث المباشر من مناطق النزاع للتوثيق والإعلام</li>
+      <li>الأرشفة البصرية للتاريخ الفلسطيني</li>
+    </ul>
+    <p class="pol-text" style="margin-top:10px;">المحتوى غير المسموح به — <span style="direction:ltr;display:inline;">Prohibited Content:</span></p>
+    <ul class="pol-list">
+      <li>معلومات كاذبة أو مضللة عن الضحايا</li>
+      <li>محتوى يخترق خصوصية الأفراد دون موافقتهم</li>
+      <li>خطاب الكراهية بأي شكل من الأشكال</li>
+    </ul>
+  </div>
+
+  <div class="pol-section">
+    <div class="pol-title">البث المباشر <span class="pol-title-en">LIVE STREAMING</span></div>
+    <p class="pol-text">البث المباشر على FALASTEEN.INK يعمل عبر بروتوكولات لامركزية. <strong>لا نستطيع إيقاف بثك</strong> — هذا هو المبدأ الأساسي للمنصة.</p>
+    <div class="pol-highlight">
+      <p>كل بث يُحفظ تلقائياً على شبكة Arweave. هذا يعني أن البث يبقى موجوداً حتى بعد انتهائه — للأبد.</p>
+    </div>
+    <p class="pol-text" style="direction:ltr;">Every stream is automatically saved to the Arweave network — permanently. This is by design, not a bug.</p>
+  </div>
+
+  <div class="pol-section">
+    <div class="pol-title">حماية الأطفال <span class="pol-title-en">CHILD PROTECTION</span></div>
+    <p class="pol-text">نحن ملتزمون بحماية كرامة أطفال غزة حتى في التوثيق. عند توثيق شهداء الأطفال:</p>
+    <ul class="pol-list">
+      <li>نحترم كرامة الطفل في طريقة العرض</li>
+      <li>نركز على الاسم والقصة لا على مشاهد العنف</li>
+      <li>نطلب إذن العائلة عند الإمكان</li>
+    </ul>
+  </div>
+
+  <div class="pol-section">
+    <div class="pol-title">اتصل بنا <span class="pol-title-en">CONTACT</span></div>
+    <p class="pol-text">لأي سؤال قانوني أو للإبلاغ عن محتوى مخالف:</p>
+    <p class="pol-text"><strong>policy@falasteen.ink</strong></p>
+    <p class="pol-text" style="direction:ltr;">For legal inquiries or to report violating content: <strong>policy@falasteen.ink</strong></p>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Contact.html"><span class="nav-icon">✉</span>Contact</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>Profile</a>
+</nav>
+
+<script>
+if("serviceWorker" in navigator && window.location.protocol !== "file:"){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js")
+    .then(function(r){console.log("SW registered ✓");})
+    .catch(function(e){console.log("SW error:",e);});
+  });
+}
+</script>
+<script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

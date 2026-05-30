@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>بث مباشر | FALASTEEN.INK</title>
+<style>
+body { margin:0; min-height:100vh; background:#080808; color:#e5e2e1; font-family:Arial, "Segoe UI", sans-serif; }
+.live-page { max-width:1140px; margin:0 auto; padding:24px; }
+.topnav { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center; padding:18px 0; }
+.live-hero { margin:24px auto 14px; text-align:center; }
+.live-tag { display:inline-block; font-family:"Courier New", monospace; letter-spacing:0.18em; color:var(--red); text-transform:uppercase; margin-bottom:14px; }
+.live-title { font-size:clamp(2rem,4vw,3rem); font-weight:900; line-height:1.05; margin-bottom:12px; }
+.live-desc { max-width:760px; margin:0 auto; color:var(--dim); line-height:1.75; }
+.toggle-switch { display:flex; justify-content:center; gap:6px; margin:22px auto 0; max-width:420px; border:1px solid rgba(255,255,255,.08); border-radius:999px; background:rgba(255,255,255,.03); overflow:hidden; }
+.toggle-switch button { flex:1; border:none; background:transparent; color:var(--text); padding:12px 14px; font-weight:700; cursor:pointer; transition:all .25s ease; }
+.toggle-switch button.active { background:rgba(232,34,31,0.95); color:#fff; }
+.stream-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:28px; }
+.stream-panel { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.3); min-height:420px; position:relative; }
+.stream-panel h2 { margin:0 0 12px; font-size:.95rem; letter-spacing:.12em; text-transform:uppercase; color:var(--red); font-weight:900; }
+.panel-note { color:var(--dim); line-height:1.7; margin-bottom:18px; }
+.panel-state { position:absolute; top:18px; right:18px; font-size:.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:.15em; }
+.stream-panel.inactive::after { content:'غير نشط'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.75); background:rgba(0,0,0,.45); backdrop-filter:blur(4px); border-radius:24px; font-size:1rem; pointer-events:none; }
+.live-embed-wrap { width:100%; border-radius:18px; overflow:hidden; background:#000; min-height:240px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.live-embed { width:100%; aspect-ratio:16/9; border:none; background:#000; display:block; }
+.livepeer-placeholder { min-height:240px; display:flex; align-items:center; justify-content:center; color:var(--dim); background:radial-gradient(circle, rgba(232,34,31,.08), transparent 55%); border:1px dashed rgba(232,34,31,.35); border-radius:18px; padding:18px; text-align:center; }
+.stream-meta { margin-top:16px; color:var(--dim); font-size:0.95rem; line-height:1.6; }
+.stream-note { margin-top:10px; color:var(--dim); font-size:0.92rem; text-align:center; }
+.stream-button { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:12px 24px; border-radius:999px; border:none; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; cursor:pointer; transition:transform .2s; font-weight:700; }
+.stream-button:hover { transform:translateY(-2px); }
+@media (max-width: 940px) { .stream-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="live-page">
+  <nav class="topnav">
+    <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+    <a class="donate-btn" href="donate.html">تبرع / Donate</a>
+  </nav>
+  <section class="live-hero">
+    <span class="live-tag">بث مباشر</span>
+    <h1 class="live-title">اختر وضع المشاهدة</h1>
+    <p class="live-desc">تابع البث التقليدي أو انقل المشاهدة إلى البث اللامركزي المحمي عبر Livepeer.</p>
+  </section>
+  <div class="toggle-switch" role="tablist">
+    <button type="button" id="toggleNormal" class="active">مشاهدة البث العادي</button>
+    <button type="button" id="toggleDecentralized">البث عبر البلوكشين</button>
+  </div>
+  <div class="stream-grid">
+    <section id="youtubePanel" class="stream-panel active-mode" aria-label="YouTube stream">
+      <div class="panel-state">بث عادي</div>
+      <h2>بث YouTube</h2>
+      <p class="panel-note">مشاهدة البث التقليدي باستخدام مشغل YouTube المدمج.</p>
+      <div class="live-embed-wrap">
+        <iframe id="youtubeEmbed" class="live-embed"
+          src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+      <div class="stream-meta">اضغط على الزر أدناه للانتقال إلى البث المباشر في يوتيوب.</div>
+      <div class="live-actions" style="justify-content:center; margin-top:18px;">
+        <a href="https://www.youtube.com/channel/YOUR_CHANNEL_ID/live" target="_blank" rel="noreferrer noopener" class="stream-button">
+          🔴 فتح البث في YouTube
+        </a>
+      </div>
+    </section>
+    <section id="decentralizedPanel" class="stream-panel inactive" aria-label="Decentralized stream">
+      <div class="panel-state">بث لامركزي</div>
+      <h2>Livepeer Player</h2>
+      <p class="panel-note">يجلب هذا العرض رابط البث الموثق عبر العقد الذكي ويشغله عبر Livepeer.</p>
+      <div id="livepeerContainer" class="livepeer-placeholder">
+        جاري تحميل رابط البث اللامركزي...
+      </div>
+      <div class="stream-meta">الرابط الثابت والموثق سيظهر هنا بمجرد التحقق من العقد الذكي.</div>
+      <p class="stream-note">تم التحقق من البث آخر مرة على: <strong id="streamTimestamp">--</strong></p>
+    </section>
+  </div>
+</div>
+<script>
+(function() {
+  function setLiveMode(mode) {
+    var normalBtn = document.getElementById('toggleNormal');
+    var decBtn = document.getElementById('toggleDecentralized');
+    var ytPanel = document.getElementById('youtubePanel');
+    var decPanel = document.getElementById('decentralizedPanel');
+    normalBtn.classList.toggle('active', mode === 'normal');
+    decBtn.classList.toggle('active', mode === 'decentralized');
+    ytPanel.classList.toggle('inactive', mode !== 'normal');
+    decPanel.classList.toggle('inactive', mode !== 'decentralized');
+    ytPanel.classList.toggle('active-mode', mode === 'normal');
+    decPanel.classList.toggle('active-mode', mode === 'decentralized');
+  }
+
+  function updateTimestamp(ts) {
+    var stamp = document.getElementById('streamTimestamp');
+    if (!stamp) return;
+    stamp.textContent = ts || '--';
+  }
+
+  async function loadDecentralizedStream() {
+    var container = document.getElementById('livepeerContainer');
+    if (!container) return;
+    container.textContent = 'جارٍ التحقق من العقد الذكي...';
+    try {
+      if (!window.verifyBlockchainStream) {
+        throw new Error('لم يتم تهيئة دعم العقد الذكي بعد.');
+      }
+      var link = await window.verifyBlockchainStream();
+      if (!link) throw new Error('لا يوجد رابط بث لامركزي متاح.');
+      container.innerHTML = '<iframe class="live-embed" src="' + link + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+      var record = window.timestampStreamLink ? window.timestampStreamLink(link) : { timestamp: new Date().toISOString() };
+      updateTimestamp(record.timestamp);
+    } catch (err) {
+      container.innerHTML = '<div class="livepeer-placeholder">تعذر تحميل البث اللامركزي: ' + err.message + '</div>';
+      updateTimestamp(null);
+      console.warn(err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var normalBtn = document.getElementById('toggleNormal');
+    var decBtn = document.getElementById('toggleDecentralized');
+    if (normalBtn) normalBtn.addEventListener('click', function(){ setLiveMode('normal'); });
+    if (decBtn) decBtn.addEventListener('click', function(){ setLiveMode('decentralized'); });
+    loadDecentralizedStream();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script>
+(function(){
+  if(!window.FL){return;}
+  FL.getSession().then(function(session) {
+    if (!session) {
+      window.location.href='Auth.html';
+      return;
+    }
+    window.addEventListener('DOMContentLoaded', function(){ FL.injectUserBadge(); });
+  }).catch(function() {
+    window.location.href='Auth.html';
+  });
+})();
+</script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#E8221F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>القبو | FALASTEEN.INK</title>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0e0e0e; --s1: #131313; --s2: #1c1b1b; --s3: #201f1f; --s4: #353534;
+  --red: #E8221F; --red2: #930006; --green: #00b954; --text: #e5e2e1; --dim: #9a9898;
+}
+
+body { background: var(--bg); color: var(--text); font-family: Arial, "Segoe UI", Tahoma, sans-serif; min-height: 100vh; padding-bottom: 72px; }
+
+.topnav { position: fixed; top: 0; width: 100%; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; background: rgba(14,14,14,0.95); }
+.logo { font-family: "Courier New", monospace; font-weight: 900; font-size: 1rem; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
+.logo-dot { color: var(--red); }
+.sys-label { font-family: "Courier New", monospace; font-size: 0.58rem; color: var(--green); letter-spacing: 0.1em; }
+
+.vault-header { padding: 100px 18px 28px; background: radial-gradient(ellipse at 50% 0%, rgba(232,34,31,0.07) 0%, transparent 70%); }
+
+.access-tag { font-family: "Courier New", monospace; font-size: 0.52rem; color: var(--green); letter-spacing: 0.22em; display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+.access-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,185,84,0.5); } 50% { box-shadow: 0 0 0 5px rgba(0,185,84,0); } }
+
+.vault-title { font-size: clamp(2.2rem, 7vw, 4.2rem); font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
+.vault-title .red { color: var(--red); }
+.vault-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.7; margin-bottom: 24px; max-width: 460px; }
+
+.vault-btns { display: flex; gap: 10px; direction: ltr; flex-wrap: wrap; }
+.btn-red { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--red), var(--red2)); color: #fff; font-size: 0.78rem; font-weight: 700; padding: 11px 22px; border: none; cursor: pointer; text-decoration: none; letter-spacing: 0.04em; transition: transform 0.2s; }
+.btn-red:hover { transform: translateY(-2px); }
+.btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid rgba(93,63,59,0.4); color: var(--dim); font-size: 0.78rem; font-weight: 500; padding: 11px 22px; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+.btn-outline:hover { background: var(--s2); }
+
+.sys-status { background: var(--s2); padding: 18px; margin: 0 18px 2px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.sys-key { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--dim); letter-spacing: 0.14em; margin-bottom: 2px; }
+.sys-val { font-family: "Courier New", monospace; font-size: 0.72rem; color: var(--green); }
+
+.encrypt-bar { background: var(--s2); padding: 14px 18px; margin: 2px 18px; display: flex; align-items: center; gap: 14px; }
+.enc-label { font-family: "Courier New", monospace; font-size: 0.58rem; color: var(--red); letter-spacing: 0.1em; white-space: nowrap; }
+.enc-track { flex: 1; height: 3px; background: var(--s4); border-radius: 2px; }
+.enc-fill { height: 100%; background: linear-gradient(90deg, var(--red2), var(--red)); width: 82%; border-radius: 2px; animation: enc 3s ease-in-out infinite alternate; }
+@keyframes enc { from { width: 78%; } to { width: 88%; } }
+.enc-pct { font-family: "Courier New", monospace; font-size: 0.62rem; color: var(--red); }
+
+.filters { padding: 14px 18px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.chip { font-size: 0.7rem; font-weight: 600; padding: 6px 14px; background: var(--s2); color: var(--dim); border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.chip.active { color: var(--red); border-bottom-color: var(--red); background: rgba(232,34,31,0.06); }
+
+.section-label { font-family: "Courier New", monospace; font-size: 0.54rem; color: var(--red); letter-spacing: 0.22em; text-transform: uppercase; padding: 16px 18px 8px; display: block; }
+
+.file-list { padding: 0 18px; display: flex; flex-direction: column; gap: 2px; margin-bottom: 2px; }
+.file-card { background: var(--s2); padding: 18px; display: flex; gap: 14px; align-items: flex-start; transition: background 0.2s; cursor: pointer; }
+.file-card:hover { background: var(--s3); }
+.file-icon { width: 44px; height: 44px; background: var(--s4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.4rem; }
+.file-info { flex: 1; }
+.file-type { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--green); letter-spacing: 0.1em; margin-bottom: 3px; }
+.file-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; line-height: 1.3; }
+.file-desc { font-size: 0.78rem; color: var(--dim); line-height: 1.5; margin-bottom: 9px; }
+.file-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.file-btn { display: flex; align-items: center; gap: 3px; font-size: 0.68rem; color: var(--red); background: none; border: none; cursor: pointer; padding: 0; }
+.file-size { font-family: "Courier New", monospace; font-size: 0.56rem; color: var(--dim); }
+
+.audio-list { padding: 0 18px; display: flex; flex-direction: column; gap: 2px; margin-bottom: 32px; }
+.audio-item { background: var(--s2); padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; }
+.audio-item:hover { background: var(--s3); }
+.play-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; font-size: 1rem; transition: transform 0.2s; }
+.play-btn:hover { transform: scale(1.1); }
+.audio-info { flex: 1; }
+.audio-title { font-size: 0.86rem; font-weight: 700; margin-bottom: 2px; }
+.audio-sub { font-size: 0.7rem; color: var(--dim); }
+.dl-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--dim); }
+
+.bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: rgba(14,14,14,0.97); padding: 10px 0 14px; z-index: 200; }
+.bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--dim); font-size: 0.56rem; }
+.bottom-nav a:hover, .bottom-nav a.active { color: var(--red); }
+.nav-icon { font-size: 1.3rem; line-height: 1; }
+
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <span class="sys-label">ARCHIVE SYSTEM v1.0</span>
+</nav>
+
+<div class="vault-header">
+  <div class="access-tag"><div class="access-dot"></div>SECURE_ACCESS: GRANTED — الوصول مصرح به</div>
+  <h1 class="vault-title">القبو<br/><span class="red">الرقمي</span></h1>
+  <p class="vault-desc">مستودع لامركزي للسجلات التاريخية والأدلة البصرية والروايات الشفوية من قلب فلسطين. مشفر، أبدي، لا يُحذف.</p>
+  <div class="vault-btns">
+    <a href="#" class="btn-red">⬇ تحميل كل الأرشيف</a>
+    <a href="#" class="btn-outline">📋 سجل العمليات</a>
+  </div>
+</div>
+
+<div class="sys-status">
+  <div><div class="sys-key">ENCRYPTION</div><div class="sys-val">AES-256 ✓</div></div>
+  <div><div class="sys-key">FRAGMENTS</div><div class="sys-val">42,901</div></div>
+  <div><div class="sys-key">STATUS</div><div class="sys-val">LIVE_SYNC</div></div>
+  <div><div class="sys-key">LATENCY</div><div class="sys-val">14MS</div></div>
+  <div><div class="sys-key">NODES</div><div class="sys-val">2,847</div></div>
+  <div><div class="sys-key">ORIGIN</div><div class="sys-val">GAZA_METRO</div></div>
+</div>
+
+<div class="encrypt-bar">
+  <span class="enc-label">ENCRYPTING...</span>
+  <div class="enc-track"><div class="enc-fill"></div></div>
+  <span class="enc-pct">82%</span>
+</div>
+
+<div class="filters">
+  <button class="chip active">الكل</button>
+  <button class="chip">فيديو</button>
+  <button class="chip">وثائق</button>
+  <button class="chip">صور</button>
+  <button class="chip">صوتي</button>
+</div>
+
+<span class="section-label">الملفات الأخيرة — RECENT FILES</span>
+
+<div class="file-list">
+  <div class="file-card">
+    <div class="file-icon">🎬</div>
+    <div class="file-info">
+      <div class="file-type">HD VIDEO — 4.2 GB · 12:45 دقيقة</div>
+      <div class="file-name">عين على الأفق: أرشيف 001</div>
+      <div class="file-desc">توثيق بصري نادر لمعالم غزة التاريخية قبل الأحداث الأخيرة. مؤرشف على شبكة Arweave.</div>
+      <div class="file-actions">
+        <button class="file-btn">▶ شاهد الآن</button>
+        <button class="file-btn">⬇ تحميل</button>
+      </div>
+    </div>
+  </div>
+  <div class="file-card">
+    <div class="file-icon">📄</div>
+    <div class="file-info">
+      <div class="file-type">PDF DOCUMENT — 124 MB</div>
+      <div class="file-name">سجلات الأراضي — حي الشجاعية</div>
+      <div class="file-desc">وثائق تمليك عقاري تاريخية من منطقة الشجاعية (1920–1948). موثقة من قِبل 14 حارساً.</div>
+      <div class="file-actions">
+        <span class="file-size">SHJ_DEEDS_48.PDF</span>
+        <button class="file-btn">⬇ تحميل</button>
+      </div>
+    </div>
+  </div>
+  <div class="file-card">
+    <div class="file-icon">🖼</div>
+    <div class="file-info">
+      <div class="file-type">PHOTO GALLERY — 847 صورة</div>
+      <div class="file-name">شظايا الذاكرة: سلسلة 1967</div>
+      <div class="file-desc">مجموعة صور أرشيفية نادرة توثق الحياة اليومية في غزة عام 1967. مرقمنة من سلبيات أصلية.</div>
+      <div class="file-actions">
+        <button class="file-btn">📂 فتح المجموعة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<span class="section-label">الروايات الشفوية — ORAL HISTORIES</span>
+
+<div class="audio-list">
+  <div class="audio-item">
+    <button class="play-btn">▶</button>
+    <div class="audio-info">
+      <div class="audio-title">حاجة مريم — حصاد الزيتون 1948</div>
+      <div class="audio-sub">42:18 · VERIFIED · غزة</div>
+    </div>
+    <button class="dl-btn">⬇</button>
+  </div>
+  <div class="audio-item">
+    <button class="play-btn">▶</button>
+    <div class="audio-info">
+      <div class="audio-title">ميناء غزة — قصص من البحر</div>
+      <div class="audio-sub">28:44 · VERIFIED · غزة</div>
+    </div>
+    <button class="dl-btn">⬇</button>
+  </div>
+  <div class="audio-item">
+    <button class="play-btn">▶</button>
+    <div class="audio-info">
+      <div class="audio-title">المدينة القديمة — حوارات السوق</div>
+      <div class="audio-sub">55:02 · VERIFIED · القدس</div>
+    </div>
+    <button class="dl-btn">⬇</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="Map.html"><span class="nav-icon">🗺</span>الخريطة</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>النبض</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>الحراس</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>حسابي</a>
+</nav>
+
+<script>
+document.querySelectorAll('.chip').forEach(function(c) {
+  c.addEventListener('click', function() {
+    document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
+    c.classList.add('active');
+  });
+});
+</script>
+
+
+<script>
+if("serviceWorker" in navigator && window.location.protocol !== "file:"){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js")
+    .then(function(r){console.log("SW registered ✓");})
+    .catch(function(e){console.log("SW error:",e);});
+  });
+}
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

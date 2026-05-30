@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rewards | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js" defer></script>
+<script src="rewards-system.js" defer></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0e0e0e;--s1:#131313;--s2:#1c1b1b;--s3:#201f1f;--s4:#353534;--red:#E8221F;--red2:#930006;--green:#00b954;--text:#e5e2e1;--dim:#9a9898;}
+body{background:var(--bg);color:var(--text);font-family:Arial,"Segoe UI",Tahoma,sans-serif;min-height:100vh;padding-bottom:78px;}
+.topnav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(14,14,14,.97);border-bottom:1px solid rgba(93,63,59,.12);}
+.logo{font-family:"Courier New",monospace;font-weight:900;font-size:1rem;letter-spacing:.08em;color:var(--text);text-decoration:none;}
+.logo-dot{color:var(--red);}
+.hero{padding:88px 18px 24px;background:linear-gradient(180deg,rgba(232,34,31,.08),transparent);}
+.hero-tag{font-family:"Courier New",monospace;font-size:.54rem;color:var(--red);letter-spacing:.26em;margin-bottom:9px;display:block;}
+.hero-title{font-size:clamp(2rem,6vw,3.3rem);line-height:1.05;font-weight:900;margin-bottom:8px;}
+.hero-title .red{color:var(--red);}
+.hero-desc{font-size:.88rem;color:var(--dim);line-height:1.7;max-width:620px;}
+.wrap{padding:0 18px 24px;}
+.section-label{font-family:"Courier New",monospace;font-size:.54rem;color:var(--red);letter-spacing:.2em;display:block;margin:22px 0 10px;}
+.bottom-nav{position:fixed;bottom:0;width:100%;display:flex;justify-content:space-around;background:rgba(14,14,14,.97);padding:10px 0 14px;z-index:200;border-top:1px solid rgba(93,63,59,.12);}
+.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--dim);font-size:.54rem;}
+.bottom-nav a.active,.bottom-nav a:hover{color:var(--red);}
+.nav-icon{font-size:1.25rem;line-height:1;}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a class="donate-btn" href="donate.html">تبرع / Donate</a>
+</nav>
+
+<section class="hero">
+  <span class="hero-tag">REWARDS & GUARDIANS</span>
+  <h1 class="hero-title">مكافآت <span class="red">الحراس</span></h1>
+  <p class="hero-desc">اكسب XP ونقاطًا ومكافآت Token داخلية عبر التوثيق والمشاهدة والترجمة والمشاركة. Token balance محفوظ داخل النظام الآن، والتكامل مع البلوكشين لاحقًا.</p>
+</section>
+
+<main class="wrap">
+  <div id="flRewardsCard"></div>
+
+  <span class="section-label">OVERVIEW</span>
+  <section class="fl-rewards-grid" id="rewardOverview"></section>
+
+  <span class="section-label">MISSIONS</span>
+  <section class="fl-mission-list" id="missionList"></section>
+
+  <span class="section-label">BADGES</span>
+  <section class="fl-achievements-list" id="badgeList"></section>
+
+  <span class="section-label">ACHIEVEMENTS</span>
+  <section class="fl-achievements-list" id="achievementList"></section>
+
+  <span class="section-label">TOP GUARDIANS</span>
+  <section class="fl-leader-list" id="leaderList"></section>
+
+  <section class="fl-rewards-panel">
+    <div class="fl-rewards-head">
+      <div>
+        <div class="fl-rewards-kicker">DEV ACTIONS</div>
+        <h2>اختبار المكافآت</h2>
+        <p>أزرار للتجربة الآن. اربطها لاحقًا بأحداث الرفع والتعليق والمشاركة.</p>
+      </div>
+    </div>
+    <div class="fl-wallet-actions">
+      <button type="button" onclick="FLRewards.trackEvent('view')">مشاهدة +1 XP</button>
+      <button type="button" onclick="FLRewards.trackEvent('upload')">رفع +15 XP</button>
+      <button type="button" onclick="FLRewards.trackEvent('comment')">تعليق +5 XP</button>
+      <button type="button" onclick="FLRewards.trackEvent('translate')">ترجمة +20 XP</button>
+      <button type="button" onclick="FLRewards.trackEvent('document')">توثيق +25 XP</button>
+      <button type="button" onclick="toggleRewardSound()">Sound</button>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">⌂</span>Home</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Rewards.html"><span class="nav-icon">★</span>Rewards</a>
+  <a href="Leaderboard.html"><span class="nav-icon">♛</span>Rank</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>Profile</a>
+</nav>
+
+<script>
+var currentRewardsProfile = null;
+
+function esc(v){ return window.FL && FL.esc ? FL.esc(v) : String(v || ''); }
+
+async function loadRewardsPage(){
+  console.log('[FLRewardsPage] Loading rewards page.');
+  try {
+    if (!window.FLRewards) throw new Error('FLRewards is not loaded');
+    currentRewardsProfile = await FLRewards.initProfileCard();
+    renderOverview(currentRewardsProfile);
+    renderMissions(currentRewardsProfile);
+    renderBadges(currentRewardsProfile);
+    renderAchievements(currentRewardsProfile);
+    renderLeaderboard();
+  } catch (e) {
+    console.error('[FLRewardsPage] Failed to load rewards page.', e);
+    document.getElementById('missionList').innerHTML = '<article class="fl-mission-card"><div><h3>تعذر تحميل المكافآت</h3><p>راجع Console للتفاصيل. سيتم استخدام التخزين المحلي عند توفر النظام.</p></div></article>';
+  }
+}
+
+function renderOverview(profile){
+  document.getElementById('rewardOverview').innerHTML = [
+    ['XP', Number(profile.xp || 0).toLocaleString()],
+    ['Level', 'Guardian ' + profile.level],
+    ['Points', Number(profile.points || 0).toLocaleString()],
+    ['Token Balance', Number(profile.token_balance || 0).toLocaleString(undefined,{maximumFractionDigits:2}) + ' FAL']
+  ].map(function(item){
+    return '<div class="fl-rewards-tile"><span>'+item[0]+'</span><strong>'+item[1]+'</strong></div>';
+  }).join('');
+}
+
+function renderMissions(profile){
+  var missions = FLRewards.missions;
+  var progress = profile.missions || {};
+  console.log('[FLRewardsPage] Rendering missions.', missions.length);
+  document.getElementById('missionList').innerHTML = missions.map(function(m){
+    var state = progress[m.id] || { progress:0, completed:false };
+    var pct = Math.min(100, Math.round((Number(state.progress || 0) / m.target) * 100));
+    return '<article class="fl-mission-card">' +
+      '<div><h3>'+esc(m.title)+'</h3><p>'+esc(m.titleEn)+' · '+Number(state.progress || 0)+'/'+m.target+' · +'+m.xp+' XP · +'+m.points+' Points · +'+m.token+' FAL</p>' +
+      '<div class="fl-xp-track" style="margin-top:9px;"><div class="fl-xp-fill" style="width:'+pct+'%"></div></div></div>' +
+      '<button class="fl-rewards-btn" '+(state.completed?'disabled':'')+' data-reward-mission="'+esc(m.id)+'">'+(state.completed?'Done':'Complete')+'</button>' +
+    '</article>';
+  }).join('');
+}
+
+function renderBadges(profile){
+  var owned = profile.badges || [];
+  document.getElementById('badgeList').innerHTML = FLRewards.badges.map(function(b){
+    var unlocked = owned.indexOf(b.id) > -1;
+    return '<article class="fl-achievement-card"><span>'+b.icon+'</span><h3>'+esc(b.name)+'</h3><p>'+esc(b.desc)+' · '+(unlocked?'Unlocked':'Locked')+'</p></article>';
+  }).join('');
+}
+
+function renderAchievements(profile){
+  var owned = profile.achievements || [];
+  document.getElementById('achievementList').innerHTML = FLRewards.achievements.map(function(a){
+    return '<article class="fl-achievement-card"><span>ACHIEVEMENT</span><h3>'+esc(a.title)+'</h3><p>'+(owned.indexOf(a.id)>-1?'Unlocked':'In progress')+'</p></article>';
+  }).join('');
+}
+
+async function renderLeaderboard(){
+  var rows = await FLRewards.leaderboard(8);
+  if (!rows.length && currentRewardsProfile) rows = [currentRewardsProfile];
+  document.getElementById('leaderList').innerHTML = rows.map(function(row, i){
+    return '<div class="fl-leader-row"><div class="fl-leader-rank">#'+(i+1)+'</div><div><strong>'+esc(row.user_id || 'Guardian')+'</strong><p style="color:var(--dim);font-size:.72rem;margin-top:4px;">Level '+row.level+' · '+(row.badges||[]).length+' badges</p></div><strong>'+Number(row.points||0).toLocaleString()+' GP</strong></div>';
+  }).join('');
+}
+
+async function completeRewardMission(id){
+  console.log('[FLRewardsPage] Completing reward mission.', id);
+  await FLRewards.completeMission(null, id);
+  loadRewardsPage();
+}
+
+function toggleRewardSound(){
+  var on = localStorage.getItem('fl_rewards_sound') !== 'on';
+  FLRewards.setSound(on);
+  FLRewards.trackEvent('share');
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  if (window.FLRewards) loadRewardsPage();
+});
+
+document.addEventListener('click', function(e){
+   var target = e.target;
+   var closestFn = target.closest || (Element.prototype.closest && target.closest.bind(target));
+   if (!closestFn) return;
+   var btn = closestFn('[data-reward-mission]');
+   if (!btn) return;
+   e.preventDefault();
+   completeRewardMission(btn.getAttribute('data-reward-mission'));
+ });
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

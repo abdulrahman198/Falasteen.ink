@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script>
+
+var _editingLandmarkId = null;
+
+function editLandmark(id) {
+  var landmarks = [];
+  try { landmarks = JSON.parse(localStorage.getItem('fl_landmarks')||'[]'); } catch(e){}
+  var lm = landmarks.find(function(x){ return x.id === id; });
+  if (!lm) return;
+  _editingLandmarkId = id;
+  // Fill form
+  var fields = { lName: lm.name, lCity: lm.city, lType: lm.type, lYear: lm.year, lDesc: lm.desc };
+  Object.keys(fields).forEach(function(k){
+    var el = document.getElementById(k);
+    if (el) el.value = fields[k] || '';
+  });
+  closeDetail();
+  var addModal = document.getElementById('addModal') || document.getElementById('addOverlay') || document.querySelector('.overlay');
+  if (addModal) addModal.classList.add('on');
+  document.body.style.overflow = 'hidden';
+  FL.toast('✏ وضع التعديل / Edit mode');
+}
+
+function deleteLandmark(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا المعلم؟ / Delete this landmark?')) return;
+  var landmarks = [];
+  try { landmarks = JSON.parse(localStorage.getItem('fl_landmarks')||'[]'); } catch(e){}
+  landmarks = landmarks.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('fl_landmarks', JSON.stringify(landmarks));
+  closeDetail();
+  if (typeof renderLandmarks === 'function') renderLandmarks();
+  else if (typeof loadLandmarks === 'function') loadLandmarks();
+  FL.toast('✓ تم الحذف / Deleted');
+}
+
+</script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="ollama-auto-tagging.js" defer></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#E8221F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>المعالم المدمرة | FALASTEEN.INK</title>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0e0e0e; --s1: #131313; --s2: #1c1b1b; --s3: #201f1f; --s4: #353534;
+  --red: #E8221F; --red2: #930006; --green: #00b954; --text: #e5e2e1; --dim: #9a9898;
+}
+
+body { background: var(--bg); color: var(--text); font-family: Arial, "Segoe UI", Tahoma, sans-serif; min-height: 100vh; padding-bottom: 80px; }
+
+.topnav { position: fixed; top: 0; width: 100%; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; background: rgba(14,14,14,0.97); border-bottom: 1px solid rgba(93,63,59,0.15); }
+.logo { font-family: "Courier New", monospace; font-weight: 900; font-size: 1rem; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
+.logo-dot { color: var(--red); }
+.add-btn { display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--red), var(--red2)); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 7px 16px; border: none; cursor: pointer; letter-spacing: 0.04em; }
+
+/* HERO */
+.hero { padding: 90px 18px 28px; background: linear-gradient(180deg, rgba(232,34,31,0.05) 0%, transparent 100%); position: relative; overflow: hidden; }
+.hero::before { content: 'معالم'; position: absolute; bottom: -20px; left: -10px; font-size: clamp(5rem, 20vw, 12rem); font-weight: 900; color: rgba(232,34,31,0.04); pointer-events: none; }
+.hero-tag { font-family: "Courier New", monospace; font-size: 0.54rem; color: var(--red); letter-spacing: 0.28em; margin-bottom: 10px; display: block; position: relative; }
+.hero-title { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; position: relative; }
+.hero-title .red { color: var(--red); }
+.hero-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.7; max-width: 480px; position: relative; }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 2px; }
+.stat-card { background: var(--s2); padding: 18px 14px; text-align: center; }
+.stat-num { font-size: 1.6rem; font-weight: 900; }
+.stat-num .red { color: var(--red); }
+.stat-label { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--dim); letter-spacing: 0.14em; margin-top: 4px; }
+
+/* FILTERS */
+.filters { padding: 12px 18px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; background: var(--s1); border-bottom: 1px solid rgba(93,63,59,0.12); }
+.filters::-webkit-scrollbar { display: none; }
+.chip { font-size: 0.72rem; font-weight: 600; padding: 7px 14px; background: var(--s2); color: var(--dim); border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; border-bottom: 2px solid transparent; font-family: Arial, sans-serif; }
+.chip.active { color: var(--red); border-bottom-color: var(--red); background: rgba(232,34,31,0.06); }
+
+/* SEARCH */
+.search-bar { margin: 2px 18px 2px; background: var(--s2); padding: 12px 14px; display: flex; gap: 10px; align-items: center; }
+.search-input { flex: 1; background: var(--s4); border: 1px solid rgba(93,63,59,0.3); color: var(--text); font-size: 0.88rem; padding: 10px 14px; outline: none; font-family: Arial, sans-serif; transition: border-color 0.2s; }
+.search-input:focus { border-color: var(--red); }
+.search-input::placeholder { color: var(--dim); }
+
+/* LANDMARKS LIST */
+.landmarks { padding: 0 18px; display: flex; flex-direction: column; gap: 2px; margin-bottom: 24px; }
+
+.landmark-card { background: var(--s2); overflow: hidden; cursor: pointer; transition: background 0.2s; }
+.landmark-card:hover { background: var(--s3); }
+
+.before-after {
+  display: grid; grid-template-columns: 1fr 1fr;
+  height: 140px; position: relative;
+}
+.ba-side { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+.ba-before { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.ba-after { background: linear-gradient(135deg, #1a0505, #2a0a0a); }
+.ba-label {
+  position: absolute; bottom: 6px;
+  font-family: "Courier New", monospace; font-size: 0.5rem; letter-spacing: 0.15em;
+  padding: 2px 7px;
+}
+.ba-before .ba-label { left: 6px; background: rgba(0,0,0,0.7); color: var(--green); }
+.ba-after .ba-label { right: 6px; background: rgba(0,0,0,0.7); color: var(--red); }
+.ba-divider { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--red); transform: translateX(-50%); z-index: 1; }
+.ba-divider::before { content: '◈'; position: absolute; top: 50%; transform: translate(-50%,-50%); background: var(--red); color: #fff; font-size: 0.7rem; padding: 3px; }
+.ba-img { width: 100%; height: 100%; object-fit: cover; }
+
+.landmark-body { padding: 14px; }
+.landmark-type-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.lm-type { font-family: "Courier New", monospace; font-size: 0.52rem; color: var(--green); background: rgba(0,185,84,0.08); border: 1px solid rgba(0,185,84,0.2); padding: 2px 8px; }
+.lm-status { font-family: "Courier New", monospace; font-size: 0.52rem; color: var(--red); background: rgba(232,34,31,0.08); border: 1px solid rgba(232,34,31,0.2); padding: 2px 8px; }
+.landmark-name { font-size: 0.96rem; font-weight: 700; margin-bottom: 4px; }
+.landmark-meta { font-family: "Courier New", monospace; font-size: 0.54rem; color: var(--dim); margin-bottom: 6px; }
+.landmark-desc { font-size: 0.8rem; color: var(--dim); line-height: 1.6; margin-bottom: 10px; }
+.landmark-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.lm-tag { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--dim); }
+.lm-year { font-family: "Courier New", monospace; font-size: 0.54rem; color: rgba(232,34,31,0.6); }
+
+/* EMPTY */
+.empty-state { padding: 48px 18px; text-align: center; }
+.empty-icon { font-size: 2.5rem; opacity: 0.3; margin-bottom: 12px; display: block; }
+.empty-text { font-size: 0.84rem; color: var(--dim); line-height: 1.7; margin-bottom: 16px; }
+.empty-btn { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--red), var(--red2)); color: #fff; font-size: 0.8rem; font-weight: 700; padding: 11px 22px; border: none; cursor: pointer; }
+
+/* ADD CARD */
+.add-landmark-card { background: var(--s2); border: 2px dashed rgba(232,34,31,0.22); padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; color: var(--dim); }
+.add-landmark-card:hover { border-color: var(--red); background: rgba(232,34,31,0.04); color: var(--red); }
+.add-landmark-card .plus { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+.add-landmark-card p { font-size: 0.8rem; font-weight: 700; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.85); display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--s1); width: 100%; max-width: 540px; max-height: 92vh; overflow-y: auto; padding: 24px 18px 32px; border-top: 3px solid var(--red); scrollbar-width: none; }
+.modal::-webkit-scrollbar { display: none; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 1.1rem; font-weight: 900; }
+.modal-close { background: none; border: none; color: var(--dim); font-size: 1.4rem; cursor: pointer; }
+.modal-close:hover { color: var(--red); }
+
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+.form-label { font-family: "Courier New", monospace; font-size: 0.52rem; color: var(--red); letter-spacing: 0.18em; display: block; margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--s4); border: 1px solid rgba(93,63,59,0.3); color: var(--text); font-size: 0.88rem; padding: 11px 13px; outline: none; font-family: Arial, sans-serif; transition: border-color 0.2s; appearance: none; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--red); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--dim); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select option { background: var(--s3); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.photo-upload-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.photo-slot { border: 2px dashed rgba(93,63,59,0.3); padding: 16px 10px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.photo-slot:hover { border-color: var(--red); }
+.photo-slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.photo-slot .slot-icon { font-size: 1.5rem; margin-bottom: 6px; display: block; }
+.photo-slot .slot-label { font-family: "Courier New", monospace; font-size: 0.52rem; letter-spacing: 0.12em; }
+.photo-slot.before .slot-label { color: var(--green); }
+.photo-slot.after .slot-label { color: var(--red); }
+.photo-slot .preview { width: 100%; height: 80px; object-fit: cover; display: none; }
+
+.save-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), var(--red2)); color: #fff; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.05em; transition: transform 0.2s, box-shadow 0.2s; }
+.save-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,34,31,0.35); }
+
+.bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: rgba(14,14,14,0.97); padding: 10px 0 14px; z-index: 200; }
+.bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--dim); font-size: 0.56rem; }
+.bottom-nav a:hover, .bottom-nav a.active { color: var(--red); }
+.nav-icon { font-size: 1.3rem; line-height: 1; }
+
+
+.upload-progress{height:3px;background:var(--s4);margin-top:6px;display:none;overflow:hidden;}
+.upload-progress-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b35);width:0%;transition:width .3s;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <button class="add-btn" onclick="openModal()">+ أضف معلماً</button>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">سجل المعالم — DESTROYED LANDMARKS</span>
+  <h1 class="hero-title">مبانٍ كان <span class="red">لها اسم</span></h1>
+  <p class="hero-desc">كل مبنى دُمِّر كان له تاريخ. نوثّق ما كان قبل — حتى لا يُقال يوماً إنه لم يوجد.</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-num" id="countTotal">0</div><div class="stat-label">معلم موثق</div></div>
+  <div class="stat-card"><div class="stat-num" id="countWithPhoto">0</div><div class="stat-label">مع صور قبل/بعد</div></div>
+  <div class="stat-card"><div class="stat-num" id="countCities">0</div><div class="stat-label">مدينة موثقة</div></div>
+</div>
+
+<div class="filters" id="filterChips">
+  <button class="chip active" onclick="filterBy('all', this)">الكل</button>
+  <button class="chip" onclick="filterBy('mosque', this)">🕌 مساجد</button>
+  <button class="chip" onclick="filterBy('hospital', this)">🏥 مستشفيات</button>
+  <button class="chip" onclick="filterBy('school', this)">🏫 مدارس وجامعات</button>
+  <button class="chip" onclick="filterBy('heritage', this)">🏛 تراث تاريخي</button>
+  <button class="chip" onclick="filterBy('residential', this)">🏘 أحياء سكنية</button>
+  <button class="chip" onclick="filterBy('cultural', this)">🎭 مراكز ثقافية</button>
+  <button class="chip" onclick="filterBy('other', this)">◈ أخرى</button>
+</div>
+
+<div class="search-bar">
+  <span>🔍</span>
+  <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن معلم..." oninput="renderLandmarks()"/>
+</div>
+
+<div class="landmarks" id="landmarksList"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">توثيق معلم مدمّر</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form class="modal-form" onsubmit="saveLandmark(event)">
+
+      <div>
+        <label class="form-label">اسم المعلم *</label>
+        <input type="text" class="form-input" id="lName" placeholder="مثال: مسجد الشجاعية الكبير" required/>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label class="form-label">التصنيف *</label>
+          <select class="form-select" id="lType" required>
+            <option value="">اختر...</option>
+            <option value="mosque">🕌 مسجد</option>
+            <option value="hospital">🏥 مستشفى</option>
+            <option value="school">🏫 مدرسة / جامعة</option>
+            <option value="heritage">🏛 تراث تاريخي</option>
+            <option value="residential">🏘 حي سكني</option>
+            <option value="cultural">🎭 مركز ثقافي</option>
+            <option value="other">◈ أخرى</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">المدينة / الحي</label>
+          <input type="text" class="form-input" id="lCity" placeholder="مثال: الشجاعية، غزة"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label class="form-label">سنة البناء</label>
+          <input type="number" class="form-input" id="lBuiltYear" placeholder="مثال: 1895" min="600" max="2024"/>
+        </div>
+        <div>
+          <label class="form-label">تاريخ التدمير</label>
+          <input type="date" class="form-input" id="lDestroyedDate" style="color-scheme:dark;"/>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">صور قبل وبعد</label>
+        <div class="photo-upload-pair">
+          <div class="photo-slot before">
+            <input type="file" accept="image/*" onchange="previewImg(this)" onchange="previewSlot(this,'before')"/>
+            <span class="slot-icon">🟢</span>
+            <div class="slot-label">قبل التدمير</div>
+            <img class="preview" id="preview-before" alt=""/>
+          </div>
+          <div class="photo-slot after">
+            <input type="file" accept="image/*" onchange="previewSlot(this,'after')"/>
+            <span class="slot-icon">🔴</span>
+            <div class="slot-label">بعد التدمير</div>
+            <img class="preview" id="preview-after" alt=""/>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">وصف المعلم وتاريخه</label>
+        <textarea class="form-textarea" id="lDesc" placeholder="ماذا كان هذا المكان؟ ما أهميته؟ ما الذي يجب أن يعرفه العالم عنه؟"></textarea>
+      </div>
+      <div class="fl-ai-tags-panel">
+        <input type="hidden" id="mTags"/>
+        <div class="fl-ai-tags-actions">
+          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
+        </div>
+        <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
+      </div>
+
+      <div>
+        <label class="form-label">الإحداثيات (اختياري)</label>
+        <div class="form-row">
+          <input type="text" class="form-input" id="lLat" placeholder="خط العرض"/>
+          <input type="text" class="form-input" id="lLng" placeholder="خط الطول"/>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">المصدر</label>
+        <input type="text" class="form-input" id="lSource" placeholder="من يعرف هذا المكان؟ (اختياري)"/>
+      </div>
+
+      <button type="submit" class="save-btn">🏛 حفظ في سجل المعالم</button>
+    </form>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>الشهداء</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>النبض</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>الحراس</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>حسابي</a>
+</nav>
+
+<script>
+
+var currentFilter = 'all';
+var photoBefore = null;
+var photoAfter = null;
+
+var TYPE_LABELS = {
+  mosque: '🕌 مسجد', hospital: '🏥 مستشفى', school: '🏫 مدرسة/جامعة',
+  heritage: '🏛 تراث', residential: '🏘 سكني', cultural: '🎭 ثقافي', other: '◈ أخرى'
+};
+
+function getData() {
+  try { return JSON.parse(localStorage.getItem('fl_landmarks') || '[]'); }
+  catch(e) { return []; }
+}
+function saveData(d) { localStorage.setItem('fl_landmarks', JSON.stringify(d)); }
+
+function renderLandmarks() {
+  var data = getData();
+  var search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  var filtered = data.filter(function(l) {
+    var matchFilter = currentFilter === 'all' || l.type === currentFilter;
+    var matchSearch = !search || l.name.toLowerCase().indexOf(search) > -1 || (l.city && l.city.toLowerCase().indexOf(search) > -1);
+    return matchFilter && matchSearch;
+  });
+
+  // Stats
+  document.getElementById('countTotal').textContent = data.length;
+  document.getElementById('countWithPhoto').textContent = data.filter(function(l) { return l.photoBefore || l.photoAfter; }).length;
+  var cities = {};
+  data.forEach(function(l) { if (l.city) cities[l.city] = 1; });
+  document.getElementById('countCities').textContent = Object.keys(cities).length;
+
+  var list = document.getElementById('landmarksList');
+  list.innerHTML = '';
+
+  if (filtered.length === 0 && !search) {
+    list.innerHTML = '<div class="empty-state"><span class="empty-icon">🏛</span><p class="empty-text">لم يُوثَّق أي معلم بعد.<br/>كن أول من يحفظ ذاكرة هذا المكان.</p><button class="empty-btn" onclick="openModal()">+ أضف أول معلم</button></div>';
+    return;
+  }
+
+  filtered.forEach(function(l) {
+    var card = document.createElement('div');
+    card.className = 'landmark-card';
+
+    var beforeHtml = l.photoBefore
+      ? '<img class="ba-img" src="' + l.photoBefore + '" alt="قبل"/>'
+      : '<span style="font-size:2rem;opacity:0.3;">🏛</span>';
+    var afterHtml = l.photoAfter
+      ? '<img class="ba-img" src="' + l.photoAfter + '" alt="بعد"/>'
+      : '<span style="font-size:2rem;opacity:0.3;">💔</span>';
+
+    var typeLabel = TYPE_LABELS[l.type] || l.type || '◈';
+
+    card.innerHTML =
+      '<div class="before-after">' +
+        '<div class="ba-side ba-before">' + beforeHtml + '<span class="ba-label">قبل</span></div>' +
+        '<div class="ba-divider"></div>' +
+        '<div class="ba-side ba-after">' + afterHtml + '<span class="ba-label">بعد</span></div>' +
+      '</div>' +
+      '<div class="landmark-body">' +
+        '<div class="landmark-type-row">' +
+          '<span class="lm-type">' + typeLabel + '</span>' +
+          '<span class="lm-status">مدمّر</span>' +
+        '</div>' +
+        '<div class="landmark-name">' + esc(l.name) + '</div>' +
+        '<div class="landmark-meta">' +
+          (l.city ? '📍 ' + esc(l.city) : '') +
+          (l.builtYear ? ' · بُني ' + l.builtYear : '') +
+          (l.destroyedDate ? ' · دُمِّر ' + formatDate(l.destroyedDate) : '') +
+        '</div>' +
+        (l.desc ? '<div class="landmark-desc">' + esc(l.desc) + '</div>' : '') +
+        '<div class="landmark-footer">' +
+          (l.lat && l.lng ? '<span class="lm-tag">📌 ' + l.lat + ', ' + l.lng + '</span>' : '') +
+          '<span class="lm-year">' + (l.source ? '← ' + esc(l.source) : '') + '</span>' +
+        '</div>' +
+      '</div>';
+    list.appendChild(card);
+  });
+
+  // Add button at end
+  var addCard = document.createElement('div');
+  addCard.className = 'add-landmark-card';
+  addCard.onclick = openModal;
+  addCard.innerHTML = '<span class="plus">+</span><p>أضف معلماً جديداً</p>';
+  list.appendChild(addCard);
+}
+
+function filterBy(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  btn.classList.add('active');
+  renderLandmarks();
+}
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('lName').focus(); }, 100);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+  resetModal();
+}
+
+function closeOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function resetModal() {
+  ['lName','lCity','lBuiltYear','lDestroyedDate','lDesc','lLat','lLng','lSource'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('lType').value = '';
+  document.getElementById('preview-before').style.display = 'none';
+  document.getElementById('preview-after').style.display = 'none';
+  clearGeneratedTags();
+  photoBefore = null; photoAfter = null;
+}
+
+function previewSlot(input, side) {
+  if (!input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    if (side === 'before') photoBefore = e.target.result;
+    else photoAfter = e.target.result;
+    var preview = document.getElementById('preview-' + side);
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    input.parentElement.querySelector('.slot-icon').style.display = 'none';
+    input.parentElement.querySelector('.slot-label').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function saveLandmark(e) {
+  e.preventDefault();
+  var landmark = {
+    id: 'L_' + Date.now(),
+    name: document.getElementById('lName').value.trim(),
+    type: document.getElementById('lType').value,
+    city: document.getElementById('lCity').value.trim(),
+    builtYear: document.getElementById('lBuiltYear').value,
+    destroyedDate: document.getElementById('lDestroyedDate').value,
+    desc: document.getElementById('lDesc').value.trim(),
+    lat: document.getElementById('lLat').value.trim(),
+    lng: document.getElementById('lLng').value.trim(),
+    source: document.getElementById('lSource').value.trim(),
+    photoBefore: photoBefore,
+    photoAfter: photoAfter,
+    tags: getGeneratedTags(),
+    addedAt: new Date().toISOString()
+  };
+  var data = getData();
+  data.unshift(landmark);
+  saveData(data);
+  clearGeneratedTags();
+  closeModal();
+  renderLandmarks();
+}
+
+function getGeneratedTags() {
+  var el = document.getElementById('mTags');
+  if (!el || !el.value) return [];
+  try { return JSON.parse(el.value); } catch(e) { return []; }
+}
+
+function clearGeneratedTags() {
+  var hidden = document.getElementById('mTags');
+  var output = document.getElementById('aiTagsOutput');
+  if (hidden) hidden.value = '';
+  if (output) {
+    output.innerHTML = '';
+    output.classList.add('is-empty');
+  }
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  var p = d.split('-');
+  return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : d;
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// SAMPLE DATA
+if (getData().length === 0) {
+  var samples = [
+    { id: 'L1', name: 'مسجد الشجاعية الكبير', type: 'mosque', city: 'الشجاعية، غزة', builtYear: '1895', destroyedDate: '2024-01-15', desc: 'أحد أعرق مساجد غزة. بُني عام 1895 وكان يتسع لأكثر من 3000 مصلٍّ. تميّز بمئذنته العالية وزخارفه العثمانية. دُمِّر بالكامل في العدوان على غزة 2024.', lat: '31.5085', lng: '34.4669', source: 'الذاكرة الجماعية', photoBefore: null, photoAfter: null, addedAt: new Date().toISOString() },
+    { id: 'L2', name: 'جامعة الإسلامية — غزة', type: 'school', city: 'غزة', builtYear: '1978', destroyedDate: '2023-12-09', desc: 'أعرق الجامعات في قطاع غزة. أسّسها المفكر الإسلامي أحمد ياسين عام 1978. خرّجت عشرات الآلاف من الأطباء والمهندسين والمعلمين.', lat: '31.5027', lng: '34.4487', source: 'الذاكرة الجماعية', photoBefore: null, photoAfter: null, addedAt: new Date().toISOString() },
+    { id: 'L3', name: 'مستشفى الشفاء', type: 'hospital', city: 'غزة', builtYear: '1946', destroyedDate: '2024-03-01', desc: 'أكبر مستشفى في قطاع غزة. أُسِّس في العهد البريطاني عام 1946. خدم الغزيين لأكثر من سبعة عقود. تحوّل خلال الحرب إلى رمز للصمود ثم للدمار.', lat: '31.5236', lng: '34.4502', source: 'الذاكرة الجماعية', photoBefore: null, photoAfter: null, addedAt: new Date().toISOString() }
+  ];
+  saveData(samples);
+}
+
+renderLandmarks();
+</script>
+
+
+<script>
+if("serviceWorker" in navigator && window.location.protocol !== "file:"){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js")
+    .then(function(r){console.log("SW registered ✓");})
+    .catch(function(e){console.log("SW error:",e);});
+  });
+}
+
+function previewImg(inp) {
+  if (!inp.files || !inp.files[0]) return;
+  var reader = new FileReader();
+  var preview = inp.parentElement.querySelector('img') || inp.parentElement.querySelector('.img-preview');
+  reader.onload = function(e) {
+    if (preview) { preview.src = e.target.result; preview.style.display='block'; }
+  };
+  reader.readAsDataURL(inp.files[0]);
+}
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

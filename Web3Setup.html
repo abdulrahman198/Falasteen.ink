@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+<script src="web3-token.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ربط البلوكشين | FALASTEEN.INK</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:40px; }
+
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+
+/* HERO */
+.hero { padding:90px 18px 28px; background:linear-gradient(180deg,rgba(232,34,31,.06) 0%,transparent 100%); }
+.hero-tag { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(1.8rem,5vw,3rem); font-weight:900; margin-bottom:8px; }
+.hero-title .red { color:var(--red); }
+.hero-desc { font-size:.86rem; color:var(--dim); line-height:1.7; max-width:520px; }
+
+/* STATUS CARDS */
+.status-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin:0 0 2px; }
+@media(max-width:480px){ .status-grid{grid-template-columns:1fr;} }
+.status-card { background:var(--s2); padding:18px 14px; text-align:center; }
+.status-icon { font-size:1.6rem; margin-bottom:8px; display:block; }
+.status-name { font-family:"Courier New",monospace; font-size:.54rem; color:var(--text); letter-spacing:.12em; margin-bottom:4px; }
+.status-state { font-family:"Courier New",monospace; font-size:.52rem; }
+.state-ok { color:var(--green); }
+.state-wait { color:var(--dim); }
+.state-need { color:var(--red); }
+
+/* STEPS */
+.step { margin:0 0 2px; }
+.step-header { background:var(--s2); padding:20px 18px; display:flex; align-items:center; gap:14px; cursor:pointer; user-select:none; }
+.step-header:hover { background:var(--s3); }
+.step-num { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--red),var(--red2)); display:flex; align-items:center; justify-content:center; font-family:"Courier New",monospace; font-size:.7rem; font-weight:700; color:#fff; flex-shrink:0; }
+.step-num.done { background:linear-gradient(135deg,var(--green),#009940); }
+.step-info { flex:1; }
+.step-title { font-size:.96rem; font-weight:700; margin-bottom:2px; }
+.step-sub { font-size:.76rem; color:var(--dim); direction:ltr; }
+.step-arrow { color:var(--dim); font-size:1.1rem; transition:transform .2s; }
+.step-arrow.open { transform:rotate(180deg); }
+
+.step-body { background:var(--s1); padding:20px 18px; display:none; }
+.step-body.open { display:block; }
+
+/* INSTRUCTIONS */
+.instruction { margin-bottom:16px; }
+.instr-label { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; margin-bottom:8px; display:block; }
+.instr-text { font-size:.84rem; color:var(--dim); line-height:1.7; margin-bottom:10px; }
+.instr-text strong { color:var(--text); }
+.instr-text a { color:var(--green); text-decoration:none; }
+.instr-text a:hover { text-decoration:underline; }
+
+/* CODE BLOCK */
+.code-block { background:var(--s4); border:1px solid rgba(93,63,59,.2); border-right:3px solid var(--red); padding:14px; margin:10px 0; position:relative; overflow-x:auto; }
+.code-block code { font-family:"Courier New",monospace; font-size:.72rem; color:var(--green); line-height:1.8; white-space:pre; display:block; }
+.copy-btn { position:absolute; top:8px; left:8px; background:rgba(232,34,31,.15); border:1px solid rgba(232,34,31,.3); color:var(--red); font-family:"Courier New",monospace; font-size:.5rem; padding:3px 8px; cursor:pointer; letter-spacing:.1em; transition:all .2s; }
+.copy-btn:hover { background:var(--red); color:#fff; }
+.copy-btn.copied { background:var(--green); border-color:var(--green); color:#fff; }
+
+/* ACTION BUTTONS */
+.action-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:.82rem; font-weight:700; padding:12px 22px; border:none; cursor:pointer; transition:transform .2s,box-shadow .2s; letter-spacing:.04em; text-decoration:none; margin-top:8px; }
+.action-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,34,31,.35); }
+.action-btn.ghost { background:transparent; border:1px solid rgba(93,63,59,.4); color:var(--dim); }
+.action-btn.ghost:hover { background:var(--s2); box-shadow:none; transform:none; }
+.action-btn.green-btn { background:linear-gradient(135deg,var(--green),#009940); }
+
+/* WALLET DEMO */
+.wallet-demo { background:var(--s2); padding:20px; margin-top:12px; text-align:center; }
+.wallet-addr { font-family:"Courier New",monospace; font-size:.62rem; color:var(--green); background:rgba(0,185,84,.06); border:1px solid rgba(0,185,84,.2); padding:8px 14px; margin:12px 0; word-break:break-all; direction:ltr; display:none; }
+.wallet-balance { font-family:"Courier New",monospace; font-size:.56rem; color:var(--dim); display:none; }
+
+/* LIVEPEER DEMO */
+.livepeer-form { margin-top:12px; }
+.form-label { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:6px; }
+.form-input { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.86rem; padding:11px 13px; outline:none; font-family:"Courier New",monospace; transition:border-color .2s; margin-bottom:12px; }
+.form-input:focus { border-color:var(--red); }
+.form-input::placeholder { color:var(--dim); font-family:Arial,sans-serif; }
+
+/* ARWEAVE DEMO */
+.upload-test { border:2px dashed rgba(232,34,31,.25); padding:24px; text-align:center; margin-top:12px; cursor:pointer; transition:all .2s; position:relative; }
+.upload-test:hover { border-color:var(--red); background:rgba(232,34,31,.04); }
+.upload-test input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.upload-icon { font-size:2rem; margin-bottom:8px; display:block; }
+.upload-result { background:rgba(0,185,84,.06); border:1px solid rgba(0,185,84,.2); padding:12px; margin-top:10px; display:none; }
+.upload-hash { font-family:"Courier New",monospace; font-size:.58rem; color:var(--green); word-break:break-all; direction:ltr; margin-top:6px; }
+
+/* CHECKLIST */
+.checklist { background:var(--s2); padding:20px 18px; margin-bottom:2px; }
+.check-title { font-family:"Courier New",monospace; font-size:.54rem; color:var(--red); letter-spacing:.22em; margin-bottom:14px; }
+.check-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(93,63,59,.1); }
+.check-item:last-child { border:none; }
+.check-box { width:20px; height:20px; border:1px solid rgba(93,63,59,.4); border-radius:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.7rem; cursor:pointer; transition:all .2s; }
+.check-box.checked { background:var(--green); border-color:var(--green); color:#fff; }
+.check-text { font-size:.82rem; color:var(--dim); flex:1; }
+.check-text.done { color:var(--green); text-decoration:line-through; }
+
+/* IMPORTANT BOX */
+.important { background:rgba(232,34,31,.06); border:1px solid rgba(232,34,31,.2); padding:14px 16px; margin:12px 0; }
+.important-label { font-family:"Courier New",monospace; font-size:.5rem; color:var(--red); letter-spacing:.18em; margin-bottom:6px; display:block; }
+.important p { font-size:.82rem; color:var(--dim); line-height:1.7; }
+
+.info-box { background:rgba(0,185,84,.06); border:1px solid rgba(0,185,84,.2); padding:14px 16px; margin:12px 0; }
+.info-box p { font-size:.82rem; color:var(--dim); line-height:1.7; }
+.info-box strong { color:var(--green); }
+
+/* DIVIDER */
+.divider { height:1px; background:rgba(93,63,59,.15); margin:0; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <a href="Index.html" style="font-family:'Courier New',monospace;font-size:.62rem;color:var(--dim);text-decoration:none;">← رجوع / Back</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">إعداد البلوكشين — BLOCKCHAIN SETUP</span>
+  <h1 class="hero-title">ربط المشروع <span class="red">بالبلوكشين</span></h1>
+  <p class="hero-desc">3 خطوات فقط لربط المشروع الكامل بالبلوكشين. اتبع الخطوات بالترتيب.</p>
+</div>
+
+<!-- STATUS -->
+<div class="status-grid" id="statusGrid" style="padding:0 0 0 0;margin:0 0 2px 0;">
+  <div class="status-card">
+    <span class="status-icon">🦊</span>
+    <div class="status-name">MetaMask</div>
+    <div class="status-state state-wait" id="walletStatus">لم يتصل بعد</div>
+  </div>
+  <div class="status-card">
+    <span class="status-icon">📡</span>
+    <div class="status-name">Livepeer</div>
+    <div class="status-state state-wait" id="livepeerStatus">يحتاج API Key</div>
+  </div>
+  <div class="status-card">
+    <span class="status-icon">🔐</span>
+    <div class="status-name">Arweave</div>
+    <div class="status-state state-wait" id="arweaveStatus">يحتاج إعداد</div>
+  </div>
+</div>
+
+<!-- ═══ STEP 1: METAMASK ═══ -->
+<div class="step">
+  <div class="step-header" onclick="toggleStep(1)">
+    <div class="step-num" id="stepNum1">1</div>
+    <div class="step-info">
+      <div class="step-title">🦊 ربط المحفظة — MetaMask Wallet</div>
+      <div class="step-sub">Connect your crypto wallet to identify as a Guardian</div>
+    </div>
+    <span class="step-arrow" id="stepArrow1">▼</span>
+  </div>
+  <div class="step-body" id="stepBody1">
+
+    <div class="instruction">
+      <span class="instr-label">الخطوة 1 من 3 — ثبّت MetaMask</span>
+      <p class="instr-text">
+        MetaMask هي محفظة رقمية مجانية تعمل كإضافة في المتصفح. بدونها لا يمكن التعامل مع البلوكشين.<br/>
+        MetaMask is a free digital wallet browser extension. Required for all blockchain interactions.
+      </p>
+      <a href="https://metamask.io/download/" target="_blank" class="action-btn green-btn">
+        🦊 تحميل MetaMask مجاناً
+      </a>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">الخطوة 2 من 3 — اتصل بالمحفظة</span>
+      <p class="instr-text">بعد تثبيت MetaMask، اضغط الزر أدناه لربط محفظتك بالمشروع:</p>
+      <div class="wallet-demo">
+        <button class="action-btn" onclick="connectWallet()">🦊 اتصل بالمحفظة / Connect Wallet</button>
+        <div class="wallet-addr" id="walletAddr">0x...</div>
+        <div class="wallet-balance" id="walletBalance">Balance: — ETH</div>
+      </div>
+      <div id="flWalletBox"></div>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">أضف هذا الكود في Index.html</span>
+      <p class="instr-text">انسخ هذا الكود وضعه قبل إغلاق &lt;/body&gt; في أي صفحة تريد ربط المحفظة فيها:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code id="code1">&lt;!-- MetaMask Wallet Connection --&gt;
+&lt;script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('ثبّت MetaMask أولاً / Install MetaMask first');
+    window.open('https://metamask.io', '_blank');
+    return;
+  }
+  try {
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts'
+    });
+    const addr = accounts[0];
+    // Save wallet address
+    localStorage.setItem('fl_wallet', addr);
+    // Show short address
+    const short = addr.slice(0,6) + '...' + addr.slice(-4);
+    document.getElementById('walletBtn').textContent = '🦊 ' + short;
+    document.getElementById('walletBtn').style.background = 'var(--green)';
+    console.log('Connected:', addr);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Auto-reconnect if previously connected
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('fl_wallet');
+  if (saved && window.ethereum) {
+    const short = saved.slice(0,6) + '...' + saved.slice(-4);
+    const btn = document.getElementById('walletBtn');
+    if (btn) {
+      btn.textContent = '🦊 ' + short;
+      btn.style.background = 'var(--green)';
+    }
+  }
+});
+&lt;/script&gt;
+
+&lt;!-- Add this button wherever you want --&gt;
+&lt;button id="walletBtn" onclick="connectWallet()"
+  style="background:var(--red);color:#fff;border:none;
+  padding:10px 20px;cursor:pointer;font-size:.8rem;"&gt;
+  🦊 اتصل بالمحفظة
+&lt;/button&gt;</code>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p>✓ <strong>مجاني تماماً.</strong> ربط المحفظة لا يكلف شيئاً. فقط تثبيت الإضافة.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ STEP 2: LIVEPEER ═══ -->
+<div class="step">
+  <div class="step-header" onclick="toggleStep(2)">
+    <div class="step-num" id="stepNum2">2</div>
+    <div class="step-info">
+      <div class="step-title">📡 بث لامركزي — Livepeer Streaming</div>
+      <div class="step-sub">Replace browser camera with decentralized Livepeer stream</div>
+    </div>
+    <span class="step-arrow" id="stepArrow2">▼</span>
+  </div>
+  <div class="step-body" id="stepBody2">
+
+    <div class="instruction">
+      <span class="instr-label">الخطوة 1 — احصل على API Key مجاني</span>
+      <p class="instr-text">
+        1. اذهب إلى <a href="https://livepeer.studio" target="_blank"><strong>livepeer.studio</strong></a><br/>
+        2. أنشئ حساباً مجانياً<br/>
+        3. اذهب إلى <strong>Settings → API Keys</strong><br/>
+        4. اضغط <strong>"Create API Key"</strong><br/>
+        5. انسخ الـ Key
+      </p>
+    </div>
+
+    <div class="livepeer-form">
+      <label class="form-label">الصق API Key هنا للاختبار</label>
+      <input type="text" class="form-input" id="livepeerKey" placeholder="لصق API Key من livepeer.studio هنا..."/>
+      <button class="action-btn" onclick="testLivepeer()">🔍 اختبر الاتصال / Test Connection</button>
+      <div id="livepeerResult" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">أضف هذا الكود في live.html — استبدل الكاميرا بـ Livepeer</span>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code>// 1. أضف API Key في أعلى ملف live.html
+var LIVEPEER_API_KEY = 'YOUR_API_KEY_HERE';
+
+// 2. استبدل دالة startLive بهذه:
+async function startLive() {
+  var title = document.getElementById('streamTitle').value.trim();
+  if (!title) { alert('أضف عنواناً للبث'); return; }
+
+  try {
+    // Create stream on Livepeer
+    var response = await fetch('https://livepeer.studio/api/stream', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + LIVEPEER_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: title,
+        profiles: [
+          { name: '720p', bitrate: 2000000,
+            fps: 30, width: 1280, height: 720 }
+        ]
+      })
+    });
+
+    var stream = await response.json();
+
+    // Save stream keys
+    localStorage.setItem('fl_stream_key', stream.streamKey);
+    localStorage.setItem('fl_stream_id', stream.id);
+    localStorage.setItem('fl_playback_id', stream.playbackId);
+
+    // Show stream details
+    document.getElementById('streamKey').textContent =
+      'RTMP Key: ' + stream.streamKey;
+    document.getElementById('playbackUrl').textContent =
+      'Watch: https://livepeer.com/streams/' + stream.playbackId;
+
+    beginLive(title);
+
+  } catch(err) {
+    alert('خطأ في الاتصال بـ Livepeer: ' + err.message);
+  }
+}</code>
+      </div>
+    </div>
+
+    <div class="important">
+      <span class="important-label">⚠ ملاحظة مهمة / IMPORTANT</span>
+      <p>للبث الحي تحتاج تطبيق RTMP مثل <strong>OBS Studio</strong> (مجاني). Livepeer يعطيك مفتاح RTMP تضعه في OBS وتبث من هناك. المشاهدون يشاهدون عبر رابط Livepeer اللامركزي.</p>
+    </div>
+
+    <div class="info-box">
+      <p>✓ <strong>Livepeer مجاني للبدء.</strong> 1000 دقيقة بث + 1000 دقيقة مشاهدة مجاناً شهرياً.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ STEP 3: ARWEAVE ═══ -->
+<div class="step">
+  <div class="step-header" onclick="toggleStep(3)">
+    <div class="step-num" id="stepNum3">3</div>
+    <div class="step-info">
+      <div class="step-title">🔐 أرشيف أبدي — Arweave Storage</div>
+      <div class="step-sub">Upload documents and streams permanently to the blockchain</div>
+    </div>
+    <span class="step-arrow" id="stepArrow3">▼</span>
+  </div>
+  <div class="step-body" id="stepBody3">
+
+    <div class="instruction">
+      <span class="instr-label">الخيار الأسهل — Irys (مجاني حتى 100KB)</span>
+      <p class="instr-text">
+        <strong>Irys</strong> هو واجهة مبسطة لـ Arweave. الملفات أقل من 100KB <strong>مجانية تماماً</strong> بدون رسوم.<br/>
+        Irys is the easiest way to upload to Arweave. Files under 100KB are completely free.
+      </p>
+      <a href="https://irys.xyz" target="_blank" class="action-btn green-btn">🌐 افتح Irys.xyz</a>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">اختبر الرفع — Test Upload (محاكاة)</span>
+      <p class="instr-text">هذا اختبار محلي يوضح كيف يعمل الرفع على Arweave:</p>
+      <div class="upload-test" id="uploadTest">
+        <input type="file" onchange="testUpload(this)"/>
+        <span class="upload-icon">📁</span>
+        <p style="font-size:.8rem;color:var(--dim);">اسحب ملفاً أو اضغط للاختبار<br/>Drag or click to test upload</p>
+        <div class="upload-result" id="uploadResult">
+          <p style="font-size:.78rem;color:var(--text);margin-bottom:6px;">✅ جاهز للرفع على Arweave</p>
+          <div class="upload-hash" id="uploadHash"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">أضف هذا الكود في Upload.html</span>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code>// أضف في أعلى الصفحة:
+&lt;script src="https://unpkg.com/@irys/sdk/build/esm/web/index.js"&gt;&lt;/script&gt;
+
+// دالة الرفع الحقيقي على Arweave عبر Irys:
+async function uploadToArweave(file) {
+  try {
+    // Connect Irys with MetaMask
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const irys = new Irys({
+      url: 'https://node1.irys.xyz',
+      token: 'ethereum',
+      wallet: provider
+    });
+
+    // Fund if needed (for files over 100KB)
+    const price = await irys.getPrice(file.size);
+    if (price > 0) await irys.fund(price);
+
+    // Upload file
+    const tags = [
+      { name: 'Content-Type', value: file.type },
+      { name: 'App-Name', value: 'FALASTEEN.INK' },
+      { name: 'Title', value: file.name }
+    ];
+
+    const receipt = await irys.uploadFile(file, { tags });
+
+    const permanentUrl = 'https://arweave.net/' + receipt.id;
+    console.log('Uploaded permanently:', permanentUrl);
+    return permanentUrl;
+
+  } catch (err) {
+    console.error('Upload failed:', err);
+    throw err;
+  }
+}</code>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p>✓ <strong>الملفات أقل من 100KB مجانية.</strong> الصور الصغيرة، الوثائق النصية — مجاناً.<br/>
+      للملفات الكبيرة تحتاج كمية صغيرة من ETH في محفظتك (~$0.01 للـ MB).</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ STEP 4: CONNECT TO PROJECT ═══ -->
+<div class="step">
+  <div class="step-header" onclick="toggleStep(4)">
+    <div class="step-num" id="stepNum4">4</div>
+    <div class="step-info">
+      <div class="step-title">🔗 ربط كل شيء — Connect Everything</div>
+      <div class="step-sub">Run a local server to test all blockchain features</div>
+    </div>
+    <span class="step-arrow" id="stepArrow4">▼</span>
+  </div>
+  <div class="step-body" id="stepBody4">
+
+    <div class="instruction">
+      <span class="instr-label">⚠ مهم جداً — تشغيل سيرفر محلي</span>
+      <p class="instr-text">
+        ميزات البلوكشين لا تعمل عند فتح الملفات بـ <strong>double click</strong> مباشرة.<br/>
+        تحتاج تشغيل سيرفر محلي بسيط. هذا يأخذ 30 ثانية:
+      </p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code># 1. افتح Terminal أو Command Prompt
+# 2. اذهب لمجلد المشروع:
+cd /path/to/your/project
+
+# 3. شغّل السيرفر (Python مثبت على كل جهاز):
+python3 -m http.server 8080
+
+# 4. افتح المتصفح على:
+# http://localhost:8080/Index.html
+
+# Windows:
+python -m http.server 8080</code>
+      </div>
+      <div class="info-box" style="margin-top:10px;">
+        <p>✓ بعد تشغيل السيرفر، افتح <strong>http://localhost:8080</strong> في المتصفح. الآن كل ميزات البلوكشين ستعمل.</p>
+      </div>
+    </div>
+
+    <div class="divider" style="margin:16px 0;"></div>
+
+    <div class="instruction">
+      <span class="instr-label">ملف الإعداد الكامل — config.js</span>
+      <p class="instr-text">أنشئ ملف <strong>config.js</strong> في مجلد المشروع وضع فيه مفاتيحك:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code>// config.js — FALASTEEN.INK Blockchain Config
+// ضع هذا الملف في نفس مجلد المشروع
+
+var FL_CONFIG = {
+  // Livepeer API Key من livepeer.studio
+  LIVEPEER_API_KEY: 'YOUR_LIVEPEER_KEY_HERE',
+
+  // Network: 'mainnet' للإنتاج, 'polygon' أرخص
+  NETWORK: 'polygon',
+
+  // App Name للـ Arweave tags
+  APP_NAME: 'FALASTEEN.INK',
+
+  // Version
+  VERSION: '1.0.0'
+};
+
+console.log('FALASTEEN.INK Config Loaded ✓');</code>
+      </div>
+      <p class="instr-text" style="margin-top:10px;">ثم أضف في كل صفحة HTML قبل &lt;/head&gt;:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <code>&lt;script src="config.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"&gt;&lt;/script&gt;</code>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="checklist" style="margin:2px 0;">
+  <div class="check-title">قائمة المراجعة — SETUP CHECKLIST</div>
+
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">ثبّت MetaMask على المتصفح / Install MetaMask</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">أنشئ محفظة جديدة واحفظ الـ Seed Phrase / Create wallet & save seed</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">أنشئ حساب على livepeer.studio / Create Livepeer account</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">احصل على API Key من Livepeer / Get Livepeer API Key</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">أنشئ ملف config.js / Create config.js</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">شغّل السيرفر المحلي / Run local server</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">اختبر ربط المحفظة / Test wallet connection</div>
+  </div>
+  <div class="check-item">
+    <div class="check-box" onclick="toggleCheck(this)">○</div>
+    <div class="check-text">اختبر البث المباشر / Test live stream</div>
+  </div>
+</div>
+
+<!-- RESOURCES -->
+<div style="padding:20px 18px 0;">
+  <div style="font-family:'Courier New',monospace;font-size:.54rem;color:var(--red);letter-spacing:.22em;margin-bottom:14px;">روابط مفيدة — RESOURCES</div>
+  <div style="display:flex;flex-direction:column;gap:2px;">
+    <a href="https://metamask.io" target="_blank" style="background:var(--s2);padding:14px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:12px;font-size:.84rem;">
+      <span style="font-size:1.3rem;">🦊</span>
+      <div><div style="font-weight:700;">MetaMask</div><div style="font-size:.72rem;color:var(--dim);">metamask.io — محفظة مجانية</div></div>
+      <span style="margin-right:auto;color:var(--green);font-family:'Courier New',monospace;font-size:.56rem;">FREE →</span>
+    </a>
+    <a href="https://livepeer.studio" target="_blank" style="background:var(--s2);padding:14px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:12px;font-size:.84rem;">
+      <span style="font-size:1.3rem;">📡</span>
+      <div><div style="font-weight:700;">Livepeer Studio</div><div style="font-size:.72rem;color:var(--dim);">livepeer.studio — بث لامركزي</div></div>
+      <span style="margin-right:auto;color:var(--green);font-family:'Courier New',monospace;font-size:.56rem;">FREE →</span>
+    </a>
+    <a href="https://irys.xyz" target="_blank" style="background:var(--s2);padding:14px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:12px;font-size:.84rem;">
+      <span style="font-size:1.3rem;">🔐</span>
+      <div><div style="font-weight:700;">Irys (Arweave)</div><div style="font-size:.72rem;color:var(--dim);">irys.xyz — تخزين أبدي</div></div>
+      <span style="margin-right:auto;color:var(--green);font-family:'Courier New',monospace;font-size:.56rem;">FREE &lt;100KB →</span>
+    </a>
+    <a href="https://www.obsproject.com" target="_blank" style="background:var(--s2);padding:14px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:12px;font-size:.84rem;">
+      <span style="font-size:1.3rem;">🎬</span>
+      <div><div style="font-weight:700;">OBS Studio</div><div style="font-size:.72rem;color:var(--dim);">obsproject.com — برنامج البث</div></div>
+      <span style="margin-right:auto;color:var(--green);font-family:'Courier New',monospace;font-size:.56rem;">FREE →</span>
+    </a>
+  </div>
+</div>
+
+<script>
+// STEP TOGGLE
+function toggleStep(n) {
+  var body = document.getElementById('stepBody' + n);
+  var arrow = document.getElementById('stepArrow' + n);
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+
+// COPY CODE
+function copyCode(btn) {
+  var block = btn.nextElementSibling;
+  var text = block.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'COPIED ✓';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = 'COPY';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(function() {
+    // Fallback
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'COPIED ✓';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// WALLET CONNECTION
+async function connectWallet() {
+  console.log('[FLWeb3Setup] Connect wallet clicked.');
+  if (window.FLToken && typeof window.FLToken.connectWallet === 'function') {
+    var connected = await window.FLToken.connectWallet();
+    if (!connected) return;
+    var addr = window.FLToken.state.address;
+    var shortAddr = addr ? addr.slice(0,6) + '...' + addr.slice(-4) : '—';
+    var addrBox = document.getElementById('walletAddr');
+    var balanceBox = document.getElementById('walletBalance');
+    if (addrBox) {
+      addrBox.textContent = addr || '';
+      addrBox.style.display = addr ? 'block' : 'none';
+    }
+    if (balanceBox) {
+      balanceBox.style.display = 'block';
+      balanceBox.textContent = 'Connected ✓ — ' + shortAddr;
+    }
+    document.getElementById('walletStatus').textContent = '✓ ' + shortAddr;
+    document.getElementById('walletStatus').className = 'status-state state-ok';
+    document.getElementById('stepNum1').className = 'step-num done';
+    document.getElementById('stepNum1').textContent = '✓';
+    return;
+  }
+
+  if (!window.ethereum) {
+    if (confirm('MetaMask غير مثبت. هل تريد تحميله الآن؟\nMetaMask not installed. Download now?')) {
+      window.open('https://metamask.io/download/', '_blank');
+    }
+    return;
+  }
+  try {
+    var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    var addr = accounts[0];
+    localStorage.setItem('fl_wallet', addr);
+    var short = addr.slice(0,6) + '...' + addr.slice(-4);
+    var addrEl = document.getElementById('walletAddr');
+    var balEl = document.getElementById('walletBalance');
+    addrEl.textContent = addr;
+    addrEl.style.display = 'block';
+    balEl.style.display = 'block';
+    balEl.textContent = 'Connected ✓ — ' + short;
+    document.getElementById('walletStatus').textContent = '✓ ' + short;
+    document.getElementById('walletStatus').className = 'status-state state-ok';
+    document.getElementById('stepNum1').className = 'step-num done';
+    document.getElementById('stepNum1').textContent = '✓';
+
+    // Get balance
+    if (window.ethereum) {
+      var bal = await window.ethereum.request({ method: 'eth_getBalance', params: [addr, 'latest'] });
+      var ethBal = (parseInt(bal, 16) / 1e18).toFixed(4);
+      balEl.textContent = 'Balance: ' + ethBal + ' ETH · ' + short;
+    }
+  } catch(err) {
+    alert('فشل الاتصال: ' + err.message);
+  }
+}
+
+// LIVEPEER TEST
+async function testLivepeer() {
+  var key = document.getElementById('livepeerKey').value.trim();
+  if (!key) { alert('الصق API Key أولاً'); return; }
+  var result = document.getElementById('livepeerResult');
+  result.innerHTML = '<p style="font-size:.78rem;color:var(--dim);">جاري الاختبار...</p>';
+  try {
+    var res = await fetch('https://livepeer.studio/api/stream', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    });
+    if (res.ok || res.status === 200) {
+      result.innerHTML = '<div style="background:rgba(0,185,84,.08);border:1px solid rgba(0,185,84,.25);padding:12px;font-size:.78rem;color:var(--green);">✅ Livepeer متصل! API Key يعمل بشكل صحيح.<br/>Livepeer connected! API Key is valid.</div>';
+      localStorage.setItem('fl_livepeer_key', key);
+      document.getElementById('livepeerStatus').textContent = '✓ Connected';
+      document.getElementById('livepeerStatus').className = 'status-state state-ok';
+      document.getElementById('stepNum2').className = 'step-num done';
+      document.getElementById('stepNum2').textContent = '✓';
+    } else {
+      result.innerHTML = '<div style="background:rgba(232,34,31,.08);border:1px solid rgba(232,34,31,.25);padding:12px;font-size:.78rem;color:var(--red);">✗ API Key غير صحيح. تحقق من المفتاح.<br/>Invalid API Key. Check your key.</div>';
+    }
+  } catch(err) {
+    result.innerHTML = '<div style="background:rgba(232,34,31,.08);border:1px solid rgba(232,34,31,.25);padding:12px;font-size:.78rem;color:var(--red);">✗ ' + err.message + '<br/>(تأكد من تشغيل السيرفر المحلي)</div>';
+  }
+}
+
+// TEST UPLOAD
+function testUpload(input) {
+  if (!input.files[0]) return;
+  var file = input.files[0];
+  var result = document.getElementById('uploadResult');
+  var hash = document.getElementById('uploadHash');
+  var h = '0x';
+  for (var i = 0; i < 43; i++) h += '0123456789abcdef'[Math.floor(Math.random()*16)];
+  result.style.display = 'block';
+  hash.textContent =
+    'File: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)\n' +
+    'Simulated TX: ' + h + '\n' +
+    'URL: https://arweave.net/' + h.slice(2,20) + '...\n' +
+    (file.size < 100000 ? '✓ Under 100KB — FREE on Arweave!' : '⚠ Over 100KB — small fee required');
+  document.getElementById('arweaveStatus').textContent = '✓ Ready';
+  document.getElementById('arweaveStatus').className = 'status-state state-ok';
+}
+
+// CHECKLIST
+function toggleCheck(box) {
+  var isChecked = box.classList.contains('checked');
+  box.classList.toggle('checked', !isChecked);
+  box.textContent = isChecked ? '○' : '✓';
+  var text = box.nextElementSibling;
+  text.classList.toggle('done', !isChecked);
+}
+
+// Auto-restore wallet
+window.addEventListener('load', function() {
+  var saved = localStorage.getItem('fl_wallet');
+  if (saved) {
+    document.getElementById('walletStatus').textContent = '✓ ' + saved.slice(0,6) + '...' + saved.slice(-4);
+    document.getElementById('walletStatus').className = 'status-state state-ok';
+  }
+  var lp = localStorage.getItem('fl_livepeer_key');
+  if (lp) {
+    document.getElementById('livepeerKey').value = lp;
+    document.getElementById('livepeerStatus').textContent = '✓ Saved';
+    document.getElementById('livepeerStatus').className = 'status-state state-ok';
+  }
+  // Open step 1 by default
+  toggleStep(1);
+});
+</script>
+</body>
+</html>

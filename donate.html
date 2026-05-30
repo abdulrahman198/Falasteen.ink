@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>تبرع لدعم المشروع | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+<script src="web3-token.js" defer></script>
+<style>
+:root {
+  --bg:#0e0e0e;
+  --card:#171717;
+  --card-strong:#1f1f1f;
+  --red:#E8221F;
+  --red-soft:rgba(232,34,31,.18);
+  --text:#e5e2e1;
+  --dim:#9a9898;
+  --border:rgba(255,255,255,.08);
+}
+body { background:var(--bg); color:var(--text); font-family:Arial, sans-serif; min-height:100vh; margin:0; }
+.topnav { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 22px; background:rgba(14,14,14,.95); border-bottom:1px solid rgba(255,255,255,.05); }
+.topnav .logo { font-family:"Courier New",monospace; font-weight:900; letter-spacing:.16em; color:var(--text); text-decoration:none; font-size:0.95rem; }
+.topnav .nav-note { color:var(--dim); font-size:0.82rem; }
+.main { max-width:1080px; margin:0 auto; padding:24px 18px 60px; }
+.hero { background:linear-gradient(180deg,rgba(232,34,31,.12),rgba(14,14,14,0.95)); border:1px solid rgba(232,34,31,.16); border-radius:24px; padding:32px 30px; display:grid; gap:20px; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at top left,rgba(232,34,31,.15),transparent 30%),radial-gradient(circle at bottom right,rgba(255,255,255,.08),transparent 22%); pointer-events:none; }
+.hero-content { position:relative; z-index:1; }
+.hero-title { font-size:clamp(2rem,4vw,2.7rem); line-height:1.05; margin:0 0 10px; }
+.hero-title .accent { color:var(--red); }
+.hero-text { color:var(--dim); font-size:0.95rem; line-height:1.8; max-width:760px; }
+.hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.btn-primary, .btn-secondary { border:none; border-radius:999px; padding:13px 20px; font-weight:700; cursor:pointer; transition:transform .2s, box-shadow .2s; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+.btn-primary { background:linear-gradient(135deg, var(--red), #c50f19); color:#fff; }
+.btn-secondary { background:rgba(255,255,255,.06); color:var(--text); }
+.btn-primary:hover, .btn-secondary:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(232,34,31,.18); }
+
+  /* donate button styles moved to styles.css */
+
+.section { margin-top:34px; }
+.section-title { display:flex; align-items:center; gap:12px; font-size:1.05rem; font-weight:900; margin-bottom:18px; }
+.section-sub { color:var(--dim); font-size:0.88rem; margin-top:4px; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+@media(max-width:780px){ .grid{grid-template-columns:1fr;} }
+/* Related donation UI styles were moved to styles.css; removed duplicates. */
+  /* donation styles moved to styles.css */
+.note { color:var(--dim); font-size:0.9rem; line-height:1.7; }
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:rgba(14,14,14,.95); border:1px solid rgba(232,34,31,.3); color:#fff; padding:12px 18px; border-radius:999px; font-size:0.88rem; opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:200; }
+.toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="logo" href="Index.html">FALASTEEN.INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <div class="nav-note">تبرع لدعم استمرار التوثيق والتطوير</div>
+</div>
+<main class="main">
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">ادعم الموقع وكن شريكًا في حفظ الذاكرة</h1>
+      <p class="hero-text">تبرعك يساعد على تشغيل الخوادم، تطوير الميزات الجديدة، ونشر سجل الشهداء والمعالم الفلسطينية بطريقة دائمة وآمنة.</p>
+      <div class="hero-actions">
+        <a class="donate-btn" href="#donation">💳 المحافظ الرقمية</a>
+        <a class="btn-secondary" href="#donation">🔗 روابط الدفع</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="donation">
+    <div class="donation-container">
+      <h2>❤️ دعم وتطوير موقع Falasteen.ink</h2>
+      <p class="donation-intro">مساهمتكم تساعدنا على استمرار وتطوير الموقع وإيصال الصوت للعالم.</p>
+
+      <div class="donation-card paypal-card">
+        <div class="card-icon">💳</div>
+        <h3>التبرع عبر PayPal</h3>
+        <p class="account-email">alazzehabdul@gmail.com</p>
+        <a href="https://www.paypal.com/paypalme/alazzehabdul" target="_blank" class="btn-paypal">
+          الدفع عبر PayPal
+        </a>
+      </div>
+
+      <div class="donation-card crypto-card">
+        <div class="card-icon">🪙</div>
+        <h3>دعم عبر العملات الرقمية (BTC)</h3>
+        <p class="crypto-network">الشبكة: <strong>Bitcoin</strong></p>
+        
+        <div class="address-container">
+          <span id="btc-address" class="wallet-address">bc1q3n3e3jw99rrl684ztdxx2qc5yhgu0sze4cw6td</span>
+          <button data-copy="btc-address" class="btn-copy">نسخ العنوان</button>
+        </div>
+      </div>
+      <div id="flWalletBox"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">ملاحظات مهمة</div>
+    <p class="note">
+      - العناوين أعلاه مخصصة للتبرعات المباشرة، والمشروع يعتمد على دعمكم لتمويل الاستضافة وتطوير المحتوى.
+      - عند النسخ، سيتم حفظ العنوان تلقائيًا في حافظة الجهاز لاستخدامه في محفظتك أو تطبيق الدفع.
+      - إذا رغبت ببديل آخر للدفع، يمكن التواصل معنا من خلال صفحة الاتصال.
+    </p>
+  </section>
+</main>
+<div class="toast" id="toast">تم النسخ!</div>
+<script>
+  // attach copy handlers to buttons with class `btn-copy`
+  document.querySelectorAll('.btn-copy').forEach(function(button){
+    button.addEventListener('click', function(){
+      var target = null;
+      if (button.dataset && button.dataset.copy) {
+        target = document.getElementById(button.dataset.copy);
+      }
+      if (!target) return;
+      var text = target.textContent.trim();
+      navigator.clipboard.writeText(text).then(function(){
+        // temporary inline feedback on the button (progressive enhancement)
+        var old = button.innerText;
+        button.innerText = ' تم النسخ! ';
+        setTimeout(function(){ button.innerText = old; }, 1800);
+        showToast('✓ تم نسخ العنوان');
+      }).catch(function(){
+        showToast('✕ فشل النسخ، حاول يدويًا');
+      });
+    });
+  });
+  function showToast(message){
+    var toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(window.__donateToastTimer);
+    window.__donateToastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+</script>
+</body>
+</html>

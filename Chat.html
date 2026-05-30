@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>محادثة خاصة | فلسطين حرة</title>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700&amp;family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@400;500&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#005321",
+                    "outline": "#ae8883",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "tertiary-fixed": "#e2e2e2",
+                    "primary": "#ffb4aa",
+                    "surface-container-high": "#2a2a2a",
+                    "on-tertiary": "#2f3131",
+                    "surface-variant": "#353534",
+                    "surface-container-lowest": "#0e0e0e",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "on-primary-fixed": "#410001",
+                    "secondary-container": "#00b954",
+                    "tertiary": "#c6c6c7",
+                    "error-container": "#93000a",
+                    "surface-dim": "#131313",
+                    "on-primary": "#690003",
+                    "inverse-surface": "#e5e2e1",
+                    "inverse-primary": "#c0000c",
+                    "error": "#ffb4ab",
+                    "on-error": "#690005",
+                    "background": "#131313",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-secondary-container": "#004119",
+                    "tertiary-container": "#767777",
+                    "on-primary-fixed-variant": "#930006",
+                    "on-background": "#e5e2e1",
+                    "surface-bright": "#3a3939",
+                    "surface": "#131313",
+                    "on-secondary": "#003915",
+                    "surface-container-highest": "#353534",
+                    "secondary-fixed-dim": "#4ae176",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "secondary": "#4ae176",
+                    "surface-container": "#201f1f",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-surface-variant": "#e7bdb7",
+                    "surface-tint": "#ffb4aa",
+                    "on-tertiary-container": "#040506",
+                    "on-primary-container": "#150000",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#1c1b1b",
+                    "primary-fixed": "#ffdad5",
+                    "on-secondary-fixed": "#002109",
+                    "outline-variant": "#5d3f3b",
+                    "secondary-fixed": "#6bff8f",
+                    "primary-container": "#e8221f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Epilogue"],
+                    "display": ["Epilogue"],
+                    "body": ["Inter"],
+                    "label": ["Space Grotesk"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { background-color: #131313; color: #e5e2e1; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0e0e0e; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+        .narrative-progress {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 3px;
+            height: 45%;
+            background: #e8221f;
+            z-index: 100;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<div class="narrative-progress"></div>
+<div class="relative flex h-screen w-full flex-col bg-surface overflow-hidden">
+<!-- START SHARED COMPONENT: TopAppBar -->
+<div class="flex items-center bg-surface p-4 pb-2 justify-between">
+<div class="text-white flex size-12 shrink-0 items-center cursor-pointer" data-icon="ArrowLeft" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+</svg>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-white text-lg font-headline font-bold leading-tight tracking-tight">فلسطين حرة</h2>
+<span class="text-[10px] font-label text-secondary uppercase tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> مباشر الآن
+                </span>
+</div>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-12 bg-transparent text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<div class="text-white" data-icon="House" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"></path>
+</svg>
+</div>
+</button>
+</div>
+</div>
+<!-- END SHARED COMPONENT -->
+<!-- Chat Narrative Content -->
+<div class="flex-1 overflow-y-auto px-4 pb-24 pt-4 space-y-8 scroll-smooth">
+<div class="flex flex-col items-center py-6">
+<div class="bg-surface-container-low px-4 py-1 rounded-full text-xs font-label text-on-surface-variant uppercase tracking-widest">اليوم - 15 مايو</div>
+</div>
+<!-- Received Message -->
+<div class="flex items-end gap-4 max-w-[85%]">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0 ring-2 ring-surface-container-high" data-alt="close-up portrait of a middle eastern man with a determined expression in soft cinematic lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBu0gzzl5daNFmdPRCK4hWwURNLcCNCbShOVpyJsuy2Vnvgf4eMO5wILH_hUOM596efr_hy3WQPVbprqcrhn-_4cJbLivR0Jat0MUa2JrRoVHaOokSwTdJ7HZ2Rs0OJatle8JQy8a1GRyx-s8y54pMtr5xQgScn9WxRvpA5NyciDDV4xcT8gyhUx91wD0KviZ4zx0bOi-O0sRaZCikLBdpizOhiMZf-3yIv7EmruXBY6zO72dyVBSWMnzMk5jSzoKjrVD7Wm9Ed3T6I");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-secondary font-label text-[11px] font-medium tracking-wide">أحمد @ahmed_pal</p>
+<div class="relative group">
+<div class="text-base font-body leading-relaxed flex rounded-xl rounded-tr-none px-5 py-4 bg-surface-container text-on-surface shadow-lg">
+                            هل سنلتقي في المسيرة غداً؟ نحتاج للتنسيق حول اللافتات ❤️
+                        </div>
+</div>
+</div>
+</div>
+<!-- Sent Message (Me) -->
+<div class="flex items-end gap-4 justify-end max-w-[85%] mr-auto">
+<div class="flex flex-col gap-1 items-end">
+<p class="text-outline font-label text-[11px] font-medium tracking-wide">أنت</p>
+<div class="flex flex-col gap-2">
+<!-- Reply Context -->
+<div class="bg-surface-container-low border-r-4 border-primary-container px-3 py-2 rounded-lg text-sm text-on-surface-variant">
+<span class="block text-[10px] font-label text-primary-container">رداً على أحمد</span>
+                            هل سنلتقي في المسيرة غداً؟
+                        </div>
+<div class="text-base font-body leading-relaxed flex flex-col gap-2 rounded-xl rounded-tl-none px-5 py-4 bg-gradient-to-br from-primary-container to-on-primary-fixed-variant text-white shadow-xl shadow-primary-container/10">
+<span>بالتأكيد، سأكون هناك عند الساعة الرابعة. <span class="font-bold text-secondary-fixed">@أحمد</span> 🇵🇸</span>
+<span class="text-[10px] font-label self-end opacity-70">10:42 PM</span>
+</div>
+</div>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0 ring-2 ring-primary" data-alt="portrait of a person looking off-camera with soft natural lighting and dark background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9pYdK8DiS8HkjaZR6r5x8ZCizYuNYK3hP8TTsQRoUSRVGdVNgqGJAFrS6cLeyE95wGEu9dkrtT9MW0Ii2oiQg8H7KWwxHBUZmI-dz1SN8ZSo_WGYPebXrL2Vr6Xn_1m2402g_ILSao7KgOX9U-5DU1qRQBPiUTxgWSbRbP2MkJ0QdqfU-HQKqZ_V7rtwM5wLC0UFIwSjMIboZIAeMXcJiv8N0DDXM53Ro9cxYg_7hziVbMX3Vnfx8pnRSbXYGQzpisv-RRhzdExIn");'></div>
+</div>
+<!-- Received Message -->
+<div class="flex items-end gap-4 max-w-[85%]">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0 ring-2 ring-surface-container-high" data-alt="close-up portrait of a middle eastern man with a determined expression in soft cinematic lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9J7A50NupfHEf3T_83FAKnyoUgoFTfVub6ORd88xnhp_zfIQZThoxuUbx0vw44UCAPXmxUHQmCW326rZavOw2hypdrOtOxfasjpAuqgQWH4YL0MfGa2LWTMUkzUbvYk-xYtuv_r9Olac0uiWQ30d-OwDXLQ8VDnPKl2Spgy-9TplxwatrgLVeCNs3NRcmkg8XeZPQkZkFsQNacC0Nxbxt7jmXFhQffRRF-p4SD6vTpUjzchG7peTu1zPlB5sG7qlBOGYrwf__LbGA");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-secondary font-label text-[11px] font-medium tracking-wide">أحمد</p>
+<div class="text-base font-body leading-relaxed flex rounded-xl rounded-tr-none px-5 py-4 bg-surface-container text-on-surface shadow-lg">
+                        ممتاز، النصر لنا دائماً. سأحضر معي الأعلام الإضافية.
+                    </div>
+</div>
+</div>
+<!-- Action Divider (Archival feel) -->
+<div class="flex items-center gap-4 py-4">
+<div class="flex-1 h-px bg-outline-variant opacity-20"></div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline">تشفير تام بين الطرفين</div>
+<div class="flex-1 h-px bg-outline-variant opacity-20"></div>
+</div>
+</div>
+<!-- Sticky Chat Input Area -->
+<div class="absolute bottom-0 left-0 w-full p-4 bg-surface/80 backdrop-blur-xl border-t border-outline-variant/10">
+<!-- Quick Emoji Bar -->
+<div class="flex gap-2 mb-3 px-2">
+<button class="bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors rounded-full px-3 py-1 text-lg">❤️</button>
+<button class="bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors rounded-full px-3 py-1 text-lg">😂</button>
+<button class="bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors rounded-full px-3 py-1 text-lg">🇵🇸</button>
+<button class="bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors rounded-full px-3 py-1 text-lg">✌️</button>
+<button class="bg-surface-container-highest/50 hover:bg-surface-container-highest transition-colors rounded-full px-3 py-1 text-lg text-on-surface/50">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-12 rounded-full bg-surface-container-high text-on-surface-variant hover:text-white transition-all">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<div class="flex-1 relative">
+<input class="w-full bg-surface-container-lowest border-none border-b-2 border-outline-variant focus:border-primary-container focus:ring-0 rounded-xl px-4 py-3 text-on-surface placeholder:text-outline/50 font-body transition-all" placeholder="اكتب رسالتك هنا..." type="text"/>
+</div>
+<button class="flex items-center justify-center size-12 rounded-full bg-primary-container text-on-primary-container shadow-lg shadow-primary-container/20 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+<!-- Safe Area Spacer -->
+<div class="h-2"></div>
+</div>
+</div>
+</body></html>

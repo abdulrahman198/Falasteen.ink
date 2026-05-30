@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script>
+var _editingFilmId = null;
+var FILMS_KEY = 'fl_archive_films';
+var ARCHIVE_ADMIN = false;
+
+async function initArchiveAdmin() {
+  try {
+    var user = await FL.getUser();
+    ARCHIVE_ADMIN = FL.isAdminUser(user);
+  } catch(e) {
+    ARCHIVE_ADMIN = false;
+  }
+  var btn = document.getElementById('addFilmBtn');
+  if (btn) btn.style.display = ARCHIVE_ADMIN ? 'inline-flex' : 'none';
+}
+
+async function requireArchiveAdmin() {
+  try {
+    var user = await FL.getUser();
+    ARCHIVE_ADMIN = FL.isAdminUser(user);
+  } catch(e) {
+    ARCHIVE_ADMIN = false;
+  }
+  if (!ARCHIVE_ADMIN) {
+    FL.toast('غير مصرح / Admin only', 'err');
+    return false;
+  }
+  return true;
+}
+
+function getFilms() {
+  try {
+    var stored = JSON.parse(localStorage.getItem(FILMS_KEY)||'[]');
+    if (stored.length > 0) return stored.concat(FILMS.filter(function(f){ return !stored.find(function(s){return s.id===f.id;}); }));
+  } catch(e) {}
+  return FILMS;
+}
+
+async function openAddFilm() {
+  if (!(await requireArchiveAdmin())) return;
+  _editingFilmId = null;
+  document.getElementById('afTitle').textContent = '+ أضف فيلم / Add Film';
+  ['afTit','afYt','afDesc','afYear','afSrc'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  clearGeneratedTags();
+  document.getElementById('afModal').classList.add('on');
+}
+
+function closeAddFilm() {
+  document.getElementById('afModal').classList.remove('on');
+  _editingFilmId = null;
+}
+
+async function editFilm(id) {
+  if (!(await requireArchiveAdmin())) return;
+  var films = getFilms();
+  var film = films.find(function(f){ return f.id===id; });
+  if (!film) return;
+  _editingFilmId = id;
+  document.getElementById('afTitle').textContent = '✏ تعديل الفيلم / Edit Film';
+  document.getElementById('afTit').value  = film.title||'';
+  document.getElementById('afYt').value   = film.ytId||'';
+  document.getElementById('afDesc').value = film.sub||film.desc||'';
+  document.getElementById('afYear').value = film.year||'';
+  document.getElementById('afSrc').value  = film.src||'';
+  var typeEl = document.getElementById('afType'); if(typeEl && film.type) typeEl.value = film.type;
+  document.getElementById('afModal').classList.add('on');
+  closeV();
+}
+
+async function deleteFilm(id) {
+  if (!(await requireArchiveAdmin())) return;
+  if (!confirm('حذف هذا الفيلم؟ / Delete this film?')) return;
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem(FILMS_KEY)||'[]'); } catch(e){}
+  // If default film, mark as deleted
+  var isDefault = FILMS.find(function(f){ return f.id===id; });
+  if (isDefault) {
+    stored = stored.filter(function(f){ return f.id !== id; });
+    // Add tombstone
+    stored.push({ id: id, deleted: true });
+  } else {
+    stored = stored.filter(function(f){ return f.id !== id; });
+  }
+  localStorage.setItem(FILMS_KEY, JSON.stringify(stored));
+  closeV();
+  renderFilms(window._currentFilter||'all');
+  FL.toast('✓ تم الحذف / Deleted');
+}
+
+async function saveFilm() {
+  if (!(await requireArchiveAdmin())) return;
+  var title = document.getElementById('afTit').value.trim();
+  if (!title) { document.getElementById('afTit').focus(); return; }
+
+  var film = {
+    id:   _editingFilmId || ('F_'+Date.now()),
+    title: title,
+    ytId:  document.getElementById('afYt').value.trim(),
+    sub:   document.getElementById('afDesc').value.trim(),
+    type:  document.getElementById('afType').value,
+    year:  document.getElementById('afYear').value.trim(),
+    src:   document.getElementById('afSrc').value.trim(),
+    tags:  getGeneratedTags(),
+    icon:  {doc:'🎬',feature:'🎭',testimony:'🎙',news:'📡'}[document.getElementById('afType').value]||'🎬',
+    srcUrl: ''
+  };
+
+  var stored = [];
+  try { stored = JSON.parse(localStorage.getItem(FILMS_KEY)||'[]'); } catch(e){}
+  var idx = stored.findIndex(function(f){ return f.id===film.id; });
+  if (idx > -1) stored[idx] = film;
+  else stored.unshift(film);
+  localStorage.setItem(FILMS_KEY, JSON.stringify(stored));
+  clearGeneratedTags();
+
+  closeAddFilm();
+  renderFilms(window._currentFilter||'all');
+  FL.toast(_editingFilmId ? '✓ تم التعديل' : '✓ تمت الإضافة');
+  _editingFilmId = null;
+}
+
+function getGeneratedTags() {
+  var el = document.getElementById('mTags');
+  if (!el || !el.value) return [];
+  try { return JSON.parse(el.value); } catch(e) { return []; }
+}
+
+function clearGeneratedTags() {
+  var hidden = document.getElementById('mTags');
+  var output = document.getElementById('aiTagsOutput');
+  if (hidden) hidden.value = '';
+  if (output) {
+    output.innerHTML = '';
+    output.classList.add('is-empty');
+  }
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="ollama-auto-tagging.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>الأرشيف البصري | FALASTEEN.INK</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0e0e0e;color:#e5e2e1;font-family:Arial,"Segoe UI",Tahoma,sans-serif;padding-bottom:80px;}
+.topnav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(14,14,14,.97);border-bottom:1px solid rgba(93,63,59,.12);}
+.logo{font-family:"Courier New",monospace;font-weight:900;font-size:1rem;letter-spacing:.08em;color:#e5e2e1;text-decoration:none;}
+.logo .r{color:#E8221F;}
+.hero{padding:88px 18px 28px;background:linear-gradient(180deg,rgba(232,34,31,.06),transparent);position:relative;overflow:hidden;}
+.hero::before{content:'ARCHIVE';position:absolute;bottom:-10px;left:-10px;font-size:clamp(6rem,22vw,14rem);font-weight:900;color:rgba(232,34,31,.04);pointer-events:none;font-family:"Courier New",monospace;}
+.hero-tag{font-family:"Courier New",monospace;font-size:.54rem;color:#E8221F;letter-spacing:.28em;margin-bottom:8px;display:block;}
+.hero-title{font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1.1;margin-bottom:8px;}
+.hero-title .r{color:#E8221F;}
+.hero-desc{font-size:.86rem;color:#9a9898;line-height:1.7;max-width:480px;margin-bottom:20px;}
+.hero-btns{display:flex;gap:10px;direction:ltr;flex-wrap:wrap;}
+.btn-red{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#E8221F,#930006);color:#fff;font-size:.82rem;font-weight:700;padding:11px 22px;text-decoration:none;transition:transform .2s;border:none;cursor:pointer;}
+.btn-red:hover{transform:translateY(-2px);}
+.btn-out{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid rgba(93,63,59,.4);color:#9a9898;font-size:.82rem;padding:11px 22px;text-decoration:none;cursor:pointer;transition:background .2s;}
+.btn-out:hover{background:#1c1b1b;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px;}
+.stat{background:#1c1b1b;padding:18px 12px;text-align:center;}
+.sn{font-family:"Courier New",monospace;font-size:1.4rem;font-weight:900;color:#E8221F;}
+.sl{font-family:"Courier New",monospace;font-size:.48rem;color:#9a9898;letter-spacing:.12em;margin-top:3px;}
+
+/* SEARCH */
+.search-wrap{background:#1c1b1b;padding:14px 18px;display:flex;gap:10px;align-items:center;margin-bottom:2px;}
+.search-inp{flex:1;background:#353534;border:1px solid rgba(93,63,59,.3);color:#e5e2e1;font-size:.9rem;padding:11px 14px;outline:none;font-family:Arial,sans-serif;}
+.search-inp:focus{border-color:#E8221F;}
+.search-inp::placeholder{color:#9a9898;}
+.search-btn{background:linear-gradient(135deg,#E8221F,#930006);color:#fff;border:none;padding:11px 18px;cursor:pointer;font-size:.86rem;}
+
+/* FILTERS */
+.filters{padding:10px 18px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;background:#131313;border-bottom:1px solid rgba(93,63,59,.1);}
+.filters::-webkit-scrollbar{display:none;}
+.chip{font-size:.72rem;font-weight:600;padding:6px 14px;background:#1c1b1b;color:#9a9898;border:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:Arial,sans-serif;}
+.chip.on{color:#E8221F;border-bottom-color:#E8221F;background:rgba(232,34,31,.06);}
+
+/* FEATURED */
+.sec-lbl{font-family:"Courier New",monospace;font-size:.54rem;color:#E8221F;letter-spacing:.22em;padding:16px 18px 10px;display:block;}
+.featured{background:#1c1b1b;margin:0 18px 2px;padding:20px;cursor:pointer;transition:background .2s;border-right:3px solid #E8221F;}
+.featured:hover{background:#201f1f;}
+.feat-badge{font-family:"Courier New",monospace;font-size:.5rem;color:#E8221F;background:rgba(232,34,31,.1);border:1px solid rgba(232,34,31,.25);padding:3px 9px;margin-bottom:10px;display:inline-block;}
+.feat-title{font-size:1.2rem;font-weight:900;line-height:1.2;margin-bottom:8px;}
+.feat-title .r{color:#E8221F;}
+.feat-desc{font-size:.84rem;color:#9a9898;line-height:1.7;margin-bottom:14px;}
+.feat-pills{display:flex;gap:6px;flex-wrap:wrap;direction:ltr;margin-bottom:14px;}
+.pill{font-family:"Courier New",monospace;font-size:.5rem;color:#9a9898;background:#353534;padding:3px 8px;}
+.feat-btns{display:flex;gap:8px;direction:ltr;}
+
+/* FILM GRID */
+.film-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 18px;margin-bottom:2px;}
+@media(min-width:500px){.film-grid{grid-template-columns:repeat(3,1fr);}}
+.film-card{background:#1c1b1b;overflow:hidden;cursor:pointer;transition:background .2s;}
+.film-card:hover{background:#201f1f;}
+.film-thumb{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;overflow:hidden;background:#131313;}
+.film-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.film-thumb .ft-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s;}
+.film-card:hover .ft-overlay{opacity:1;}
+.play-icon{width:48px;height:48px;border-radius:50%;background:rgba(232,34,31,.9);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;}
+.film-type{position:absolute;top:6px;right:6px;font-family:"Courier New",monospace;font-size:.46rem;background:rgba(0,0,0,.75);color:#e5e2e1;padding:2px 6px;}
+.film-body{padding:10px 10px 12px;}
+.film-title{font-size:.86rem;font-weight:700;margin-bottom:3px;line-height:1.3;}
+.film-sub{font-size:.72rem;color:#9a9898;margin-bottom:6px;}
+.film-footer{display:flex;align-items:center;justify-content:space-between;}
+.film-year{font-family:"Courier New",monospace;font-size:.52rem;color:#9a9898;}
+.film-action{font-family:"Courier New",monospace;font-size:.52rem;color:#E8221F;}
+
+/* TESTIMONY */
+.testimony-list{padding:0 18px;display:flex;flex-direction:column;gap:2px;margin-bottom:24px;}
+.test-item{background:#1c1b1b;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:background .2s;}
+.test-item:hover{background:#201f1f;}
+.test-icon{width:44px;height:44px;background:#353534;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.test-body{flex:1;min-width:0;}
+.test-title{font-size:.88rem;font-weight:700;margin-bottom:3px;}
+.test-meta{font-family:"Courier New",monospace;font-size:.52rem;color:#9a9898;}
+.test-arrow{font-size:.8rem;color:#9a9898;flex-shrink:0;}
+
+/* VIDEO MODAL */
+.v-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.97);display:none;align-items:center;justify-content:center;flex-direction:column;}
+.v-overlay.on{display:flex;}
+.v-inner{width:100%;max-width:700px;position:relative;}
+.v-close{position:absolute;top:-44px;right:0;background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;}
+.v-player{width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;}
+.v-player iframe,.v-player video{width:100%;height:100%;border:0;display:block;}
+.v-info{padding:12px 0 0;}
+.v-title{font-size:.96rem;font-weight:700;color:#e5e2e1;margin-bottom:3px;}
+.v-meta{font-family:"Courier New",monospace;font-size:.54rem;color:#9a9898;}
+.v-src{margin-top:4px;}
+.v-src a{color:#E8221F;font-size:.72rem;text-decoration:none;}
+
+.nav-icon{font-size:1.25rem;line-height:1;}
+
+/* ── ADD FILM MODAL ── */
+.af-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:none;align-items:flex-end;justify-content:center;}
+.af-overlay.on{display:flex;}
+.af-sheet{background:#131313;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:22px 18px 32px;border-top:3px solid #E8221F;scrollbar-width:none;}
+.af-sheet::-webkit-scrollbar{display:none;}
+.af-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.af-lbl{font-family:"Courier New",monospace;font-size:.52rem;color:#E8221F;letter-spacing:.18em;display:block;margin-bottom:6px;}
+.af-inp{width:100%;background:#353534;border:1px solid rgba(93,63,59,.3);color:#e5e2e1;font-size:.88rem;padding:11px 13px;outline:none;font-family:Arial,sans-serif;margin-bottom:12px;}
+.af-inp:focus{border-color:#E8221F;}
+.af-sel{width:100%;background:#353534;border:1px solid rgba(93,63,59,.3);color:#e5e2e1;font-size:.88rem;padding:11px 13px;outline:none;font-family:Arial,sans-serif;margin-bottom:12px;appearance:none;}
+.af-ta{width:100%;background:#353534;border:1px solid rgba(93,63,59,.3);color:#e5e2e1;font-size:.86rem;padding:11px 13px;outline:none;font-family:Arial,sans-serif;resize:vertical;min-height:70px;margin-bottom:12px;}
+.af-save{width:100%;padding:13px;background:linear-gradient(135deg,#E8221F,#930006);color:#fff;border:none;cursor:pointer;font-size:.9rem;font-weight:700;}
+
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="r">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <div style="display:flex;gap:8px;align-items:center;"><button id="addFilmBtn" onclick="openAddFilm()" style="display:none;background:linear-gradient(135deg,#E8221F,#930006);color:#fff;border:none;font-size:.72rem;font-weight:700;padding:7px 14px;cursor:pointer;">+ فيلم</button><a href="Feed.html" style="font-family:'Courier New',monospace;font-size:.62rem;color:#E8221F;text-decoration:none;">▶ ريلز</a></div>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">الأرشيف البصري — CINEMATIC RESISTANCE</span>
+  <h1 class="hero-title">الذاكرة البصرية <span class="r">الكاملة</span></h1>
+  <p class="hero-desc">مجموعة مختارة من الوثائقيات والشهادات واللقطات الأرشيفية لحفظ التاريخ البصري لفلسطين.</p>
+  <div class="hero-btns">
+    <button class="btn-red" onclick="playFilm(FILMS[0])">▶ شاهد المميز</button>
+    <a href="Feed.html" class="btn-out">▶ ريلز قصيرة</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="sn">75+</div><div class="sl">YEARS COVERED</div></div>
+  <div class="stat"><div class="sn">130+</div><div class="sl">JOURNALIST MARTYRS</div></div>
+  <div class="stat"><div class="sn">∞</div><div class="sl">MEMORY PRESERVED</div></div>
+</div>
+
+<div class="search-wrap">
+  <input type="text" class="search-inp" id="searchInp" placeholder="ابحث عن فيلم أو وثيقة / Search..." onkeydown="if(event.key==='Enter')doSearch()"/>
+  <button class="search-btn" onclick="doSearch()">بحث</button>
+</div>
+
+<div class="filters">
+  <button class="chip on" onclick="filterFilms('all',this)">الكل</button>
+  <button class="chip" onclick="filterFilms('doc',this)">🎬 وثائقي</button>
+  <button class="chip" onclick="filterFilms('feature',this)">🎭 أفلام</button>
+  <button class="chip" onclick="filterFilms('testimony',this)">🎙 شهادات</button>
+  <button class="chip" onclick="filterFilms('news',this)">📡 أخبار</button>
+</div>
+
+<!-- FEATURED -->
+<span class="sec-lbl">الفيلم المميز — FEATURED</span>
+<div class="featured" onclick="playFilm(FILMS[0])">
+  <span class="feat-badge">DOCUMENTARY · مُميَّز</span>
+  <h2 class="feat-title">التغريبة <span class="r">الفلسطينية</span></h2>
+  <p class="feat-desc">الرواية الأشمل لنكبة فلسطين — يرصد رحلة عائلة فلسطينية عبر عقود من التشرد والصمود. وثيقة بصرية لا مثيل لها.</p>
+  <div class="feat-pills">
+    <span class="pill">DOCUMENTARY</span>
+    <span class="pill">2004</span>
+    <span class="pill">ARAB CINEMA</span>
+  </div>
+  <div class="feat-btns">
+    <button class="btn-red" onclick="event.stopPropagation();playFilm(FILMS[0])">▶ شاهد الآن</button>
+    <a href="Vault.html" class="btn-out" onclick="event.stopPropagation()">🔖 احفظ</a>
+  </div>
+</div>
+
+<!-- FILM GRID -->
+<span class="sec-lbl" id="filmsLbl">أفلام مختارة — SELECTED FILMS</span>
+<div class="film-grid" id="filmGrid"></div>
+
+<!-- TESTIMONIES -->
+<span class="sec-lbl">شهادات شفوية — ORAL TESTIMONIES</span>
+<div class="testimony-list" id="testList"></div>
+
+<!-- VIDEO MODAL -->
+<div class="v-overlay" id="vModal" onclick="if(event.target===this)closeV()">
+  <div class="v-inner">
+    <button class="v-close" onclick="closeV()">✕</button>
+    <div class="v-player" id="vPlayer"></div>
+    <div class="v-info">
+      <div class="v-title" id="vTitle"></div>
+      <div class="v-meta"  id="vMeta"></div>
+      <div class="v-src"   id="vSrc"></div>
+    <div id="vActBtns"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADD/EDIT FILM MODAL -->
+<div class="af-overlay" id="afModal" onclick="if(event.target===this)closeAddFilm()">
+  <div class="af-sheet">
+    <div class="af-hdr">
+      <div style="font-size:1rem;font-weight:900;" id="afTitle">+ أضف فيلم / Add Film</div>
+      <button onclick="closeAddFilm()" style="background:none;border:none;color:#9a9898;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <label class="af-lbl">العنوان *</label>
+    <input type="text" class="af-inp" id="afTit" placeholder="عنوان الفيلم"/>
+    <label class="af-lbl">YouTube ID</label>
+    <input type="text" class="af-inp" id="afYt" dir="ltr" placeholder="مثال: dD3vQQRcKPU"/>
+    <label class="af-lbl">الوصف</label>
+    <textarea class="af-ta" id="afDesc" placeholder="وصف قصير..."></textarea>
+    <div class="fl-ai-tags-panel">
+      <input type="hidden" id="mTags"/>
+      <div class="fl-ai-tags-actions">
+        <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
+      </div>
+      <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
+    </div>
+    <label class="af-lbl">التصنيف</label>
+    <select class="af-sel" id="afType">
+      <option value="doc">🎬 وثائقي</option>
+      <option value="feature">🎭 فيلم روائي</option>
+      <option value="testimony">🎙 شهادة</option>
+      <option value="news">📡 أخبار</option>
+    </select>
+    <label class="af-lbl">السنة</label>
+    <input type="text" class="af-inp" id="afYear" placeholder="2024"/>
+    <label class="af-lbl">المصدر</label>
+    <input type="text" class="af-inp" id="afSrc" placeholder="Al Jazeera, UNRWA..."/>
+    <button class="af-save" onclick="saveFilm()">💾 حفظ / Save</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>Guardians</a>
+</nav>
+
+<script>
+var FILMS = [
+  {id:'F1',type:'doc',title:'التغريبة الفلسطينية',sub:'وثائقي · 2004',icon:'🎬',ytId:'dD3vQQRcKPU',year:'2004',src:'Al Jazeera',srcUrl:'https://www.aljazeera.net'},
+  {id:'F2',type:'feature',title:'هند رجب',sub:'وثائقي قصير · 2024',icon:'🌸',ytId:'xQgCe4S7UhU',year:'2024',src:'AJ+',srcUrl:'https://www.youtube.com/@AJArabic'},
+  {id:'F3',type:'doc',title:'الصحفيون الشهداء',sub:'تقرير خاص · 2024',icon:'📷',ytId:'rGV3L3pkMMk',year:'2024',src:'Al Jazeera English',srcUrl:'https://www.aljazeera.com'},
+  {id:'F4',type:'doc',title:'مستشفى الشفاء',sub:'توثيق ميداني · 2024',icon:'🏥',ytId:'H5tpGcWf9yA',year:'2024',src:'Eye on Palestine',srcUrl:'https://www.youtube.com'},
+  {id:'F5',type:'feature',title:'ملح هذا البحر',sub:'أنماري جاسر · 2008',icon:'🌊',ytId:null,searchQ:'ملح هذا البحر أنماري جاسر',year:'2008',src:'',srcUrl:''},
+  {id:'F6',type:'feature',title:'عمر',sub:'هاني أبو أسعد · 2013',icon:'🎭',ytId:null,searchQ:'فيلم عمر هاني أبو أسعد',year:'2013',src:'',srcUrl:''},
+  {id:'F7',type:'doc',title:'زيتون فلسطين',sub:'UNRWA · التراث',icon:'🌿',ytId:'pQvM9PJKL9A',year:'2023',src:'UNRWA',srcUrl:'https://www.unrwa.org'},
+  {id:'F8',type:'news',title:'غزة الآن',sub:'تغطية مستمرة',icon:'📡',ytId:null,searchQ:'غزة أخبار الآن',year:'2024',src:'',srcUrl:''},
+];
+
+var TESTIMONIES = [
+  {id:'T1',title:'شهادة أم فلسطينية من مخيم جباليا',meta:'2024 · مقابلة شفوية',icon:'🎙',ytId:'xQgCe4S7UhU'},
+  {id:'T2',title:'شاهد عيان — تدمير حي الشجاعية',meta:'2023 · تسجيل ميداني',icon:'👁',ytId:'H5tpGcWf9yA'},
+  {id:'T3',title:'صحفي: كيف يبدو العمل تحت القصف',meta:'2024 · مقابلة حصرية',icon:'📹',ytId:'rGV3L3pkMMk'},
+  {id:'T4',title:'طبيب من مستشفى الشفاء',meta:'2024 · شهادة طبية',icon:'🏥',ytId:'dD3vQQRcKPU'},
+];
+
+var currentFilter = 'all';
+
+function ytThumb(id){return id?'https://img.youtube.com/vi/'+id+'/mqdefault.jpg':null;}
+
+function renderFilms(filter){
+  window._currentFilter=filter; var allFilms=getFilms().filter(function(f){return !f.deleted;}); var filtered = filter==='all' ? allFilms : allFilms.filter(function(f){return f.type===filter;});
+  var grid = document.getElementById('filmGrid');
+  grid.innerHTML='';
+  filtered.forEach(function(film){
+    var thumb=ytThumb(film.ytId);
+    var card=document.createElement('div');
+    card.className='film-card';
+    card.onclick=function(){playFilm(film);};
+    card.innerHTML=
+      '<div class="film-thumb">'+
+        (thumb?'<img src="'+thumb+'" loading="lazy" onerror="this.parentElement.innerHTML=\''+film.icon+'\'"/>':film.icon)+
+        '<div class="ft-overlay"><div class="play-icon">▶</div></div>'+
+        '<span class="film-type">'+film.type.toUpperCase()+'</span>'+
+      '</div>'+
+      '<div class="film-body">'+
+        '<div class="film-title">'+esc(film.title)+'</div>'+
+        '<div class="film-sub">'+esc(film.sub)+'</div>'+
+        '<div class="film-footer">'+
+          '<span class="film-year">'+film.year+'</span>'+
+          '<span class="film-action">شاهد ←</span>'+
+        '</div>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function renderTestimonies(){
+  var list=document.getElementById('testList');
+  list.innerHTML='';
+  TESTIMONIES.forEach(function(t){
+    var item=document.createElement('div');
+    item.className='test-item';
+    item.onclick=function(){playFilm(t);};
+    item.innerHTML=
+      '<div class="test-icon">'+t.icon+'</div>'+
+      '<div class="test-body">'+
+        '<div class="test-title">'+esc(t.title)+'</div>'+
+        '<div class="test-meta">'+esc(t.meta)+'</div>'+
+      '</div>'+
+      '<span class="test-arrow">←</span>';
+    list.appendChild(item);
+  });
+}
+
+function filterFilms(type,btn){
+  currentFilter=type;
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  btn.classList.add('on');
+  renderFilms(type);
+}
+
+function doSearch(){
+  var q=document.getElementById('searchInp').value.trim();
+  if(!q)return;
+  // Search in local films first
+  var found=FILMS.filter(function(f){return f.title.includes(q)||f.sub.includes(q);});
+  if(found.length>0){playFilm(found[0]);}
+  else{window.open('https://www.youtube.com/results?search_query='+encodeURIComponent('فلسطين '+q),'_blank');}
+}
+
+function playFilm(film){
+  var pl=document.getElementById('vPlayer');
+  document.getElementById('vTitle').textContent=film.title||'';
+  // Edit/Delete buttons in video modal
+  var actBtns = document.getElementById('vActBtns');
+  if (actBtns) actBtns.innerHTML = ARCHIVE_ADMIN ? '<div style="display:flex;gap:8px;margin-top:8px;"><button onclick="editFilm(\'' + film.id + '\')" style="flex:1;padding:9px;background:#353534;color:#e5e2e1;border:none;cursor:pointer;font-size:.78rem;font-weight:700;">✏ تعديل</button><button onclick="deleteFilm(\'' + film.id + '\')" style="flex:1;padding:9px;background:rgba(232,34,31,.12);color:#E8221F;border:none;cursor:pointer;font-size:.78rem;font-weight:700;">🗑 حذف</button></div>' : '';
+  document.getElementById('vMeta').textContent=(film.meta||film.sub||'')+(film.year?' · '+film.year:'');
+  document.getElementById('vSrc').innerHTML=film.srcUrl?'<a href="'+film.srcUrl+'" target="_blank">📺 '+esc(film.src)+'</a>':'';
+
+  if(film.ytId){
+    pl.innerHTML='<iframe src="https://www.youtube.com/embed/'+film.ytId+'?autoplay=1&rel=0" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+  }else if(film.searchQ){
+    var url='https://www.youtube.com/results?search_query='+encodeURIComponent(film.searchQ);
+    pl.innerHTML='<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#131313;gap:16px;padding:24px;text-align:center;"><span style="font-size:2rem;">🎬</span><p style="color:#9a9898;font-size:.84rem;">هذا الفيلم غير متاح مباشرة.<br/>اضغط للبحث عنه على YouTube.</p><a href="'+url+'" target="_blank" style="background:linear-gradient(135deg,#E8221F,#930006);color:#fff;padding:10px 20px;text-decoration:none;font-size:.82rem;font-weight:700;">بحث على YouTube ←</a></div>';
+  }else{
+    pl.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;background:#131313;color:#9a9898;font-size:.86rem;">لا يوجد رابط متاح</div>';
+  }
+  document.getElementById('vModal').classList.add('on');
+}
+function closeV(){document.getElementById('vModal').classList.remove('on');document.getElementById('vPlayer').innerHTML='';}
+
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeV();});
+window.addEventListener('load',async function(){await initArchiveAdmin();renderFilms('all');renderTestimonies();});
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

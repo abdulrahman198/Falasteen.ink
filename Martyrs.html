@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="ollama-auto-tagging.js" defer></script>
+<script>
+  // Respect user reduced-motion preference early for JS-driven enhancements
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('prefers-reduced-motion');
+    }
+  } catch(e) {}
+  // Disable falling/floating names on this page specifically
+  try {
+    document.documentElement.classList.add('no-falling');
+    document.addEventListener('DOMContentLoaded', function(){
+      try { if (window.stopFloatingNames) stopFloatingNames(); } catch(e) {}
+      var _ov = document.getElementById('namesOverlay'); if(_ov) _ov.remove();
+    });
+  } catch(e) {}
+</script>
+<script>
+var _editingMartyrId = null;
+
+function editMartyr(id) {
+  var martyrs = [];
+  try { martyrs = JSON.parse(localStorage.getItem('fl_martyrs')||'[]'); } catch(e){}
+  var m = martyrs.find(function(x){ return x.id === id; });
+  if (!m) return;
+  _editingMartyrId = id;
+  closeDetail();
+  var fields = {
+    mName: m.name, mCity: m.city, mAge: m.age,
+    mCategory: m.category, mGender: m.gender, mStory: m.story
+  };
+  Object.keys(fields).forEach(function(k){
+    var el = document.getElementById(k);
+    if (el) el.value = fields[k] || '';
+  });
+  var addModal = document.getElementById('addModal');
+  if (addModal) addModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  FL.toast('✏ وضع التعديل / Edit mode');
+}
+
+function deleteMartyr(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا الشهيد؟ / Delete this martyr?')) return;
+  var martyrs = [];
+  try { martyrs = JSON.parse(localStorage.getItem('fl_martyrs')||'[]'); } catch(e){}
+  martyrs = martyrs.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('fl_martyrs', JSON.stringify(martyrs));
+  if (window.FL && FL.SUPABASE_URL) {
+    fetch(FL.SUPABASE_URL + '/rest/v1/martyrs?id=eq.' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { apikey: FL.SUPABASE_KEY, Authorization: 'Bearer ' + FL.SUPABASE_KEY }
+    }).catch(function(){});
+  }
+  closeDetail();
+  if (typeof loadSection === 'function') loadSection(currentTab, false);
+  FL.toast('✓ تم الحذف / Deleted');
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>سجل الشهداء | FALASTEEN.INK</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:80px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,0.97); border-bottom:1px solid rgba(93,63,59,0.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:0.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+.add-btn { display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:0.72rem; font-weight:700; padding:8px 18px; border:none; cursor:pointer; }
+
+/* HERO */
+.hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,0.06) 0%,transparent 100%); position:relative; overflow:hidden; }
+.hero::before { content:'شهداء'; position:absolute; bottom:-20px; left:-10px; font-size:clamp(5rem,18vw,10rem); font-weight:900; color:rgba(232,34,31,0.04); pointer-events:none; }
+.hero-tag { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:0.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(1.8rem,5vw,3rem); font-weight:900; line-height:1.1; margin-bottom:8px; }
+.hero-title .red { color:var(--red); }
+.hero-desc { font-size:0.84rem; color:var(--dim); line-height:1.7; max-width:460px; }
+
+/* LIVE COUNTERS */
+.counters { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+@media(max-width:480px){ .counters{grid-template-columns:repeat(2,1fr);} }
+.counter-card { background:var(--s2); padding:18px 10px; text-align:center; position:relative; overflow:hidden; cursor:default; transition:background .2s; }
+.counter-card:hover { background:var(--s3); }
+.counter-card::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--red); transform:scaleX(0); transition:transform .4s; transform-origin:right; }
+.counter-card:hover::after { transform:scaleX(1); transform-origin:left; }
+.counter-num { font-size:1.7rem; font-weight:900; line-height:1; margin-bottom:4px; font-family:"Courier New",monospace; }
+.counter-label { font-family:"Courier New",monospace; font-size:0.46rem; color:var(--dim); letter-spacing:0.12em; text-transform:uppercase; }
+.counter-total { grid-column:1/-1; background:rgba(232,34,31,0.06); border:1px solid rgba(232,34,31,0.15); }
+.counter-total .counter-num { font-size:2.4rem; color:var(--red); }
+
+/* SEARCH */
+.search-wrap { background:var(--s2); padding:12px 18px; display:flex; gap:10px; align-items:center; }
+.search-input { flex:1; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:0.88rem; padding:10px 14px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; }
+.search-input:focus { border-color:var(--red); }
+.search-input::placeholder { color:var(--dim); }
+
+/* TABS */
+.tabs-wrap { position:sticky; top:52px; z-index:90; background:var(--s1); border-bottom:1px solid rgba(93,63,59,.12); }
+.tabs { display:flex; overflow-x:auto; scrollbar-width:none; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab-btn { flex-shrink:0; padding:12px 16px; background:none; border:none; cursor:pointer; color:var(--dim); font-size:0.74rem; font-weight:600; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; font-family:Arial,sans-serif; display:flex; align-items:center; gap:6px; }
+.tab-btn.active { color:var(--red); border-bottom-color:var(--red); }
+.tc { font-family:"Courier New",monospace; font-size:0.5rem; background:var(--s4); color:var(--dim); padding:1px 5px; border-radius:8px; }
+.tab-btn.active .tc { background:rgba(232,34,31,.15); color:var(--red); }
+
+/* SECTION */
+.section { padding:16px 18px 0; display:none; }
+.section.active { display:block; }
+.section-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid rgba(93,63,59,.12); }
+.section-icon { font-size:1.4rem; }
+.section-title { font-size:0.96rem; font-weight:900; }
+.section-sub { font-size:0.72rem; color:var(--dim); margin-top:2px; }
+
+/* MARTYRS GRID */
+.martyrs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:24px; }
+@media(max-width:400px){ .martyrs-grid{grid-template-columns:repeat(2,1fr);} }
+.martyr-card { background:var(--s2); cursor:pointer; transition:background .2s; position:relative; }
+.martyr-card:hover { background:var(--s3); }
+.martyr-photo { width:100%; aspect-ratio:1; background:var(--s4); display:flex; align-items:center; justify-content:center; font-size:2rem; overflow:hidden; position:relative; }
+.martyr-photo img { width:100%; height:100%; object-fit:cover; }
+.martyr-photo .no-photo { opacity:0.2; }
+.date-badge { position:absolute; bottom:4px; right:4px; font-family:"Courier New",monospace; font-size:0.44rem; background:rgba(14,14,14,.88); color:var(--red); padding:2px 5px; }
+.martyr-body { padding:8px 10px 10px; }
+.martyr-name { font-size:0.8rem; font-weight:700; margin-bottom:2px; line-height:1.3; }
+.martyr-meta { font-family:"Courier New",monospace; font-size:0.48rem; color:var(--dim); }
+.tribute-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+.tribute-btn { flex:1 1 calc(33.33% - 6px); min-width:90px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); color:var(--text); padding:8px 10px; border-radius:12px; font-size:0.75rem; cursor:pointer; transition:all .2s; text-align:center; }
+.tribute-btn:hover { background:rgba(255,255,255,.08); border-color:rgba(232,34,31,.35); }
+.tribute-action { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+.detail-tributes { margin:16px 0 10px; }
+
+/* ADD CARD */
+.add-card { background:var(--s2); border:2px dashed rgba(232,34,31,.2); display:flex; flex-direction:column; align-items:center; justify-content:center; aspect-ratio:1; cursor:pointer; transition:all .2s; color:var(--dim); gap:5px; }
+.add-card:hover { border-color:var(--red); color:var(--red); background:rgba(232,34,31,.04); }
+.add-card .plus { font-size:1.6rem; }
+.add-card span { font-size:0.64rem; font-weight:700; }
+
+/* LIST CARDS */
+.list-card { background:var(--s2); padding:14px; display:flex; gap:12px; align-items:flex-start; margin-bottom:2px; cursor:pointer; transition:background .2s; }
+.list-card:hover { background:var(--s3); }
+.list-avatar { width:50px; height:50px; border-radius:50%; background:var(--s4); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; overflow:hidden; }
+.list-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.list-name { font-size:0.88rem; font-weight:700; margin-bottom:2px; }
+.list-meta { font-family:"Courier New",monospace; font-size:0.5rem; color:var(--dim); margin-bottom:4px; }
+.list-story { font-size:0.74rem; color:var(--dim); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.badge { font-family:"Courier New",monospace; font-size:0.48rem; padding:3px 7px; flex-shrink:0; }
+.badge-j { color:#7eb8ff; background:rgba(126,184,255,.08); border:1px solid rgba(126,184,255,.2); }
+.badge-p { color:#ffb347; background:rgba(255,179,71,.08); border:1px solid rgba(255,179,71,.2); }
+.add-list-row { background:var(--s2); padding:14px; text-align:center; font-size:0.8rem; color:var(--red); font-weight:700; cursor:pointer; border-top:1px dashed rgba(232,34,31,.2); }
+.add-list-row:hover { background:var(--s3); }
+
+/* EMPTY */
+.empty { padding:44px 0; text-align:center; grid-column:1/-1; }
+.empty-icon { font-size:2rem; opacity:.25; margin-bottom:10px; display:block; }
+.empty-text { font-size:0.8rem; color:var(--dim); line-height:1.7; margin-bottom:14px; }
+.empty-btn { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:0.76rem; font-weight:700; padding:10px 20px; border:none; cursor:pointer; }
+
+/* LOADING */
+.loading-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:24px; }
+.skel { aspect-ratio:1; background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; }
+@keyframes shimmer { 0%{background-position:200% 0;}100%{background-position:-200% 0;} }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.9); display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--s1); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:22px 18px 32px; border-top:3px solid var(--red); scrollbar-width:none; }
+.modal::-webkit-scrollbar { display:none; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.modal-title { font-size:1rem; font-weight:900; }
+.modal-close { background:none; border:none; color:var(--dim); font-size:1.4rem; cursor:pointer; }
+.modal-close:hover { color:var(--red); }
+.form-group { margin-bottom:14px; }
+.form-label { font-family:"Courier New",monospace; font-size:0.52rem; color:var(--red); letter-spacing:0.18em; display:block; margin-bottom:6px; }
+.form-input, .form-select, .form-textarea { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:0.88rem; padding:11px 13px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; appearance:none; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--red); }
+.form-input::placeholder, .form-textarea::placeholder { color:var(--dim); }
+.form-textarea { resize:vertical; min-height:80px; }
+.form-select option { background:var(--s3); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:400px){ .form-row{grid-template-columns:1fr;} }
+.photo-slot { border:2px dashed rgba(93,63,59,.3); padding:18px; text-align:center; cursor:pointer; position:relative; transition:all .2s; }
+.photo-slot:hover { border-color:var(--red); }
+.photo-slot input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.photo-slot .slot-icon { font-size:1.6rem; margin-bottom:5px; display:block; }
+.photo-slot p { font-size:0.72rem; color:var(--dim); }
+.photo-slot .preview { width:100%; height:110px; object-fit:cover; display:none; }
+.save-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:0.88rem; font-weight:700; transition:transform .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.save-btn:hover:not(:disabled) { transform:translateY(-2px); }
+.save-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+/* DETAIL MODAL */
+.detail-photo { width:100%; height:180px; object-fit:cover; }
+.detail-placeholder { width:100%; height:120px; background:var(--s4); display:flex; align-items:center; justify-content:center; font-size:3rem; opacity:.25; }
+.detail-name { font-size:1.2rem; font-weight:900; padding:14px 18px 3px; }
+.detail-meta { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--dim); padding:0 18px 10px; }
+.detail-story { font-size:0.84rem; color:var(--dim); line-height:1.7; padding:0 18px 14px; }
+.detail-badge { display:inline-block; margin:0 18px 14px; font-family:"Courier New",monospace; font-size:0.5rem; color:var(--red); background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.2); padding:3px 10px; }
+.detail-prayer-actions { padding:0 18px 14px; }
+.detail-prayers { padding:0 18px 18px; display:flex; flex-direction:column; gap:16px; }
+.detail-prayers-header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:0 0 8px; border-bottom:1px solid rgba(255,255,255,.08); color:var(--text); }
+.detail-prayers-header span { font-size:0.95rem; font-weight:700; }
+.detail-prayers-empty { color:var(--dim); font-size:0.95rem; padding:16px 0; }
+.prayer-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:16px 18px; box-shadow:0 12px 30px rgba(0,0,0,.2); }
+.prayer-meta { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px; font-size:0.82rem; color:var(--dim); }
+.prayer-user { font-weight:700; color:#fff; }
+.prayer-text { color:var(--text); line-height:1.8; white-space:pre-line; }
+.prayer-count-label, .prayer-count-badge { display:inline-flex; align-items:center; gap:6px; margin:10px 0 0; font-size:0.78rem; color:var(--dim); }
+.prayer-count-badge { background:rgba(232,34,31,.08); border:1px solid rgba(232,34,31,.15); border-radius:999px; padding:6px 10px; color:#fff; }
+.prayer-count-badge.prayer-count-empty { color:var(--dim); background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08); }
+.prayer-modal .form-group { margin-bottom:14px; }
+.prayer-modal .form-label { margin-bottom:8px; }
+.prayer-presets { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
+.preset-btn { background:rgba(255,255,255,.05); color:var(--text); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px 12px; cursor:pointer; font-size:0.84rem; transition:all .2s; text-align:left; }
+.preset-btn:hover { background:rgba(232,34,31,.16); border-color:rgba(232,34,31,.24); }
+.preset-btn.active { background:rgba(232,34,31,.22); border-color:rgba(232,34,31,.3); }
+
+/* SHARE */
+.share-row { display:flex; gap:8px; padding:0 18px 20px; direction:ltr; }
+.share-btn { flex:1; padding:10px 8px; background:var(--s2); border:none; cursor:pointer; color:var(--text); font-size:0.72rem; transition:background .2s; display:flex; align-items:center; justify-content:center; gap:5px; }
+.share-btn:hover { background:var(--red); }
+
+/* TOAST */
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:10px 20px; font-size:0.78rem; font-weight:700; z-index:999; opacity:0; transition:opacity .3s; pointer-events:none; }
+.toast.show { opacity:1; }
+
+.nav-icon { font-size:1.25rem; line-height:1; }
+
+.upload-progress{height:3px;background:var(--s4);margin-top:6px;display:none;}
+.upload-progress-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b35);width:0%;transition:width .3s;}
+.pager{display:none;align-items:center;justify-content:center;gap:12px;padding:4px 18px 24px;}
+.pager.on{display:flex;}
+.pager-info{font-family:"Courier New",monospace;font-size:.56rem;color:var(--dim);}
+.pager-btn{background:var(--s2);border:1px solid rgba(93,63,59,.3);color:var(--text);font-size:.78rem;font-weight:700;padding:10px 18px;cursor:pointer;}
+.pager-btn:disabled{opacity:.45;cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div id="namesOverlay" class="names-overlay" aria-hidden="true"></div>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ أضف / Add</button>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">سجل الشهداء — MARTYRS REGISTRY</span>
+  <h1 class="hero-title">هم <span class="red">ليسوا أرقاماً</span></h1>
+  <p class="hero-desc">They are not numbers. Every name is a complete human story.</p>
+</div>
+
+<!-- LIVE COUNTERS -->
+<div class="counters" id="counters">
+  <div class="counter-card counter-total" style="grid-column:1/-1;">
+    <div class="counter-num" id="cntTotal">—</div>
+    <div class="counter-label">إجمالي الشهداء / Total Martyrs</div>
+  </div>
+  <div class="counter-card">
+    <div class="counter-num" id="cntChildren">—</div>
+    <div class="counter-label">🌸 أطفال / Children</div>
+  </div>
+  <div class="counter-card">
+    <div class="counter-num" id="cntYouth">—</div>
+    <div class="counter-label">🌿 شباب / Youth</div>
+  </div>
+  <div class="counter-card">
+    <div class="counter-num" id="cntAdults">—</div>
+    <div class="counter-label">🕊 كبار / Adults</div>
+  </div>
+  <div class="counter-card">
+    <div class="counter-num" id="cntFemale">—</div>
+    <div class="counter-label">👩 أنثى / Female</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <span>🔍</span>
+  <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن اسم / Search name..." oninput="debounceSearch()"/>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('children',this)">🌸 أطفال <span class="tc" id="tc-children">0</span></button>
+    <button class="tab-btn" onclick="switchTab('youth',this)">🌿 شباب <span class="tc" id="tc-youth">0</span></button>
+    <button class="tab-btn" onclick="switchTab('adults',this)">🕊 كبار <span class="tc" id="tc-adults">0</span></button>
+    <button class="tab-btn" onclick="switchTab('journalists',this)">📸 صحفيون <span class="tc" id="tc-journalists">0</span></button>
+    <button class="tab-btn" onclick="switchTab('prisoners',this)">⛓ أسرى <span class="tc" id="tc-prisoners">0</span></button>
+  </div>
+</div>
+
+<div class="section active" id="sec-children">
+  <div class="section-header"><span class="section-icon">🌸</span><div><div class="section-title">الأطفال الشهداء / Child Martyrs</div><div class="section-sub">من لم يتجاوزوا الثامنة عشرة / Under 18</div></div></div>
+  <div class="martyrs-grid" id="grid-children"></div>
+</div>
+<div class="section" id="sec-youth">
+  <div class="section-header"><span class="section-icon">🌿</span><div><div class="section-title">شهداء الشباب / Youth Martyrs</div><div class="section-sub">18 إلى 35 سنة / Ages 18–35</div></div></div>
+  <div class="martyrs-grid" id="grid-youth"></div>
+</div>
+<div class="section" id="sec-adults">
+  <div class="section-header"><span class="section-icon">🕊</span><div><div class="section-title">شهداء الكبار / Adult Martyrs</div><div class="section-sub">فوق 35 سنة / Above 35</div></div></div>
+  <div class="martyrs-grid" id="grid-adults"></div>
+</div>
+<div class="section" id="sec-journalists">
+  <div class="section-header"><span class="section-icon">📸</span><div><div class="section-title">الصحفيون الشهداء / Press Martyrs</div><div class="section-sub">سقطوا وهم يحملون الحقيقة</div></div></div>
+  <div id="list-journalists"></div>
+</div>
+<div class="section" id="sec-prisoners">
+  <div class="section-header"><span class="section-icon">⛓</span><div><div class="section-title">الأسرى الفلسطينيون / Prisoners</div><div class="section-sub">أسماؤهم لن تُنسى / Their names live on</div></div></div>
+  <div id="list-prisoners"></div>
+</div>
+
+<div class="pager" id="martyrsPager">
+  <span class="pager-info" id="pagerInfo"></span>
+  <button class="pager-btn" id="loadMoreBtn" onclick="loadMoreMartyrs()">تحميل المزيد / Load more</button>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal" onclick="closeOnOverlay(event,'addModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">إضافة شهيد / Add Martyr</div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    </div>
+    <form onsubmit="saveMartyr(event)">
+      <div class="form-group">
+        <div class="photo-slot">
+          <input type="file" accept="image/*" id="photoInput" onchange="previewPhoto(this);showUploadProgress(this)"/>
+          <span class="slot-icon">📷</span>
+          <p>صورة الشهيد (اختياري) / Photo optional</p>
+          <img class="preview" id="photoPreview" alt=""/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">الاسم الكامل *</label>
+        <input type="text" class="form-input" id="mName" placeholder="الاسم الرباعي / Full name" required/>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">التصنيف *</label>
+          <select class="form-select" id="mCategory" required>
+            <option value="">اختر / Select...</option>
+            <option value="child">🌸 طفل / Child</option>
+            <option value="youth">🌿 شاب / Youth</option>
+            <option value="adult">🕊 كبير / Adult</option>
+            <option value="journalist">📸 صحفي / Journalist</option>
+            <option value="prisoner">⛓ أسير / Prisoner</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">العمر / Age</label>
+          <input type="number" class="form-input" id="mAge" placeholder="العمر" min="0" max="120"/>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:14px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">الجنس / Gender</label>
+          <select class="form-select" id="mGender">
+            <option value="">— اختر —</option>
+            <option value="ذكر">ذكر / Male</option>
+            <option value="أنثى">أنثى / Female</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">تاريخ الاستشهاد / Date</label>
+          <input type="date" class="form-input" id="mDate" style="color-scheme:dark;"/>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:14px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">المدينة / City</label>
+          <input type="text" class="form-input" id="mCity" placeholder="غزة، خان يونس..."/>
+        </div>
+        <div class="form-group" style="margin-bottom:0;"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">قصته / Story (اختياري)</label>
+        <textarea class="form-textarea" id="mStory" placeholder="من كان هذا الشخص؟ / Who were they?"></textarea>
+      </div>
+      <div class="form-group fl-ai-tags-panel">
+        <input type="hidden" id="mTags"/>
+        <div class="fl-ai-tags-actions">
+          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
+        </div>
+        <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">المصدر / Source</label>
+        <input type="text" class="form-input" id="mSource" placeholder="من يعرف هذه المعلومة / Who knows this"/>
+      </div>
+      <button type="submit" class="save-btn" id="saveBtn">🕊 حفظ في السجل / Save</button>
+    </form>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal" onclick="closeOnOverlay(event,'detailModal')">
+  <div class="modal" id="detailContent"></div>
+</div>
+
+<!-- PRAYER MODAL -->
+<div class="modal-overlay" id="prayerModal" onclick="closeOnOverlay(event,'prayerModal')">
+  <div class="modal prayer-modal" id="prayerModalContent">
+    <div class="modal-header">
+      <div class="modal-title">أضف دعاء للشهيد</div>
+      <button class="modal-close" onclick="closeModal('prayerModal')">✕</button>
+    </div>
+    <form id="prayerForm" onsubmit="sendPrayer(event)">
+      <input type="hidden" id="prayerMartyrId" value="" />
+      <div class="form-group">
+        <label class="form-label">اسمك</label>
+        <input type="text" class="form-input" id="prayerName" placeholder="اكتب اسمك أو لقبك" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">اختر دعاء جاهز</label>
+        <div class="prayer-presets">
+          <button type="button" class="preset-btn" data-text="اللهم ارحمه واغفر له وتقبله في الشهداء الصالحين.">اللهم ارحمه واغفر له</button>
+          <button type="button" class="preset-btn" data-text="اللهم اجعل قبره روضة من رياض الجنة وألهم أهله الصبر والسلوان.">اللهم اجعل قبره روضة</button>
+          <button type="button" class="preset-btn" data-text="رحمك الله يا بطل، عشت كريماً ورحلت شهيداً عظيماً.">رحمك الله يا بطل</button>
+          <button type="button" class="preset-btn" data-text="اللهم اكتبه عندك في أعلى عليين مع النبيين والصديقين.">اللهم اكتبه في عليين</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">نص الدعاء</label>
+        <textarea class="form-textarea" id="prayerText" rows="4" placeholder="اكتب دعاءك هنا أو اختر من الأدعية الجاهزة" required></textarea>
+      </div>
+      <button type="submit" class="save-btn">إرسال الدعاء</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Landmarks.html"><span class="nav-icon">🏛</span>Landmarks</a>
+</nav>
+
+<script>
+var photoData = null;
+var currentTab = 'children';
+var searchTimer = null;
+var allData = [];
+var PAGE_SIZE = 100;
+var currentOffset = 0;
+var currentTotal = 0;
+var currentItems = [];
+var currentDetailMartyrId = null;
+var prayerRealtimeChannel = null;
+var prayerCounts = {};
+
+function renderPrayerCountBadge(id) {
+  var count = prayerCounts[id] || 0;
+  return '<div class="prayer-count-badge '+(count===0?' prayer-count-empty':'')+'">'+(count ? '🕯️ '+count+' دعاء' : 'لا أدعية حتى الآن')+'</div>';
+}
+
+function renderPrayerCountText(id) {
+  var count = prayerCounts[id] || 0;
+  return count ? '🕯️ '+count+' دعاء' : 'لا توجد أدعية بعد';
+}
+
+async function loadPrayerCounts(items) {
+  prayerCounts = {};
+  if (!Array.isArray(items) || !items.length) return;
+  var ids = items.map(function(m){ return '"'+m.id+'"'; }).join(',');
+  if (!ids) return;
+  try {
+    var query = 'select=martyr_id,count:id&martyr_id=in.(' + ids + ')&group=martyr_id';
+    var rows = await FL.rest('martyr_prayers', { query: encodeURI(query) });
+    if (Array.isArray(rows)) {
+      rows.forEach(function(r){ prayerCounts[r.martyr_id] = parseInt(r.count, 10) || 0; });
+    }
+  } catch (e) {
+    console.warn('Failed to load prayer counts', e);
+  }
+}
+
+var currentSearch = '';
+var martyrsAdmin = false;
+var martyrsAdminUser = null;
+
+async function initMartyrsAdmin(){
+  try {
+    martyrsAdminUser = await FL.getUser();
+    martyrsAdmin = FL.isAdminUser(martyrsAdminUser);
+  } catch(e) {
+    martyrsAdmin = false;
+  }
+  var btn = document.getElementById('martyrAddBtn');
+  if (btn) btn.style.display = martyrsAdmin ? 'block' : 'none';
+}
+
+async function requireMartyrsAdmin(){
+  try {
+    martyrsAdminUser = await FL.getUser();
+    martyrsAdmin = FL.isAdminUser(martyrsAdminUser);
+  } catch(e) {
+    martyrsAdmin = false;
+  }
+  if (!martyrsAdmin) {
+    showToast('غير مصرح بالإضافة / Admin only');
+    return false;
+  }
+  return true;
+}
+
+// ── FETCH FROM SUPABASE ──
+async function fetchData(category, search, limit, offset) {
+  limit = limit || PAGE_SIZE;
+  offset = offset || 0;
+  var url = FL.SUPABASE_URL + '/rest/v1/martyrs?select=*&order=created_at.desc&limit=' + limit + '&offset=' + offset;
+  if (category && category !== 'all') url += '&category=eq.' + encodeURIComponent(category);
+  if (search) {
+    var q = encodeURIComponent(search);
+    url += '&or=(name.ilike.*' + q + '*,city.ilike.*' + q + '*,source.ilike.*' + q + '*)';
+  }
+  var res = await fetch(url, { headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY, 'Prefer':'count=exact' } });
+  if (!res.ok) throw new Error('Fetch failed');
+  var items = await res.json();
+  var range = res.headers.get('content-range') || '';
+  var total = parseInt((range.split('/')[1] || ''), 10);
+  return { items: items, total: isNaN(total) ? null : total };
+}
+
+async function fetchCounts() {
+  // Get exact counts per category using Supabase count feature
+  var headers = {
+    'apikey': FL.SUPABASE_KEY,
+    'Authorization': 'Bearer ' + FL.SUPABASE_KEY,
+    'Prefer': 'count=exact'
+  };
+
+  async function getCount(filter) {
+    var url = FL.SUPABASE_URL + '/rest/v1/martyrs?select=id' + (filter ? '&' + filter : '');
+    headers['Prefer'] = 'count=exact';
+    var res = await fetch(url, { headers: Object.assign({}, headers, {'Prefer':'count=exact'}) });
+    var range = res.headers.get('content-range');
+    if (range) {
+      var total = range.split('/')[1];
+      return parseInt(total) || 0;
+    }
+    return 0;
+  }
+
+  try {
+    var total    = await getCount('');
+    var children = await getCount('category=eq.child');
+    var youth    = await getCount('category=eq.youth');
+    var adults   = await getCount('category=eq.adult');
+    var journal  = await getCount('category=eq.journalist');
+    var prisoner = await getCount('category=eq.prisoner');
+    var female   = await getCount('gender=eq.' + encodeURIComponent('أنثى'));
+
+    return {
+      _counts: true,
+      total: total,
+      child: children,
+      youth: youth,
+      adult: adults,
+      journalist: journal,
+      prisoner: prisoner,
+      female: female
+    };
+  } catch(e) {
+    console.error('Count error:', e);
+    return null;
+  }
+}
+
+// ── ANIMATED COUNTER ──
+function animateTo(elId, target, duration) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var start = 0;
+  var step = Math.ceil(target / (duration / 16));
+  var timer = setInterval(function() {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    el.textContent = start.toLocaleString('ar');
+  }, 16);
+}
+
+async function loadCounters() {
+  try {
+    var data = await fetchCounts();
+    if (!data) return;
+    // Use pre-computed counts
+    var total = data._counts ? data.total    : data.length;
+    var ch    = data._counts ? data.child    : data.filter(function(m){return m.category==='child';}).length;
+    var yo    = data._counts ? data.youth    : data.filter(function(m){return m.category==='youth';}).length;
+    var ad    = data._counts ? data.adult    : data.filter(function(m){return m.category==='adult';}).length;
+    var jo    = data._counts ? data.journalist : data.filter(function(m){return m.category==='journalist';}).length;
+    var pr    = data._counts ? data.prisoner : data.filter(function(m){return m.category==='prisoner';}).length;
+    var fe    = data._counts ? data.female   : data.filter(function(m){return m.gender==='أنثى';}).length;
+    // Animate all counters
+    animateTo('cntTotal', total, 2000);
+    animateTo('cntChildren', ch, 1800);
+    animateTo('cntYouth', yo, 1800);
+    animateTo('cntAdults', ad, 1800);
+    animateTo('cntFemale', fe, 1800);
+    // Tab counts
+    document.getElementById('tc-children').textContent = ch.toLocaleString();
+    document.getElementById('tc-youth').textContent = yo.toLocaleString();
+    document.getElementById('tc-adults').textContent = ad.toLocaleString();
+    document.getElementById('tc-journalists').textContent = jo.toLocaleString();
+    document.getElementById('tc-prisoners').textContent = pr.toLocaleString();
+  } catch(e) {
+    console.error('Counter error:', e);
+    loadLocalCounters();
+  }
+}
+
+function loadLocalCounters() {
+  var data = getLocal();
+  var ch=0,yo=0,ad=0,jo=0,pr=0,fe=0;
+  data.forEach(function(m){
+    if(m.category==='child')ch++;
+    else if(m.category==='youth')yo++;
+    else if(m.category==='adult')ad++;
+    else if(m.category==='journalist')jo++;
+    else if(m.category==='prisoner')pr++;
+    if(m.gender==='أنثى')fe++;
+  });
+  animateTo('cntTotal',data.length,1500);
+  animateTo('cntChildren',ch,1300);
+  animateTo('cntYouth',yo,1300);
+  animateTo('cntAdults',ad,1300);
+  animateTo('cntFemale',fe,1300);
+  document.getElementById('tc-children').textContent=ch;
+  document.getElementById('tc-youth').textContent=yo;
+  document.getElementById('tc-adults').textContent=ad;
+  document.getElementById('tc-journalists').textContent=jo;
+  document.getElementById('tc-prisoners').textContent=pr;
+}
+
+// ── LOAD SECTION ──
+function updatePager(loaded, total) {
+  var pager = document.getElementById('martyrsPager');
+  var info = document.getElementById('pagerInfo');
+  var btn = document.getElementById('loadMoreBtn');
+  if (!pager || !info || !btn) return;
+  var knownTotal = typeof total === 'number';
+  var hasMore = knownTotal ? loaded < total : currentItems.length >= PAGE_SIZE;
+  pager.classList.toggle('on', hasMore || loaded > 0);
+  info.textContent = knownTotal
+    ? (loaded.toLocaleString('ar') + ' / ' + total.toLocaleString('ar'))
+    : loaded.toLocaleString('ar');
+  btn.style.display = hasMore ? 'inline-block' : 'none';
+  btn.disabled = false;
+}
+
+async function loadMoreMartyrs() {
+  var btn = document.getElementById('loadMoreBtn');
+  if (btn) btn.disabled = true;
+  await loadSection(currentTab, true);
+}
+
+async function loadSection(tab, append) {
+  var grid = document.getElementById('grid-' + tab);
+  var list = document.getElementById('list-' + tab);
+  var container = grid || list;
+  if (!container) return;
+
+  // Show loading skeleton
+  if (!append && grid) {
+    grid.innerHTML = '';
+    for (var i=0;i<6;i++) { var s=document.createElement('div'); s.className='skel'; grid.appendChild(s); }
+  } else if (!append && list) {
+    list.innerHTML = '';
+  }
+
+  var search = document.getElementById('searchInput').value.trim();
+  var cat = tab === 'children' ? 'child' : tab === 'youth' ? 'youth' : tab === 'adults' ? 'adult' : tab === 'journalists' ? 'journalist' : 'prisoner';
+  if (!append || search !== currentSearch) {
+    currentOffset = 0;
+    currentItems = [];
+    currentTotal = 0;
+    currentSearch = search;
+  }
+
+  try {
+    var result = await fetchData(cat, search, PAGE_SIZE, currentOffset);
+    currentItems = append ? currentItems.concat(result.items) : result.items;
+    currentOffset += result.items.length;
+    currentTotal = typeof result.total === 'number' ? result.total : currentItems.length;
+    await loadPrayerCounts(currentItems);
+    if (grid) renderGrid(grid, currentItems, tab);
+    else renderList(list, currentItems, tab);
+    updatePager(currentItems.length, currentTotal);
+  } catch(e) {
+    // Fallback to local
+    var local = getLocal().filter(function(m){ return m.category===cat; });
+    if (search) local = local.filter(function(m){ return m.name.toLowerCase().includes(search.toLowerCase()); });
+    currentItems = local;
+    currentTotal = local.length;
+    if (grid) renderGrid(grid, local, tab);
+    else renderList(list, local, tab);
+    updatePager(local.length, local.length);
+  }
+}
+
+function renderGrid(container, items, tab) {
+  container.innerHTML = '';
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty"><span class="empty-icon">🕊</span><p class="empty-text">لم يُضف أحد بعد.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ أضف / Add</button>':'')+'</div>';
+    return;
+  }
+  items.forEach(function(m) {
+    var card = document.createElement('div');
+    card.className = 'martyr-card';
+    card.onclick = function(){ showDetail(m); };
+    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : '<span class="no-photo">🤍</span>';
+    var date = m.date ? '<span class="date-badge">'+fmtDate(m.date)+'</span>' : '';
+    card.innerHTML = '<div class="martyr-photo">'+photo+date+'</div><div class="martyr-body"><div class="martyr-name">'+esc(m.name)+'</div><div class="martyr-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'غزة')+'</div>'+renderPrayerCountBadge(m.id)+'<div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div>';
+    container.appendChild(card);
+    setupTributeButtons(card);
+  });
+  // Apply falling-name animation to rendered names (if user allows motion)
+  try { applyFallingNames(container); } catch(e) {}
+  // Start floating names overlay using current items' names
+  try { startFloatingNames(items.map(function(i){ return i.name || ''; })); } catch(e) {}
+  if (martyrsAdmin) {
+    var add = document.createElement('div');
+    add.className = 'add-card';
+    add.onclick = function(){ openModal(tab); };
+    add.innerHTML = '<span class="plus">+</span><span>أضف / Add</span>';
+    container.appendChild(add);
+  }
+}
+
+function renderList(container, items, type) {
+  container.innerHTML = '';
+  var icon = type==='journalists' ? '📸' : '⛓';
+  var badgeClass = type==='journalists' ? 'badge-j' : 'badge-p';
+  var badgeText = type==='journalists' ? 'صحفي / Press' : 'أسير / Prisoner';
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty"><span class="empty-icon">'+icon+'</span><p class="empty-text">لم يُضف أحد بعد.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ أضف / Add</button>':'')+'</div>';
+    return;
+  }
+  items.forEach(function(m) {
+    var row = document.createElement('div');
+    row.className = 'list-card';
+    row.onclick = function(){ showDetail(m); };
+    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : icon;
+    row.innerHTML = '<div class="list-avatar">'+photo+'</div><div style="flex:1;"><div class="list-name">'+esc(m.name)+'</div><div class="list-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'')+(m.date?' · '+fmtDate(m.date):'')+'</div>'+(m.story?'<div class="list-story">'+esc(m.story)+'</div>':'')+'<div class="prayer-count-label">'+renderPrayerCountText(m.id)+'</div><div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div><span class="badge '+badgeClass+'">'+badgeText+'</span>';
+    container.appendChild(row);
+    setupTributeButtons(row);
+  });
+  // Apply falling-name animation to rendered list names
+  try { applyFallingNames(container); } catch(e) {}
+  // Start floating names overlay using current list items' names
+  try { startFloatingNames(items.map(function(i){ return i.name || ''; })); } catch(e) {}
+  if (martyrsAdmin) {
+    var addRow = document.createElement('div');
+    addRow.className = 'add-list-row';
+    addRow.textContent = '+ أضف اسماً / Add';
+    addRow.onclick = function(){ openModal(type==='journalists'?'journalist':'prisoner'); };
+    container.appendChild(addRow);
+  }
+}
+
+// Enhance martyr/list name elements with the falling-name animation
+function applyFallingNames(root) {
+  if (!root) return;
+  // respect user preference set earlier
+  if (document.documentElement.classList.contains('prefers-reduced-motion')) return;
+  // page-level disable flag
+  if (document.documentElement.classList.contains('no-falling')) return;
+  // Do not apply inside the detail modal (disable animation in modal)
+  if (root.id === 'detailContent' || (root.closest && root.closest('#detailModal'))) return;
+  var els = root.querySelectorAll('.martyr-name, .list-name, .detail-name');
+  els.forEach(function(el, idx){
+    if (el.dataset.fallingApplied) return;
+    var txt = el.textContent.trim();
+    if (!txt) return;
+    var wrapper = document.createElement('span');
+    wrapper.className = 'falling-name';
+    // stagger and randomness
+    var delay = (idx % 12) * 0.08 + (Math.random() * 0.06);
+    var fallX = Math.round((Math.random() * 40) - 20) + 'px';
+    var rot = Math.round((Math.random() * 12) - 6) + 'deg';
+    wrapper.style.setProperty('--fall-delay', delay + 's');
+    wrapper.style.setProperty('--fall-x', fallX);
+    wrapper.style.setProperty('--fall-rot-start', (-Math.abs(parseFloat(rot))||-6) + 'deg');
+    wrapper.style.setProperty('--fall-rot-end', rot);
+    var inner = document.createElement('span'); inner.textContent = txt;
+    wrapper.appendChild(inner);
+    el.textContent = '';
+    el.appendChild(wrapper);
+    el.dataset.fallingApplied = '1';
+  });
+}
+
+/* Floating names: spawn names at random horizontal positions and intervals
+   - uses #namesOverlay
+   - respects prefers-reduced-motion
+   - removes elements when animation ends
+*/
+var __floatingTimer = null;
+var __floatingActive = 0;
+function spawnFloatingName(text) {
+  if (!text) return;
+  if (document.documentElement.classList.contains('prefers-reduced-motion')) return;
+  // page-level disable flag
+  if (document.documentElement.classList.contains('no-falling')) return;
+  // do not spawn while detail modal is open
+  try { if (document.getElementById('detailModal') && document.getElementById('detailModal').classList.contains('active')) return; } catch(e) {}
+  var overlay = document.getElementById('namesOverlay');
+  if (!overlay) return;
+  // limit active instances
+  if (__floatingActive > 28) return;
+  var el = document.createElement('div');
+  el.className = 'floating-name';
+  // size variant
+  var sizeClass = Math.random() < 0.5 ? 'medium' : (Math.random() < 0.5 ? 'small' : 'large');
+  el.classList.add(sizeClass);
+  el.textContent = text;
+  // random horizontal position across viewport
+  var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+  var left = Math.floor(Math.random() * (vw - 120));
+  el.style.left = left + 'px';
+  // random duration between 2s and 6s
+  var dur = (2 + Math.random() * 4).toFixed(2) + 's';
+  el.style.animationDuration = dur;
+  // random delay tiny
+  el.style.animationDelay = (Math.random()*0.6).toFixed(2) + 's';
+  // blur depth multiplier
+  var depth = (0.3 + Math.random() * 1.2).toFixed(2);
+  el.style.setProperty('--fall-blur-mult', depth);
+  // horizontal drift variable
+  var fallx = Math.round((Math.random() * 120) - 60) + 'px';
+  el.style.setProperty('--fall-x', fallx);
+  // rotation random
+  var rot = Math.round((Math.random() * 18) - 9) + 'deg';
+  el.style.setProperty('--fall-rot-start', (-Math.abs(parseFloat(rot))||-6) + 'deg');
+  el.style.setProperty('--fall-rot-end', rot);
+  overlay.appendChild(el);
+  __floatingActive++;
+  // remove after animation
+  var onEnd = function(){
+    el.removeEventListener('animationend', onEnd);
+    if (el.parentNode) el.parentNode.removeChild(el);
+    __floatingActive = Math.max(0, __floatingActive-1);
+  };
+  el.addEventListener('animationend', onEnd);
+}
+
+function startFloatingNames(names) {
+  if (!names || !names.length) return;
+  if (document.documentElement.classList.contains('prefers-reduced-motion')) return;
+  // page-level disable flag
+  if (document.documentElement.classList.contains('no-falling')) return;
+  // stop existing
+  if (__floatingTimer) { clearTimeout(__floatingTimer); __floatingTimer = null; }
+  function scheduleNext() {
+    var delay = 400 + Math.random() * 1600; // 0.4s - 2s random
+    __floatingTimer = setTimeout(function(){
+      // pick a random name
+      var n = names[Math.floor(Math.random() * names.length)];
+      spawnFloatingName(n);
+      // schedule again
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+}
+
+// stop generator
+function stopFloatingNames(){ if (__floatingTimer) clearTimeout(__floatingTimer); __floatingTimer=null; }
+
+// ── DETAIL ──
+async function showDetail(m) {
+  currentDetailMartyrId = m.id || null;
+  var catLabels = {child:'🌸 طفل / Child',youth:'🌿 شاب / Youth',adult:'🕊 كبير / Adult',journalist:'📸 صحفي / Journalist',prisoner:'⛓ أسير / Prisoner'};
+  var content = document.getElementById('detailContent');
+  content.innerHTML =
+    '<div class="modal-header"><div class="modal-title">'+esc(m.name)+'</div><button class="modal-close" onclick="closeModal(\'detailModal\')">✕</button></div>'+
+    (m.photo?'<img class="detail-photo" src="'+m.photo+'" alt=""/>':'<div class="detail-placeholder">🤍</div>')+
+    '<div class="detail-name">'+esc(m.name)+'</div>'+ 
+    '<div class="detail-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'غزة')+(m.date?' · '+fmtDate(m.date):'')+'</div>'+ 
+    '<span class="detail-badge">'+(catLabels[m.category]||m.category)+'</span>'+ 
+    (m.story?'<div class="detail-story">'+esc(m.story)+'</div>':'')+
+    '<div class="detail-prayer-actions"><button class="share-btn add-prayer-btn" data-id="'+esc(m.id)+'" data-name="'+esc(m.name)+'">🕯️ أضف دعاء</button></div>'+ 
+    '<div id="detailPrayers" class="detail-prayers"></div>'+ 
+    '<div class="share-row">'+
+    '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">𝕏 تغريد</button>'+ 
+    '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">🔗 نسخ الرابط</button>'+ 
+    '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">↗ مشاركة</button>'+ 
+    '</div>';
+  // remove any floating-name elements immediately and stop generator
+  try {
+    if (typeof stopFloatingNames === 'function') stopFloatingNames();
+    var _ov = document.getElementById('namesOverlay');
+    if (_ov) { while (_ov.firstChild) _ov.removeChild(_ov.firstChild); }
+  } catch(e) {}
+  // apply falling animation to the modal content if allowed (will no-op inside modal)
+  try { applyFallingNames(content); } catch(e) {}
+  document.getElementById('detailModal').classList.add('active');
+  setupTributeButtons(content);
+  setupPrayerButtons(content);
+  await loadMartyrPrayers(m.id);
+  document.body.style.overflow = 'hidden';
+}
+
+// ── SHARE FUNCTIONS ──
+function shareX(name) {
+  var text = 'شهيد من غزة: ' + name + ' — سجل الشهداء الفلسطينيين\n🔗 ' + window.location.origin + '/Martyrs.html\n#غزة #فلسطين #Gaza';
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+}
+function copyLink(name) {
+  var url = window.location.origin + '/Martyrs.html?q=' + encodeURIComponent(name);
+  navigator.clipboard.writeText(url).then(function(){ showToast('✓ تم نسخ الرابط / Link copied'); }).catch(function(){ showToast('✓ ' + url); });
+}
+function nativeShare(name) {
+  if (navigator.share) {
+    navigator.share({ title: 'شهيد: ' + name, text: 'من سجل الشهداء الفلسطينيين — FALASTEEN.INK', url: window.location.href }).catch(function(){});
+  } else { copyLink(name); }
+}
+
+// ── MODAL ──
+async function openModal(tab) {
+  if (!(await requireMartyrsAdmin())) return;
+  if (tab) {
+    var catMap = {children:'child',youth:'youth',adults:'adult',journalist:'journalist',prisoner:'prisoner',child:'child'};
+    var val = catMap[tab]||'';
+    document.getElementById('mCategory').value = val;
+    document.getElementById('modalTitle').textContent = tab==='journalist'?'إضافة صحفي شهيد':tab==='prisoner'?'إضافة أسير':'إضافة شهيد';
+  }
+  document.getElementById('addModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function(){ document.getElementById('mName').focus(); },100);
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+  if (id==='addModal') resetForm();
+  // when closing detail modal, resume floating names using current items
+  if (id === 'detailModal') {
+    try {
+      if (typeof startFloatingNames === 'function' && Array.isArray(currentItems) && currentItems.length) {
+        startFloatingNames(currentItems.map(function(i){ return i.name || ''; }));
+      }
+    } catch(e) {}
+  }
+}
+function closeOnOverlay(e,id) { if(e.target===document.getElementById(id))closeModal(id); }
+function resetForm() {
+  ['mName','mAge','mDate','mCity','mStory','mSource'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('mCategory').value='';
+  document.getElementById('mGender').value='';
+  document.getElementById('photoInput').value='';
+  document.getElementById('photoPreview').style.display='none';
+  document.querySelector('.photo-slot .slot-icon').style.display='block';
+  document.querySelector('.photo-slot p').style.display='block';
+  photoData=null;
+}
+function previewPhoto(input) {
+  if (!input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    photoData = e.target.result;
+    var img = document.getElementById('photoPreview');
+    img.src = e.target.result; img.style.display='block';
+    document.querySelector('.photo-slot .slot-icon').style.display='none';
+    document.querySelector('.photo-slot p').style.display='none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+async function saveMartyr(e) {
+  e.preventDefault();
+  if (!(await requireMartyrsAdmin())) return;
+  var btn = document.getElementById('saveBtn');
+  btn.disabled=true; btn.textContent='⏳ جاري الحفظ...';
+  var martyr = {
+    id:'M_'+Date.now(),
+    name:document.getElementById('mName').value.trim(),
+    category:document.getElementById('mCategory').value,
+    gender:document.getElementById('mGender').value||null,
+    age:document.getElementById('mAge').value||null,
+    date:document.getElementById('mDate').value||null,
+    city:document.getElementById('mCity').value.trim()||'غزة',
+    story:document.getElementById('mStory').value.trim()||null,
+    source:document.getElementById('mSource').value.trim()||null,
+    photo:photoData||null,
+    created_at:new Date().toISOString()
+  };
+  try {
+    var res = await fetch(FL.SUPABASE_URL+'/rest/v1/martyrs', {
+      method:'POST',
+      headers:await FL.authHeaders({'Prefer':'return=minimal'}),
+      body:JSON.stringify(martyr)
+    });
+    if (!res.ok && res.status !== 201) throw new Error('Save failed');
+  } catch(err){
+    showToast('فشل الحفظ — تحقق من صلاحيات الأدمن / Save failed');
+    btn.disabled=false; btn.innerHTML='🕊 حفظ في السجل / Save';
+    return;
+  }
+  closeModal('addModal');
+  showToast('✅ تم الحفظ / Saved');
+  await loadCounters();
+  await loadSection(currentTab, false);
+  btn.disabled=false; btn.innerHTML='🕊 حفظ في السجل / Save';
+}
+
+// ── TABS ──
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('sec-'+tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  loadSection(tab, false);
+}
+
+// ── SEARCH ──
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(function(){ loadSection(currentTab, false); }, 400);
+}
+
+// ── LOCAL FALLBACK ──
+function getLocal() { try{return JSON.parse(localStorage.getItem('fl_martyrs')||'[]');}catch(e){return[];} }
+function getMartyrTributes(id) {
+  if (!id) return {candles:0,roses:0,prayers:0};
+  try { var map = JSON.parse(localStorage.getItem('fl_martyr_tributes')||'{}'); return map[id] || {candles:0,roses:0,prayers:0}; } catch(e) { return {candles:0,roses:0,prayers:0}; }
+}
+function saveMartyrTributes(id, tributes) {
+  if (!id) return;
+  try { var map = JSON.parse(localStorage.getItem('fl_martyr_tributes')||'{}'); map[id] = tributes; localStorage.setItem('fl_martyr_tributes', JSON.stringify(map)); } catch(e) {}
+}
+function addMartyrTribute(id, type) {
+  var tributes = getMartyrTributes(id);
+  if (typeof tributes[type] !== 'number') tributes[type] = 0;
+  tributes[type]++;
+  saveMartyrTributes(id, tributes);
+  return tributes;
+}
+function tributeButtonsHtml(m) {
+  var t = getMartyrTributes(m.id);
+  return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">🕯️ '+t.candles+'</button>' +
+         '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">🌹 '+t.roses+'</button>' +
+         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">🤲 '+t.prayers+'</button>';
+}
+function updateTributeButtons(id, tributes) {
+  var safeId = id.replace(/"/g,'\\"');
+  document.querySelectorAll('[data-id="'+safeId+'"]').forEach(function(btn){
+    var type = btn.dataset.type;
+    if (type === 'candles') btn.textContent = '🕯️ ' + (tributes.candles || 0);
+    if (type === 'roses') btn.textContent = '🌹 ' + (tributes.roses || 0);
+    if (type === 'prayers') btn.textContent = '🤲 ' + (tributes.prayers || 0);
+  });
+}
+function setupTributeButtons(root) {
+  root.querySelectorAll('.tribute-btn').forEach(function(btn){
+    btn.removeEventListener('click', handleTributeClick);
+    btn.addEventListener('click', handleTributeClick);
+  });
+}
+function handleTributeClick(e) {
+  e.stopPropagation();
+  var btn = e.currentTarget;
+  var id = btn.dataset.id;
+  var type = btn.dataset.type;
+  if (!id || !type) return;
+  var counts = addMartyrTribute(id, type);
+  updateTributeButtons(id, counts);
+  var label = type === 'candles' ? 'شمعة' : type === 'roses' ? 'وردة' : 'دعاء';
+  showToast('✓ تمت إضافة ' + label);
+}
+
+// ── HELPERS ──
+function fmtDate(d){if(!d)return'';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
+function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+
+// ── INIT ──
+window.addEventListener('load',async function(){
+  await initMartyrsAdmin();
+  await loadCounters();
+  initPrayerRealtime();
+  setupPrayerPresetButtons();
+  await loadSection('children', false);
+});
+
+function initPrayerRealtime() {
+  var sb = FL.getSupabaseClient();
+  if (!sb || !sb.channel) return;
+  try {
+    prayerRealtimeChannel = sb.channel('public:martyr_prayers')
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'martyr_prayers' }, function(payload) {
+        if (!payload || !payload.new) return;
+        if (payload.new.martyr_id === currentDetailMartyrId) {
+          loadMartyrPrayers(currentDetailMartyrId);
+        }
+      })
+      .subscribe();
+  } catch (e) {
+    console.warn('Realtime unavailable for martyr prayers', e);
+  }
+}
+
+async function loadMartyrPrayers(martyrId) {
+  var container = document.getElementById('detailPrayers');
+  if (!container) return;
+  if (!martyrId) {
+    container.innerHTML = '<div class="detail-prayers-empty">لا توجد بيانات لعرض الأدعية.</div>';
+    return;
+  }
+  try {
+    var prayers = await FL.rest('martyr_prayers', { query: 'martyr_id=eq.' + encodeURIComponent(martyrId) + '&order=created_at.desc' });
+    renderPrayerList(prayers, container);
+  } catch (e) {
+    container.innerHTML = '<div class="detail-prayers-empty">فشل تحميل الأدعية. حاول مرة أخرى.</div>';
+  }
+}
+
+function renderPrayerList(prayers, container) {
+  if (!container) return;
+  if (!Array.isArray(prayers) || prayers.length === 0) {
+    container.innerHTML = '<div class="detail-prayers-empty">لا توجد أدعية بعد. كن أول من يدعو.</div>';
+    return;
+  }
+  container.innerHTML = '<div class="detail-prayers-header"><span>آخر الأدعية</span><span>'+prayers.length+' دعاء</span></div>' +
+    prayers.map(function(p) {
+      return '<div class="prayer-card"><div class="prayer-meta"><span class="prayer-user">'+esc(p.user_name || 'زائر')+'</span><span>'+fmtDateTime(p.created_at)+'</span></div><div class="prayer-text">'+esc(p.prayer_text)+'</div></div>';
+    }).join('');
+}
+
+function openPrayerModal(martyrId, martyrName) {
+  var form = document.getElementById('prayerForm');
+  if (!form) return;
+  document.getElementById('prayerMartyrId').value = martyrId || '';
+  document.getElementById('prayerName').value = '';
+  document.getElementById('prayerText').value = '';
+  document.querySelectorAll('.preset-btn').forEach(function(btn){ btn.classList.remove('active'); });
+  document.getElementById('prayerModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePrayerModal() {
+  closeModal('prayerModal');
+  var form = document.getElementById('prayerForm');
+  if (form) form.reset();
+}
+
+function setupPrayerButtons(root) {
+  root.querySelectorAll('.add-prayer-btn').forEach(function(btn){
+    btn.removeEventListener('click', handleOpenPrayerModal);
+    btn.addEventListener('click', handleOpenPrayerModal);
+  });
+}
+
+function handleOpenPrayerModal(e) {
+  e.stopPropagation();
+  var btn = e.currentTarget;
+  openPrayerModal(btn.dataset.id, btn.dataset.name);
+}
+
+function setupPrayerPresetButtons() {
+  document.querySelectorAll('.preset-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.preset-btn').forEach(function(item){ item.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('prayerText').value = btn.dataset.text || '';
+    });
+  });
+}
+
+async function sendPrayer(e) {
+  e.preventDefault();
+  var martyrId = document.getElementById('prayerMartyrId').value;
+  var userName = document.getElementById('prayerName').value.trim() || 'زائر';
+  var prayerText = document.getElementById('prayerText').value.trim();
+  if (!martyrId || !prayerText) {
+    showToast('يرجى إدخال اسمك ونص الدعاء');
+    return;
+  }
+  var payload = {
+    martyr_id: martyrId,
+    user_name: userName,
+    prayer_text: prayerText
+  };
+  try {
+    await FL.rest('martyr_prayers', { method: 'POST', body: payload, prefer: 'return=minimal' });
+    closePrayerModal();
+    showToast('✓ تم حفظ الدعاء');
+    if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
+  } catch (err) {
+    console.warn('Failed to save prayer', err);
+    showToast('فشل حفظ الدعاء، حاول مرة أخرى', 'err');
+  }
+}
+
+function fmtDateTime(value) {
+  if (!value) return '';
+  var date = new Date(value);
+  if (isNaN(date.getTime())) return value;
+  return date.toLocaleString('ar-EG', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function showUploadProgress(inp) {
+  if (!inp.files || !inp.files[0]) return;
+  var file = inp.files[0];
+  var bar = document.getElementById('uploadProgress');
+  var fill = document.getElementById('uploadFill');
+  if (!bar) return;
+  bar.style.display = 'block';
+  var start = Date.now();
+  var reader = new FileReader();
+  reader.onprogress = function(e) {
+    if (e.lengthComputable) {
+      fill.style.width = (e.loaded / e.total * 100) + '%';
+    }
+  };
+  reader.onload = function() {
+    fill.style.width = '100%';
+    setTimeout(function() { bar.style.display='none'; fill.style.width='0%'; }, 800);
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

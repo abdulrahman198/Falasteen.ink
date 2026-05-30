@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script>
+function filterPeriod(period, btn) {
+  console.log('[FLLeaderboard] filterPeriod called.', period);
+  document.querySelectorAll('.period-btn, .chip').forEach(function(b){ b.classList.remove('on','active'); });
+  btn.classList.add('on'); btn.classList.add('active');
+  // Filter localStorage data by period
+  var p = {};
+  try { p = JSON.parse(localStorage.getItem('fl_guardian_profile')||'{}'); } catch(e){}
+  var pts = p.pts || 0;
+  // Re-render leaderboard with period label
+  if (typeof renderLeaderboard === 'function') renderLeaderboard(period);
+  else if (typeof loadLeaderboard === 'function') loadLeaderboard(period);
+}
+
+</script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#E8221F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>المتصدرون | FALASTEEN.INK</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:72px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+
+.hero { padding:90px 18px 28px; background:linear-gradient(180deg,rgba(232,34,31,.05) 0%,transparent 100%); }
+.hero-tag { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:.28em; margin-bottom:8px; display:block; }
+.hero-title { font-size:clamp(2rem,6vw,3.2rem); font-weight:900; line-height:1.1; margin-bottom:8px; }
+.hero-title .red { color:var(--red); }
+.hero-desc { font-size:0.86rem; color:var(--dim); line-height:1.7; max-width:460px; }
+
+/* PODIUM */
+.podium { padding:24px 18px; display:flex; align-items:flex-end; justify-content:center; gap:8px; margin-bottom:2px; }
+.podium-item { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.pod-avatar { border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; }
+.pod-1 .pod-avatar { width:64px; height:64px; background:linear-gradient(135deg,var(--red),var(--red2)); border:3px solid #FFD700; }
+.pod-2 .pod-avatar { width:52px; height:52px; background:linear-gradient(135deg,#333,#1a1a1a); border:2px solid #C0C0C0; }
+.pod-3 .pod-avatar { width:48px; height:48px; background:linear-gradient(135deg,#3a2000,#221200); border:2px solid #CD7F32; }
+.pod-crown { font-size:1.2rem; }
+.pod-name { font-family:"Courier New",monospace; font-size:0.56rem; color:var(--text); letter-spacing:.06em; text-align:center; }
+.pod-gp { font-family:"Courier New",monospace; font-size:0.62rem; color:var(--red); }
+.pod-base { width:100%; display:flex; align-items:flex-end; justify-content:center; }
+.pod-bar { width:56px; display:flex; align-items:center; justify-content:center; font-family:"Courier New",monospace; font-size:0.7rem; font-weight:700; }
+.pod-1 .pod-bar { height:56px; background:linear-gradient(180deg,var(--red),var(--red2)); color:#fff; }
+.pod-2 .pod-bar { height:44px; background:rgba(192,192,192,.15); border:1px solid rgba(192,192,192,.3); color:#C0C0C0; }
+.pod-3 .pod-bar { height:36px; background:rgba(205,127,50,.12); border:1px solid rgba(205,127,50,.3); color:#CD7F32; }
+
+/* STATISTICS PAGE OVERRIDES: disable falling/floating names and enhance counters */
+.names-overlay, .floating-name, .falling-name { display: none !important; pointer-events: none !important; }
+.pod-gp, .pod-bar, .l-gp, .mr-rank { font-weight: 900; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+.pod-gp { font-size: 1.05rem; }
+.mr-rank { font-size: 1.6rem; }
+
+/* PERIOD TABS */
+.period-tabs { display:flex; background:var(--s1); border-bottom:1px solid rgba(93,63,59,.12); }
+.ptab { flex:1; padding:12px 8px; background:none; border:none; cursor:pointer; color:var(--dim); font-size:0.74rem; font-weight:600; border-bottom:2px solid transparent; transition:all .2s; font-family:Arial,sans-serif; text-align:center; }
+.ptab.active { color:var(--red); border-bottom-color:var(--red); }
+
+/* FULL LIST */
+.list-header { display:grid; grid-template-columns:40px 1fr 80px 60px; gap:8px; padding:10px 18px; background:var(--s1); border-bottom:1px solid rgba(93,63,59,.12); }
+.list-header span { font-family:"Courier New",monospace; font-size:0.5rem; color:var(--dim); letter-spacing:.14em; text-transform:uppercase; }
+.leaderboard { padding:0 18px; display:flex; flex-direction:column; gap:2px; margin-bottom:24px; }
+.leader-row { background:var(--s2); padding:14px; display:grid; grid-template-columns:40px 1fr 80px 60px; gap:8px; align-items:center; transition:background .2s; cursor:default; }
+.leader-row:hover { background:var(--s3); }
+.leader-row.me { border-right:3px solid var(--red); background:rgba(232,34,31,.05)!important; }
+.rank { font-family:"Courier New",monospace; font-size:1rem; font-weight:900; text-align:center; }
+.r1c { color:#FFD700; } .r2c { color:#C0C0C0; } .r3c { color:#CD7F32; } .roc { color:var(--dim); }
+.l-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; color:#fff; flex-shrink:0; }
+.l-info { display:flex; align-items:center; gap:10px; }
+.l-name { font-family:"Courier New",monospace; font-size:0.78rem; font-weight:600; margin-bottom:1px; }
+.l-title { font-size:0.7rem; color:var(--dim); }
+.l-gp { font-family:"Courier New",monospace; font-size:0.88rem; font-weight:700; color:var(--red); text-align:right; }
+.l-change { font-family:"Courier New",monospace; font-size:0.5rem; text-align:right; }
+.up { color:var(--green); } .down { color:var(--red); } .same { color:var(--dim); }
+
+/* MY RANK */
+.my-rank-bar { background:rgba(232,34,31,.06); border:1px solid rgba(232,34,31,.2); margin:0 18px 2px; padding:14px; display:flex; align-items:center; gap:14px; }
+.mr-label { font-family:"Courier New",monospace; font-size:0.52rem; color:var(--red); letter-spacing:.16em; flex-shrink:0; }
+.mr-rank { font-size:1.4rem; font-weight:900; }
+.mr-sub { font-size:0.72rem; color:var(--dim); }
+
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:0.54rem; transition:color .2s; }
+.bottom-nav a:hover, .bottom-nav a.active { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <a href="Guardian_hub1.html" style="font-family:'Courier New',monospace;font-size:.62rem;color:var(--dim);text-decoration:none;">🛡 مركزي / My Hub</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">لوحة الشرف — HONOR ROLL</span>
+  <h1 class="hero-title">حراس <span class="red">الذاكرة</span></h1>
+  <p class="hero-desc">Memory Guardians — الذين يحفظون التاريخ يستحقون الشرف والتكريم.</p>
+</div>
+
+<!-- PODIUM -->
+<div class="podium">
+  <div class="podium-item pod-2">
+    <div class="pod-avatar">م.م</div>
+    <div class="pod-name">حارس ٢</div>
+    <div class="pod-gp">14,200 GP</div>
+    <div class="pod-base"><div class="pod-bar">2</div></div>
+  </div>
+  <div class="podium-item pod-1">
+    <div class="pod-crown">👑</div>
+    <div class="pod-avatar">ن.ش</div>
+    <div class="pod-name">حارس النور_SHELD</div>
+    <div class="pod-gp">18,550 GP</div>
+    <div class="pod-base"><div class="pod-bar">1</div></div>
+  </div>
+  <div class="podium-item pod-3">
+    <div class="pod-avatar">ر.24</div>
+    <div class="pod-name">حارس ٣</div>
+    <div class="pod-gp">12,890 GP</div>
+    <div class="pod-base"><div class="pod-bar">3</div></div>
+  </div>
+</div>
+
+<!-- MY RANK -->
+<div class="my-rank-bar">
+  <span class="mr-label">ترتيبك / YOUR RANK</span>
+  <div>
+    <div class="mr-rank">#14</div>
+    <div class="mr-sub">حارس ٦ · 4,482 GP</div>
+  </div>
+</div>
+
+<!-- PERIOD TABS -->
+<div class="period-tabs">
+  <button class="ptab active" onclick="setPeriod(this)">هذا الشهر / This Month</button>
+  <button class="ptab" onclick="setPeriod(this)">هذا الأسبوع / Week</button>
+  <button class="ptab" onclick="setPeriod(this)">كل الوقت / All Time</button>
+</div>
+
+<!-- LIST HEADER -->
+<div class="list-header">
+  <span>#</span><span>الحارس / Guardian</span><span>النقاط / GP</span><span>تغيير / Δ</span>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="leaderboard">
+
+  <div class="leader-row">
+    <span class="rank r1c">1</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#5a4000,#3a2800);">ن.ش</div><div><div class="l-name">حارس النور_SHELD</div><div class="l-title">الحارس الأبدي / The Eternal Sentry</div></div></div>
+    <div class="l-gp">18,550</div><div class="l-change up">↑ +820</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank r2c">2</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#003a1a,#002210);">م.م</div><div><div class="l-name">حارس ٢</div><div class="l-title">حارس الزيتون / Guardian of Olives</div></div></div>
+    <div class="l-gp">14,200</div><div class="l-change up">↑ +440</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank r3c">3</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#3a1a00,#220e00);">ر.24</div><div><div class="l-name">حارس ٣</div><div class="l-title">مدافع التراث / Defender of Heritage</div></div></div>
+    <div class="l-gp">12,890</div><div class="l-change same">→ 0</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank roc">4</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#1a003a,#0e0020);">س.ز</div><div><div class="l-name">CITADEL_ZERO</div><div class="l-title">قائد إقليمي / Regional Commander</div></div></div>
+    <div class="l-gp">11,200</div><div class="l-change up">↑ +300</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank roc">5</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#003a3a,#002222);">أ.ح</div><div><div class="l-name">OAK_KEEPER</div><div class="l-title">مؤرخ الذاكرة / Memory Archivist</div></div></div>
+    <div class="l-gp">9,450</div><div class="l-change down">↓ -120</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank roc">6</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#2a2a00,#1a1a00);">ط.م</div><div><div class="l-name">SILENT_PATH</div><div class="l-title">طليعة استطلاع / Scout Sentinel</div></div></div>
+    <div class="l-gp">8,100</div><div class="l-change up">↑ +200</div>
+  </div>
+
+  <div class="leader-row">
+    <span class="rank roc">7</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,#003a00,#002200);">ف.ن</div><div><div class="l-name">VERDANT_BLOOM</div><div class="l-title">حارس الحياة / Life Guard</div></div></div>
+    <div class="l-gp">7,220</div><div class="l-change same">→ 0</div>
+  </div>
+
+  <div class="leader-row" style="opacity:.6;">
+    <span class="rank roc">8–13</span>
+    <div class="l-info"><div style="font-size:.78rem;color:var(--dim);">حراس آخرون / Other Guardians...</div></div>
+    <div class="l-gp" style="color:var(--dim);">—</div><div></div>
+  </div>
+
+  <div class="leader-row me">
+    <span class="rank roc">14</span>
+    <div class="l-info"><div class="l-avatar" style="background:linear-gradient(135deg,var(--red),var(--red2));">خ.ر</div><div><div class="l-name">حارس ٦ ← أنت / You</div><div class="l-title">حارس / Guardian</div></div></div>
+    <div class="l-gp">4,482</div><div class="l-change up">↑ +182</div>
+  </div>
+
+</div>
+  <script>
+  // Stop any floating/falling-name generators if loaded by other pages
+  if (window.stopFloatingNames) {
+    try { stopFloatingNames(); } catch(e) { /* ignore */ }
+  }
+  // Hide overlay element if present (extra guard)
+  var _ov = document.getElementById('namesOverlay'); if (_ov) _ov.style.display = 'none';
+
+  // Counter animation for numeric elements on page load
+  function animateNumberElement(el, duration) {
+    var raw = (el.textContent || '').replace(/[^0-9]/g,'');
+    var target = parseInt(raw,10);
+    if (!target || target <= 0) return;
+    el.dataset.target = target;
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      // ease out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var value = Math.floor(eased * target);
+      el.textContent = value.toLocaleString();
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString();
+    }
+    requestAnimationFrame(step);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var els = document.querySelectorAll('.pod-gp, .pod-bar, .l-gp, .mr-rank');
+    els.forEach(function(el){
+      var dur = 900 + Math.random() * 700; // 0.9s - 1.6s
+      animateNumberElement(el, dur);
+    });
+  });
+  </script>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>Guardians</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>Profile</a>
+</nav>
+
+<script>
+function setPeriod(el) {
+  document.querySelectorAll('.ptab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+}
+</script>
+
+<script>
+if("serviceWorker" in navigator && window.location.protocol !== "file:"){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js")
+    .then(function(r){console.log("SW registered ✓");})
+    .catch(function(e){console.log("SW error:",e);});
+  });
+}
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>

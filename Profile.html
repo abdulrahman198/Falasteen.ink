@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>الملف الشخصي | FALASTEEN.INK</title>
+<link rel="stylesheet" href="styles.css"/>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+<script src="web3-token.js" defer></script>
+<script src="rewards-system.js" defer></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0e0e0e; --s1:#131313; --s2:#1c1b1b; --s3:#201f1f; --s4:#353534; --red:#E8221F; --red2:#930006; --green:#00b954; --text:#e5e2e1; --dim:#9a9898; }
+body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tahoma,sans-serif; min-height:100vh; padding-bottom:80px; }
+.topnav { position:fixed; top:0; width:100%; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:rgba(14,14,14,.97); border-bottom:1px solid rgba(93,63,59,.12); }
+.logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+.logo-dot { color:var(--red); }
+.topnav-right { display:flex; gap:8px; align-items:center; }
+.lang-btn { background:var(--s2); border:1px solid rgba(93,63,59,.3); color:var(--dim); font-size:.68rem; font-family:"Courier New",monospace; padding:5px 10px; cursor:pointer; }
+.lang-btn:hover { background:var(--red); color:#fff; }
+
+/* COVER */
+.cover { height:130px; background:linear-gradient(135deg,var(--red2) 0%,#1a0505 40%,var(--bg) 100%); margin-top:54px; position:relative; overflow:hidden; cursor:pointer; }
+.cover::after { content:'GUARDIAN'; position:absolute; bottom:6px; left:14px; font-family:"Courier New",monospace; font-size:3rem; font-weight:900; color:rgba(255,255,255,.04); }
+.cover-edit-hint { position:absolute; top:10px; right:10px; background:rgba(0,0,0,.5); color:var(--dim); font-size:.6rem; padding:4px 8px; border-radius:2px; opacity:0; transition:opacity .2s; }
+.cover:hover .cover-edit-hint { opacity:1; }
+.cover-input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+#coverImg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+
+/* PROFILE INFO */
+.profile-info { padding:0 18px 20px; }
+.avatar-wrap { position:relative; display:inline-block; margin-top:-30px; margin-bottom:12px; cursor:pointer; }
+.avatar { width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--red),var(--red2)); display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:900; color:#fff; border:3px solid var(--bg); overflow:hidden; }
+.avatar img { width:100%; height:100%; object-fit:cover; }
+.avatar-edit { position:absolute; bottom:0; right:0; width:22px; height:22px; background:var(--red); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem; border:2px solid var(--bg); cursor:pointer; }
+.avatar-input { position:absolute; inset:0; opacity:0; cursor:pointer; border-radius:50%; }
+.vbadge { position:absolute; top:2px; left:-2px; width:18px; height:18px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.58rem; color:#fff; border:2px solid var(--bg); }
+.profile-name { font-size:1.3rem; font-weight:900; margin-bottom:3px; }
+.profile-email { font-family:"Courier New",monospace; font-size:.62rem; color:var(--dim); margin-bottom:8px; }
+.profile-desc { font-size:.84rem; color:var(--dim); line-height:1.6; margin-bottom:16px; }
+.profile-btns { display:flex; gap:8px; direction:ltr; }
+.btn-edit { font-size:.76rem; font-weight:600; background:var(--s2); border:1px solid rgba(93,63,59,.4); color:var(--text); padding:8px 20px; cursor:pointer; transition:background .2s; }
+.btn-edit:hover { background:var(--s3); }
+.btn-share { font-size:.76rem; font-weight:600; background:transparent; border:1px solid rgba(232,34,31,.4); color:var(--red); padding:8px 20px; cursor:pointer; transition:all .2s; }
+.btn-share:hover { background:var(--red); color:#fff; }
+.btn-logout { font-size:.76rem; font-weight:600; background:transparent; border:1px solid rgba(93,63,59,.3); color:var(--dim); padding:8px 16px; cursor:pointer; transition:all .2s; }
+.btn-logout:hover { color:var(--red); border-color:rgba(232,34,31,.4); }
+
+/* STATS */
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:2px; }
+.stat { background:var(--s2); padding:18px; text-align:center; }
+.stat-num { font-size:1.5rem; font-weight:900; }
+.stat-lbl { font-family:"Courier New",monospace; font-size:.48rem; color:var(--dim); letter-spacing:.12em; margin-top:3px; }
+
+/* TABS */
+.tabs { display:flex; background:var(--s2); margin-bottom:2px; }
+.tab { flex:1; font-size:.72rem; font-weight:600; padding:13px 7px; background:none; border:none; cursor:pointer; color:var(--dim); border-bottom:2px solid transparent; transition:all .2s; text-align:center; font-family:Arial,sans-serif; }
+.tab.on { color:var(--red); border-bottom-color:var(--red); }
+
+/* CONTENT */
+.tab-content { display:none; }
+.tab-content.on { display:block; }
+
+/* MY ARCHIVE */
+.archive-grid { padding:14px 18px; display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:16px; }
+.archive-card { background:var(--s2); overflow:hidden; cursor:pointer; transition:background .2s; }
+.archive-card:hover { background:var(--s3); }
+.archive-thumb { height:76px; display:flex; align-items:center; justify-content:center; font-size:2rem; position:relative; overflow:hidden; }
+.archive-thumb img { width:100%; height:100%; object-fit:cover; }
+.at1{background:linear-gradient(135deg,#1a0808,#280f0f);}
+.at2{background:linear-gradient(135deg,#080e14,#0f1825);}
+.at3{background:linear-gradient(135deg,#08140a,#0f2012);}
+.at4{background:linear-gradient(135deg,#140f00,#201600);}
+.archive-body { padding:11px; }
+.archive-type { font-family:"Courier New",monospace; font-size:.48rem; color:var(--red); letter-spacing:.1em; margin-bottom:3px; }
+.archive-title { font-size:.82rem; font-weight:700; }
+.empty-archive { padding:32px 18px; text-align:center; }
+.empty-archive p { font-size:.82rem; color:var(--dim); margin-bottom:12px; }
+.empty-archive a { color:var(--red); text-decoration:none; font-size:.8rem; font-weight:700; }
+
+/* LEADERS */
+.leaders { padding:0 18px; display:flex; flex-direction:column; gap:2px; margin-bottom:16px; }
+.leader-row { background:var(--s2); padding:13px; display:flex; align-items:center; gap:12px; transition:background .2s; }
+.leader-row:hover { background:var(--s3); }
+.leader-row.me { border-right:3px solid var(--red); background:rgba(232,34,31,.05)!important; }
+.rank-num { font-size:1rem; font-weight:900; width:24px; text-align:center; flex-shrink:0; }
+.r1c{color:#FFD700;}.r2c{color:#C0C0C0;}.r3c{color:#CD7F32;}.roc{color:var(--dim);}
+.l-av { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; color:#fff; flex-shrink:0; }
+.l-name { font-family:"Courier New",monospace; font-size:.78rem; font-weight:600; margin-bottom:1px; }
+.l-title { font-size:.7rem; color:var(--dim); }
+.l-gp { font-family:"Courier New",monospace; font-size:.88rem; font-weight:700; color:var(--red); margin-right:auto; }
+
+/* BADGES */
+.badges-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:14px 18px; margin-bottom:16px; }
+.badge-item { background:var(--s2); padding:14px 7px; text-align:center; }
+.badge-icon { font-size:1.7rem; margin-bottom:5px; display:block; }
+.badge-name { font-family:"Courier New",monospace; font-size:.44rem; color:var(--dim); }
+.badge-item.unlocked .badge-name { color:var(--green); }
+.badge-item.locked { opacity:.3; }
+
+/* EDIT MODAL */
+.modal-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.9); display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.on { display:flex; }
+.modal { background:var(--s1); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; padding:22px 18px 32px; border-top:3px solid var(--red); scrollbar-width:none; }
+.modal::-webkit-scrollbar { display:none; }
+.modal-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-title { font-size:1rem; font-weight:900; }
+.modal-close { background:none; border:none; color:var(--dim); font-size:1.4rem; cursor:pointer; }
+.field { margin-bottom:14px; }
+.lbl { font-family:"Courier New",monospace; font-size:.52rem; color:var(--red); letter-spacing:.18em; display:block; margin-bottom:7px; }
+.inp { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.9rem; padding:12px 13px; outline:none; font-family:Arial,sans-serif; transition:border-color .2s; }
+.inp:focus { border-color:var(--red); }
+.inp::placeholder { color:var(--dim); }
+.ta { width:100%; background:var(--s4); border:1px solid rgba(93,63,59,.3); color:var(--text); font-size:.88rem; padding:12px 13px; outline:none; font-family:Arial,sans-serif; resize:vertical; min-height:80px; }
+.ta:focus { border-color:var(--red); }
+.save-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; border:none; cursor:pointer; font-size:.9rem; font-weight:700; transition:transform .2s; }
+.save-btn:hover { transform:translateY(-2px); }
+.save-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+/* TOAST */
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); padding:10px 22px; font-size:.78rem; font-weight:700; z-index:999; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; }
+
+/* BOTTOM NAV */
+.bottom-nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:rgba(14,14,14,.97); padding:10px 0 14px; z-index:200; }
+.bottom-nav a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--dim); font-size:.54rem; }
+.bottom-nav a:hover, .bottom-nav a.active { color:var(--red); }
+.nav-icon { font-size:1.25rem; line-height:1; }
+
+/* SPINNER */
+.spin { display:inline-block; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <div class="topnav-right">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</nav>
+
+<!-- COVER -->
+<div class="cover" id="coverDiv">
+  <img id="coverImg" alt=""/>
+  <input type="file" class="cover-input" id="coverInput" accept="image/*" onchange="updateCover(this)"/>
+  <span class="cover-edit-hint">✏ غيّر صورة الغلاف / Change cover</span>
+</div>
+
+<div class="profile-info">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div class="avatar-wrap">
+      <div class="avatar" id="avatarEl">?</div>
+      <span class="vbadge">✓</span>
+      <span class="avatar-edit">✏</span>
+      <input type="file" class="avatar-input" id="avatarInput" accept="image/*" onchange="updateAvatar(this)"/>
+    </div>
+    <div class="profile-btns">
+      <button class="btn-edit" onclick="openEdit()" id="btnEdit">✏ تعديل / Edit</button>
+      <button class="btn-share" onclick="shareProfile()" id="btnShare">↗ مشاركة / Share</button>
+      <button class="btn-logout" onclick="doLogout()" id="btnLogout">خروج / Out</button>
+    </div>
+  </div>
+
+  <div class="profile-name" id="profileName">—</div>
+  <div class="profile-email" id="profileEmail">—</div>
+  <p class="profile-desc" id="profileDesc">حارس الذاكرة الفلسطينية.<br/>Guardian of Palestinian memory.</p>
+  <div id="flRewardsCard"></div>
+  <div id="flWalletBox"></div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-num" id="statContrib">0</div><div class="stat-lbl">REELS</div></div>
+  <div class="stat"><div class="stat-num" id="statBadges">4</div><div class="stat-lbl">BADGES</div></div>
+  <div class="stat"><div class="stat-num" id="statGP">0</div><div class="stat-lbl">GUARDIAN POINTS</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="showTab('archive',this)">أرشيفي / Archive</button>
+  <button class="tab" onclick="showTab('leaders',this)">المتصدرون / Rank</button>
+  <button class="tab" onclick="showTab('badges',this)">الأوسمة / Badges</button>
+</div>
+
+<!-- ARCHIVE TAB -->
+<div class="tab-content on" id="tc-archive">
+  <div class="archive-grid" id="archiveGrid">
+    <div class="empty-archive" style="grid-column:1/-1;">
+      <p>⏳ جاري التحميل...</p>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERS TAB -->
+<div class="tab-content" id="tc-leaders">
+  <div class="leaders">
+    <div class="leader-row"><span class="rank-num r1c">1</span><div class="l-av" style="background:linear-gradient(135deg,#5a4000,#3a2800);">ن.ش</div><div style="flex:1;"><div class="l-name">NOOR_SHELD</div><div class="l-title">الحارس الأبدي</div></div><div class="l-gp">18,550</div></div>
+    <div class="leader-row"><span class="rank-num r2c">2</span><div class="l-av" style="background:linear-gradient(135deg,#003a1a,#002210);">م.م</div><div style="flex:1;"><div class="l-name">AL-MUHAFIZ</div><div class="l-title">حارس الزيتون</div></div><div class="l-gp">14,200</div></div>
+    <div class="leader-row"><span class="rank-num r3c">3</span><div class="l-av" style="background:linear-gradient(135deg,#3a1a00,#220e00);">ر.24</div><div style="flex:1;"><div class="l-name">ROOTS_2024</div><div class="l-title">مدافع التراث</div></div><div class="l-gp">12,890</div></div>
+    <div class="leader-row me" id="myRankRow"><span class="rank-num roc" id="myRank">#?</span><div class="l-av" style="background:linear-gradient(135deg,var(--red),var(--red2));" id="myRankAv">?</div><div style="flex:1;"><div class="l-name" id="myRankName">أنت / You</div><div class="l-title" id="myRankTitle">حارس / Guardian</div></div><div class="l-gp" id="myRankGP">0</div></div>
+  </div>
+</div>
+
+<!-- BADGES TAB -->
+<div class="tab-content" id="tc-badges">
+  <div class="badges-grid">
+    <div class="badge-item unlocked"><span class="badge-icon">📖</span><div class="badge-name">حافظ القصص</div></div>
+    <div class="badge-item unlocked"><span class="badge-icon">🌿</span><div class="badge-name">حارس الأرض</div></div>
+    <div class="badge-item unlocked"><span class="badge-icon">🎙</span><div class="badge-name">صوت الحق</div></div>
+    <div class="badge-item unlocked"><span class="badge-icon">🗺</span><div class="badge-name">رسام الخرائط</div></div>
+    <div class="badge-item locked"><span class="badge-icon">⚔️</span><div class="badge-name">بطل الحقيقة</div></div>
+    <div class="badge-item locked"><span class="badge-icon">🔐</span><div class="badge-name">حارس القبو</div></div>
+    <div class="badge-item locked"><span class="badge-icon">📡</span><div class="badge-name">ناقل البث</div></div>
+    <div class="badge-item locked"><span class="badge-icon">🏛</span><div class="badge-name">أمين المتحف</div></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEdit()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="editModalTitle">تعديل الملف / Edit Profile</div>
+      <button class="modal-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="field">
+      <label class="lbl">الاسم / Name</label>
+      <input type="text" class="inp" id="editName" placeholder="اسمك الكامل / Full name"/>
+    </div>
+    <div class="field">
+      <label class="lbl">النبذة التعريفية / Bio</label>
+      <textarea class="ta" id="editBio" placeholder="نبذة قصيرة عنك / Short bio"></textarea>
+    </div>
+    <div class="field">
+      <label class="lbl">المدينة / City</label>
+      <input type="text" class="inp" id="editCity" placeholder="مثال: غزة، القدس، رام الله..."/>
+    </div>
+    <div class="field" style="margin-bottom:0;">
+      <label class="lbl">التخصص / Specialization</label>
+      <input type="text" class="inp" id="editSpec" placeholder="مثال: مصور، صحفي، مؤرخ..."/>
+    </div>
+    <br/>
+    <button class="save-btn" id="saveBtnEl" onclick="saveEdit()">💾 حفظ التغييرات / Save Changes</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav">
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>Guardians</a>
+  <a href="Profile.html"><span class="nav-icon">👤</span>Profile</a>
+</nav>
+
+<script>
+var SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
+var SB_KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb';
+var sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+var isAr = true;
+var _currentUser = null;
+var _meta = {};
+
+// ── INIT ──
+window.addEventListener('load', async function() {
+  var res = await sb.auth.getSession();
+  if (!res.data.session) {
+    window.location.href = 'Auth.html';
+    return;
+  }
+  _currentUser = res.data.session.user;
+  _meta = _currentUser.user_metadata || {};
+  renderProfile();
+  loadArchive();
+});
+
+// ── RENDER PROFILE ──
+function renderProfile() {
+  var name = _meta.name || (_currentUser.email ? _currentUser.email.split('@')[0] : '—');
+  var bio = _meta.bio || '';
+  var city = _meta.city || '';
+  var spec = _meta.spec || '';
+
+  document.getElementById('profileName').textContent = name + (city ? ' — ' + city : '');
+  document.getElementById('profileEmail').textContent = _currentUser.email || '—';
+  document.getElementById('profileDesc').textContent = bio
+    ? (spec ? bio + ' | ' + spec : bio)
+    : (spec || (isAr ? 'حارس الذاكرة الفلسطينية.' : 'Guardian of Palestinian memory.'));
+
+  // Avatar
+  var av = document.getElementById('avatarEl');
+  if (_meta.avatar_url) {
+    av.innerHTML = '<img src="' + esc(_meta.avatar_url) + '" alt=""/>';
+  } else {
+    av.textContent = (name[0] || '?').toUpperCase();
+  }
+
+  // Cover
+  if (_meta.cover_url) {
+    var ci = document.getElementById('coverImg');
+    ci.src = _meta.cover_url;
+    ci.style.display = 'block';
+  }
+
+  // Leaderboard row
+  document.getElementById('myRankName').textContent = name;
+  document.getElementById('myRankAv').textContent = (name[0] || '?').toUpperCase();
+  document.getElementById('myRankTitle').textContent = spec || (isAr ? 'حارس / Guardian' : 'Guardian');
+}
+
+// ── LOAD ARCHIVE (user's reels) ──
+async function loadArchive() {
+  var grid = document.getElementById('archiveGrid');
+  grid.innerHTML = '<div class="empty-archive" style="grid-column:1/-1;"><p>⏳ جاري التحميل...</p></div>';
+
+  var res = await sb.from('reels').select('*')
+    .eq('user_id', _currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (res.error) {
+    grid.innerHTML = '<div class="empty-archive" style="grid-column:1/-1;"><p>❌ ' + esc(res.error.message) + '</p></div>';
+    return;
+  }
+
+  var reels = res.data || [];
+  document.getElementById('statContrib').textContent = reels.length;
+  document.getElementById('statGP').textContent = reels.length * 100;
+  document.getElementById('myRankGP').textContent = reels.length * 100;
+
+  if (reels.length === 0) {
+    grid.innerHTML = '<div class="empty-archive" style="grid-column:1/-1;">' +
+      '<p>' + (isAr ? 'لم تنشر أي ريلز بعد.' : 'No reels yet.') + '</p>' +
+      '<a href="Feed.html">' + (isAr ? '+ انشر ريل الآن' : '+ Post a reel') + '</a></div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  var bgs = ['at1','at2','at3','at4'];
+  reels.forEach(function(r, i) {
+    var card = document.createElement('div');
+    card.className = 'archive-card';
+    var thumb = r.cover_url
+      ? '<img src="' + esc(r.cover_url) + '" alt=""/>'
+      : '🎬';
+    var statusBadge = r.status === 'published' ? '' :
+      '<div style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#ffd700;font-size:.5rem;padding:2px 5px;font-family:monospace;">' +
+      (r.status || 'draft').toUpperCase() + '</div>';
+    card.innerHTML =
+      '<div class="archive-thumb ' + bgs[i % 4] + '" style="position:relative;">' + thumb + statusBadge + '</div>' +
+      '<div class="archive-body">' +
+      '<div class="archive-type">REEL</div>' +
+      '<div class="archive-title">' + esc(r.description || r.title || '—') + '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+// ── AVATAR UPLOAD ──
+async function updateAvatar(input) {
+  if (!input.files[0]) return;
+  var file = input.files[0];
+  var ext = file.name.split('.').pop().toLowerCase();
+  var path = 'profile-avatars/' + _currentUser.id + '_' + Date.now() + '.' + ext;
+  toast(isAr ? '⏳ جاري الرفع...' : '⏳ Uploading...');
+
+  var upRes = await sb.storage.from('reels').upload(path, file, { upsert: true });
+  if (upRes.error) { toast('❌ ' + upRes.error.message); return; }
+
+  var url = sb.storage.from('reels').getPublicUrl(path).data.publicUrl;
+  var updRes = await sb.auth.updateUser({ data: { avatar_url: url } });
+  if (updRes.error) { toast('❌ ' + updRes.error.message); return; }
+
+  _meta.avatar_url = url;
+  document.getElementById('avatarEl').innerHTML = '<img src="' + esc(url) + '" alt=""/>';
+  toast(isAr ? '✓ تم تحديث الصورة الشخصية' : '✓ Avatar updated');
+}
+
+// ── COVER UPLOAD ──
+async function updateCover(input) {
+  if (!input.files[0]) return;
+  var file = input.files[0];
+  var ext = file.name.split('.').pop().toLowerCase();
+  var path = 'profile-covers/' + _currentUser.id + '_' + Date.now() + '.' + ext;
+  toast(isAr ? '⏳ جاري الرفع...' : '⏳ Uploading...');
+
+  var upRes = await sb.storage.from('reels').upload(path, file, { upsert: true });
+  if (upRes.error) { toast('❌ ' + upRes.error.message); return; }
+
+  var url = sb.storage.from('reels').getPublicUrl(path).data.publicUrl;
+  var updRes = await sb.auth.updateUser({ data: { cover_url: url } });
+  if (updRes.error) { toast('❌ ' + updRes.error.message); return; }
+
+  _meta.cover_url = url;
+  var ci = document.getElementById('coverImg');
+  ci.src = url;
+  ci.style.display = 'block';
+  toast(isAr ? '✓ تم تحديث صورة الغلاف' : '✓ Cover updated');
+}
+
+// ── EDIT MODAL ──
+function openEdit() {
+  document.getElementById('editName').value = _meta.name || (_currentUser.email ? _currentUser.email.split('@')[0] : '');
+  document.getElementById('editBio').value = _meta.bio || '';
+  document.getElementById('editCity').value = _meta.city || '';
+  document.getElementById('editSpec').value = _meta.spec || '';
+  document.getElementById('editModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function(){ document.getElementById('editName').focus(); }, 100);
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+async function saveEdit() {
+  var btn = document.getElementById('saveBtnEl');
+  btn.disabled = true;
+  btn.textContent = '⏳ جاري الحفظ...';
+
+  var name = document.getElementById('editName').value.trim();
+  var bio = document.getElementById('editBio').value.trim();
+  var city = document.getElementById('editCity').value.trim();
+  var spec = document.getElementById('editSpec').value.trim();
+
+  var newMeta = Object.assign({}, _meta, { name: name, bio: bio, city: city, spec: spec });
+  var res = await sb.auth.updateUser({ data: newMeta });
+
+  btn.disabled = false;
+  btn.textContent = '💾 حفظ التغييرات / Save Changes';
+
+  if (res.error) {
+    toast('❌ ' + res.error.message);
+    return;
+  }
+
+  _meta = res.data.user.user_metadata || newMeta;
+  closeEdit();
+  renderProfile();
+  toast(isAr ? '✅ تم حفظ التغييرات' : '✅ Changes saved');
+}
+
+// ── SHARE ──
+function shareProfile() {
+  var name = _meta.name || (_currentUser.email ? _currentUser.email.split('@')[0] : 'Guardian');
+  if (navigator.share) {
+    navigator.share({ title: name + ' — FALASTEEN.INK', url: window.location.href }).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(window.location.href).then(function(){
+      toast(isAr ? '✓ تم نسخ رابط الملف الشخصي' : '✓ Profile link copied');
+    });
+  }
+}
+
+// ── LOGOUT ──
+async function doLogout() {
+  if (confirm(isAr ? 'هل تريد الخروج؟' : 'Are you sure you want to logout?')) {
+    await sb.auth.signOut();
+    window.location.href = 'Auth.html';
+  }
+}
+
+// ── TABS ──
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('on'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  document.getElementById('tc-' + name).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── LANGUAGE ──
+// app.js (defer) owns window.toggleLang. Hook into its __onLangChange callback
+// so profile-specific elements update without redefining toggleLang.
+window.__onLangChange = function(lang) {
+  isAr = lang === 'ar';
+  var btnEdit = document.getElementById('btnEdit');
+  var btnShare = document.getElementById('btnShare');
+  var btnLogout = document.getElementById('btnLogout');
+  var editModalTitle = document.getElementById('editModalTitle');
+  if (btnEdit) btnEdit.textContent = isAr ? '✏ تعديل / Edit' : '✏ Edit / تعديل';
+  if (btnShare) btnShare.textContent = isAr ? '↗ مشاركة / Share' : '↗ Share / مشاركة';
+  if (btnLogout) btnLogout.textContent = isAr ? 'خروج / Out' : 'Out / خروج';
+  if (editModalTitle) editModalTitle.textContent = isAr ? 'تعديل الملف / Edit Profile' : 'Edit Profile / تعديل الملف';
+  renderProfile();
+};
+
+// ── HELPERS ──
+function toast(msg, isErr) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isErr ? '#930006' : '#00b954';
+  t.style.color = '#fff';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+</script>
+<script src="fl-nav.js" defer></script>
+</body>
+</html>
