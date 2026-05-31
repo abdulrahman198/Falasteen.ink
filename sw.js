@@ -1,5 +1,5 @@
-// FALASTEEN.INK Service Worker v8
-var CACHE = 'fl-v8';
+// FALASTEEN.INK Service Worker v9
+var CACHE = 'fl-v9';
 var APP_SHELL = [
   '/', 'Index.html', 'Feed.html', 'Martyrs.html', 'Landmarks.html',
   'Map.html', 'Archive.html', 'live.html', 'Guardian_hub1.html',
@@ -9,7 +9,7 @@ var APP_SHELL = [
   'styles.css', 'common.js', 'app-config.js', 'app.js',
   'ollama-search.js', 'ollama-auto-tagging.js', 'discovery-engine.js',
   'web3-token.js', 'rewards-system.js',
-  'manifest.json'
+  'manifest.json', 'icon-192.png', 'icon-512.png'
 ];
 
 self.addEventListener('install', function(e) {
