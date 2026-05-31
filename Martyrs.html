@@ -1106,6 +1106,8 @@ function handleTributeClick(e) {
   var reward = HANZALA_REWARD[type] || 1;
   earnHanzala(reward);
   showToast('✓ تمت إضافة ' + label + ' · +' + reward + ' حنظلة 🏅');
+  // HANDALA rewards
+  if (type === 'roses' && window.FLHandala) window.FLHandala.earn('rose');
 }
 
 // ── HELPERS ──
@@ -1225,6 +1227,8 @@ async function sendPrayer(e) {
     await FL.rest('martyr_prayers', { method: 'POST', body: payload, prefer: 'return=minimal' });
     closePrayerModal();
     showToast('✓ تم حفظ الدعاء');
+    // HANDALA rewards
+    if (window.FLHandala) window.FLHandala.earn('prayer');
     if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
   } catch (err) {
     console.warn('Failed to save prayer', err);
@@ -1260,6 +1264,7 @@ function showUploadProgress(inp) {
   reader.readAsDataURL(file);
 }
 </script>
+<script src="rewards.js"></script>
 <script src="fl-nav.js" defer></script>
 </body>
 </html>

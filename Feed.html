@@ -958,6 +958,7 @@ async function submitReel() {
     alert('تم حفظ الريل على هذا الجهاز. إذا أردت أن يظهر لكل الزوار، يجب تفعيل صلاحية الإضافة العامة في Supabase.');
   } else {
     alert('تم نشر الريل بنجاح');
+    if (window.FLHandala) window.FLHandala.earn('upload');
   }
 
   // Reset form
@@ -988,6 +989,7 @@ function clearGeneratedTags() {
 buildFeed();
 </script>
 
+<script src="rewards.js"></script>
 <script src="fl-nav.js" defer></script>
 </body>
 </html>
