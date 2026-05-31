@@ -7,7 +7,7 @@
     chainId: "0x38",
     chainName: "BNB Smart Chain",
     tokenAddress: "0x0C091900bA04376a3AEb0aFC48FAa995c0f1bFCf",
-    tokenSymbol: "HNZ",
+    tokenSymbol: "HANDALA",
     tokenDecimals: 18,
     rpcUrl: "https://bsc-dataseed.binance.org/",
     donationAddress: "0xef959E3d6221409a1f4dfA549BDC9481eD30Ecf8"
