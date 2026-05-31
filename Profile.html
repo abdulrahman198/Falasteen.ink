@@ -291,7 +291,12 @@ function renderProfile() {
   var spec = _meta.spec || '';
 
   document.getElementById('profileName').textContent = name + (city ? ' — ' + city : '');
-  document.getElementById('profileEmail').textContent = _currentUser.email || '—';
+  // عرض المحفظة إن وجدت، وإلا الإيميل
+  var wallet = _meta.wallet_address || localStorage.getItem('fl_wallet') || '';
+  var displayInfo = wallet
+    ? (wallet.slice(0,6) + '...' + wallet.slice(-4) + ' 🦊')
+    : (_currentUser.email || '—');
+  document.getElementById('profileEmail').textContent = displayInfo;
   document.getElementById('profileDesc').textContent = bio
     ? (spec ? bio + ' | ' + spec : bio)
     : (spec || (isAr ? 'حارس الذاكرة الفلسطينية.' : 'Guardian of Palestinian memory.'));

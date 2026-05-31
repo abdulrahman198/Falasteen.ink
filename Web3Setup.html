@@ -6,8 +6,9 @@
 <script src="app-config.js"></script>
 <script src="common.js"></script>
 <script src="app.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
-<script src="web3-token.js" defer></script>
+<script src="web3-token.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ربط البلوكشين | FALASTEEN.INK</title>
 <style>
@@ -609,6 +610,25 @@ function copyCode(btn) {
   });
 }
 
+// ── SUPABASE CLIENT ──
+var _sb = null;
+try {
+  var _SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
+  var _SB_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+  _sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(_SB_URL, _SB_KEY) : null;
+} catch(e) { console.warn('Supabase init failed:', e); }
+
+// حفظ عنوان المحفظة في Supabase user metadata
+async function saveWalletToSupabase(addr) {
+  if (!_sb) return;
+  try {
+    var sessionRes = await _sb.auth.getSession();
+    if (!sessionRes.data.session) return;
+    await _sb.auth.updateUser({ data: { wallet_address: addr } });
+    console.log('[FLWeb3] Wallet saved to Supabase:', addr);
+  } catch(e) { console.warn('[FLWeb3] Could not save wallet:', e); }
+}
+
 // WALLET CONNECTION
 async function connectWallet() {
   console.log('[FLWeb3Setup] Connect wallet clicked.');
@@ -631,6 +651,8 @@ async function connectWallet() {
     document.getElementById('walletStatus').className = 'status-state state-ok';
     document.getElementById('stepNum1').className = 'step-num done';
     document.getElementById('stepNum1').textContent = '✓';
+    localStorage.setItem('fl_wallet', addr);
+    await saveWalletToSupabase(addr);
     return;
   }
 
@@ -644,6 +666,7 @@ async function connectWallet() {
     var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     var addr = accounts[0];
     localStorage.setItem('fl_wallet', addr);
+    await saveWalletToSupabase(addr);
     var short = addr.slice(0,6) + '...' + addr.slice(-4);
     var addrEl = document.getElementById('walletAddr');
     var balEl = document.getElementById('walletBalance');
