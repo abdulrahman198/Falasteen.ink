@@ -4,12 +4,12 @@
   'use strict';
 
   const TOKEN_CONFIG = {
-    chainId: "0x1",
-    chainName: "Ethereum",
-    tokenAddress: "PUT_TOKEN_CONTRACT_ADDRESS_HERE",
-    tokenSymbol: "FAL",
+    chainId: "0x38",
+    chainName: "BNB Smart Chain",
+    tokenAddress: "0x0C091900bA04376a3AEb0aFC48FAa995c0f1bFCf",
+    tokenSymbol: "HNZ",
     tokenDecimals: 18,
-    rpcUrl: "PUT_RPC_URL_HERE",
+    rpcUrl: "https://bsc-dataseed.binance.org/",
     donationAddress: "0xef959E3d6221409a1f4dfA549BDC9481eD30Ecf8"
   };
 
