@@ -106,25 +106,65 @@ window.addEventListener('load', _updateOnline);
 
 // ── PWA install ──
 var _pwaPrompt = null;
+var _pwaInstalled = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+var _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+
+function _showPwaBtn(text) {
+  var btn = document.getElementById('pwaInstallBtn');
+  var label = document.getElementById('pwaInstallText');
+  if (!btn || _pwaInstalled) return;
+  if (label && text) label.textContent = text;
+  btn.style.display = 'flex';
+  setTimeout(function() { btn.classList.add('visible'); }, 300);
+}
+
+// Captured native prompt — shows native Chrome/Edge dialog
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   _pwaPrompt = e;
-  var btn = document.getElementById('pwaInstallBtn');
-  if (btn) { btn.style.display = 'flex'; setTimeout(function(){ btn.classList.add('visible'); }, 500); }
+  _showPwaBtn('ثبّت التطبيق / Install App');
 });
+
+// Fallback: show button after 4s for any HTTPS page that isn't already installed.
+// Covers browsers that don't fire beforeinstallprompt (Firefox, Samsung, etc.)
+if (!_pwaInstalled && window.location.protocol === 'https:') {
+  setTimeout(function() {
+    if (!_pwaPrompt) {
+      var text = _isIOS
+        ? 'أضف للشاشة / Add to Home'
+        : 'ثبّت التطبيق / Install App';
+      _showPwaBtn(text);
+    }
+  }, 4000);
+}
+
 window.triggerInstall = function() {
-  if (!_pwaPrompt) {
-    alert('إذا لم تظهر نافذة التثبيت، استخدم قائمة المتصفح ثم Install App أو Add to Home Screen.');
+  // 1. Native Chrome/Edge prompt
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        var btn = document.getElementById('pwaInstallBtn');
+        if (btn) { btn.classList.remove('visible'); setTimeout(function() { btn.style.display = 'none'; }, 400); }
+      }
+      _pwaPrompt = null;
+    });
     return;
   }
-  _pwaPrompt.prompt();
-  _pwaPrompt.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') {
-      var btn = document.getElementById('pwaInstallBtn');
-      if (btn) { btn.classList.remove('visible'); setTimeout(function(){ btn.style.display='none'; }, 400); }
-    }
-    _pwaPrompt = null;
-  });
+  // 2. iOS instructions
+  if (_isIOS) {
+    alert('iOS:\nاضغط زر المشاركة ⬆️ في أسفل Safari\nثم اختر "Add to Home Screen" / "أضف إلى الشاشة الرئيسية"');
+    return;
+  }
+  // 3. Generic fallback for other browsers
+  var isFF = /firefox/i.test(navigator.userAgent);
+  var isSamsung = /samsungbrowser/i.test(navigator.userAgent);
+  var msg = isFF
+    ? 'Firefox:\nاضغط القائمة ⋮ ثم "Install" أو "Add to Home Screen"'
+    : isSamsung
+    ? 'Samsung Browser:\nاضغط القائمة ☰ ثم "Add page to"\nثم "Home screen"'
+    : 'افتح قائمة المتصفح ⋮\nثم اختر "Install App" أو "Add to Home Screen"';
+  alert(msg);
 };
 
 // ── Local file cache guard ──

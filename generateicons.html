@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Generate FALASTEEN Icons</title></head>
+<body>
+<script>
+function makeIcon(size) {
+  var c = document.createElement('canvas');
+  c.width = c.height = size;
+  var ctx = c.getContext('2d');
+  // Background
+  ctx.fillStyle = '#0e0e0e';
+  ctx.fillRect(0, 0, size, size);
+  // Red circle
+  ctx.fillStyle = '#E8221F';
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size*0.38, 0, Math.PI*2);
+  ctx.fill();
+  // White F letter
+  ctx.fillStyle = '#ffffff';
+  var s = size * 0.12;
+  var x = size*0.34, y = size*0.28, w = size*0.32, h = size*0.44;
+  ctx.fillRect(x, y, w*0.22, h);          // vertical bar
+  ctx.fillRect(x, y, w, h*0.22);          // top bar
+  ctx.fillRect(x, y + h*0.44, w*0.7, h*0.22); // middle bar
+  return c.toDataURL('image/png');
+}
+
+function download(dataUrl, name) {
+  var a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = name;
+  a.click();
+}
+
+window.onload = function() {
+  setTimeout(function() { download(makeIcon(192), 'icon-192.png'); }, 300);
+  setTimeout(function() { download(makeIcon(512), 'icon-512.png'); }, 800);
+  document.body.innerHTML = '<div style="font-family:monospace;padding:40px;background:#0e0e0e;color:#e5e2e1;min-height:100vh"><h2 style="color:#E8221F">✓ جارٍ تحميل الأيقونتين...</h2><p>icon-192.png + icon-512.png</p><p style="color:#777;margin-top:20px">ارفعهم على Falasteen.ink مع باقي الملفات</p></div>';
+};
+</script>
+</body>
+</html>
