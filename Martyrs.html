@@ -76,6 +76,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:0.08em; color:var(--text); text-decoration:none; }
 .logo-dot { color:var(--red); }
 .add-btn { display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:0.72rem; font-weight:700; padding:8px 18px; border:none; cursor:pointer; }
+.hanzala-badge { font-family:"Courier New",monospace; font-size:0.66rem; font-weight:700; color:#ffd24a; background:rgba(255,210,74,.08); border:1px solid rgba(255,210,74,.25); border-radius:999px; padding:6px 12px; white-space:nowrap; }
 
 /* HERO */
 .hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,0.06) 0%,transparent 100%); position:relative; overflow:hidden; }
@@ -248,6 +249,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 <nav class="topnav">
   <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
+  <span id="hanzalaBadge" class="hanzala-badge" title="رصيدك من حنظلة — يُكتسب بإضاءة شمعة أو وردة أو دعاء">🏅 0 حنظلة</span>
   <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
   <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ أضف / Add</button>
 </nav>
@@ -1072,6 +1074,26 @@ function setupTributeButtons(root) {
     btn.addEventListener('click', handleTributeClick);
   });
 }
+// ── HANZALA REWARDS ──
+// Visitors earn HANZALA points for each tribute. Points are stored locally and
+// can later be claimed/airdropped to their wallet (on-chain distribution needs
+// a backend signer, so for now we accrue the balance the user has earned).
+var HANZALA_REWARD = { candles: 1, roses: 2, prayers: 3 };
+function getHanzalaPoints() {
+  try { return parseInt(localStorage.getItem('fl_hanzala_points') || '0', 10) || 0; } catch(e) { return 0; }
+}
+function earnHanzala(amount) {
+  var total = getHanzalaPoints() + amount;
+  try { localStorage.setItem('fl_hanzala_points', String(total)); } catch(e) {}
+  updateHanzalaBadge(total);
+  return total;
+}
+function updateHanzalaBadge(total) {
+  if (total === undefined) total = getHanzalaPoints();
+  var el = document.getElementById('hanzalaBadge');
+  if (el) el.textContent = '🏅 ' + total + ' حنظلة';
+}
+
 function handleTributeClick(e) {
   e.stopPropagation();
   var btn = e.currentTarget;
@@ -1081,7 +1103,9 @@ function handleTributeClick(e) {
   var counts = addMartyrTribute(id, type);
   updateTributeButtons(id, counts);
   var label = type === 'candles' ? 'شمعة' : type === 'roses' ? 'وردة' : 'دعاء';
-  showToast('✓ تمت إضافة ' + label);
+  var reward = HANZALA_REWARD[type] || 1;
+  earnHanzala(reward);
+  showToast('✓ تمت إضافة ' + label + ' · +' + reward + ' حنظلة 🏅');
 }
 
 // ── HELPERS ──
@@ -1091,6 +1115,7 @@ function showToast(msg){var t=document.getElementById('toast');t.textContent=msg
 
 // ── INIT ──
 window.addEventListener('load',async function(){
+  updateHanzalaBadge();
   await initMartyrsAdmin();
   await loadCounters();
   initPrayerRealtime();
