@@ -310,7 +310,7 @@
       '<div class="fl-wallet-card" dir="rtl">' +
         '<div class="fl-wallet-head">' +
           '<div>' +
-            '<div class="fl-wallet-kicker">FAL TOKEN</div>' +
+            '<div class="fl-wallet-kicker">HANDALA (حنظلة)</div>' +
             '<div class="fl-wallet-title">محفظة FALASTEEN</div>' +
           '</div>' +
           '<div class="fl-wallet-state ' + (connected ? 'is-on' : '') + '">' + (connected ? 'CONNECTED' : 'OFFLINE') + '</div>' +
