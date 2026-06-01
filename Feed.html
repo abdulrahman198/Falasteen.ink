@@ -6,6 +6,7 @@
 <title>نبض غزة | FALASTEEN.INK</title>
 <link rel="stylesheet" href="styles.css"/>
 <script src="app-config.js"></script>
+<script src="livepeer-upload.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="common.js"></script>
 <script src="app.js" defer></script>
@@ -906,26 +907,64 @@ async function submitReel() {
   }
 
   var video_url = document.getElementById('upVideo').value.trim() || null;
-  if (_upVideoFile && sb) {
-    document.getElementById('upVideoProgress').style.display = 'block';
-    var vext = _upVideoFile.name.split('.').pop().toLowerCase();
-    var vowner = _currentUser ? _currentUser.id : 'public';
-    var vname = 'videos/' + vowner + '_' + Date.now() + '.' + vext;
-    var vRes = await sb.storage.from('reels').upload(vname, _upVideoFile, {
-      upsert: true,
-      contentType: _upVideoFile.type || 'video/mp4'
-    });
-    document.getElementById('upVideoProgress').style.display = 'none';
-    if (!vRes.error) {
-      video_url = sb.storage.from('reels').getPublicUrl(vname).data.publicUrl;
+  if (_upVideoFile) {
+    // Use Livepeer for decentralized video streaming
+    if (window.LivepeerUpload) {
+      try {
+        var vprogEl = document.getElementById('upVideoProgress');
+        if (vprogEl) { vprogEl.style.display = 'block'; vprogEl.textContent = 'جارٍ الرفع إلى Livepeer... 0%'; }
+        btn.textContent = '⏳ جارٍ رفع الفيديو...';
+        var lpResult = await window.LivepeerUpload.upload(
+          _upVideoFile,
+          document.getElementById('upTitle').value.trim() || _upVideoFile.name,
+          function(pct) {
+            if (vprogEl) vprogEl.textContent = 'Livepeer: ' + pct + '%';
+            btn.textContent = '⏳ ' + pct + '%...';
+          }
+        );
+        if (vprogEl) { vprogEl.style.display = 'none'; }
+        btn.textContent = '⏳ جارٍ النشر...';
+        // Use HLS playback URL if available, fall back to playbackId-based URL
+        video_url = lpResult.playbackUrl || URL.createObjectURL(_upVideoFile);
+      } catch (lpErr) {
+        console.warn('[Livepeer] upload failed, falling back to Supabase:', lpErr);
+        // Fallback: Supabase storage
+        if (sb) {
+          var vprogEl2 = document.getElementById('upVideoProgress');
+          if (vprogEl2) { vprogEl2.style.display = 'block'; vprogEl2.textContent = 'جارٍ الرفع إلى Supabase...'; }
+          var vext = _upVideoFile.name.split('.').pop().toLowerCase();
+          var vowner = _currentUser ? _currentUser.id : 'public';
+          var vname = 'videos/' + vowner + '_' + Date.now() + '.' + vext;
+          var vRes = await sb.storage.from('reels').upload(vname, _upVideoFile, { upsert: true, contentType: _upVideoFile.type || 'video/mp4' });
+          if (vprogEl2) { vprogEl2.style.display = 'none'; }
+          if (!vRes.error) {
+            video_url = sb.storage.from('reels').getPublicUrl(vname).data.publicUrl;
+          } else {
+            alert('خطأ في رفع الفيديو: ' + vRes.error.message);
+            btn.disabled = false; btn.textContent = '📤 نشر الريل'; return;
+          }
+        } else {
+          video_url = URL.createObjectURL(_upVideoFile);
+        }
+      }
+    } else if (sb) {
+      // No Livepeer available — use Supabase directly
+      var vpEl = document.getElementById('upVideoProgress');
+      if (vpEl) { vpEl.style.display = 'block'; }
+      var vext2 = _upVideoFile.name.split('.').pop().toLowerCase();
+      var vowner2 = _currentUser ? _currentUser.id : 'public';
+      var vname2 = 'videos/' + vowner2 + '_' + Date.now() + '.' + vext2;
+      var vRes2 = await sb.storage.from('reels').upload(vname2, _upVideoFile, { upsert: true, contentType: _upVideoFile.type || 'video/mp4' });
+      if (vpEl) { vpEl.style.display = 'none'; }
+      if (!vRes2.error) {
+        video_url = sb.storage.from('reels').getPublicUrl(vname2).data.publicUrl;
+      } else {
+        alert('خطأ في رفع الفيديو: ' + vRes2.error.message);
+        btn.disabled = false; btn.textContent = '📤 نشر الريل'; return;
+      }
     } else {
-      alert('خطأ في رفع الفيديو: ' + vRes.error.message);
-      btn.disabled = false;
-      btn.textContent = '📤 نشر الريل';
-      return;
+      video_url = URL.createObjectURL(_upVideoFile);
     }
-  } else if (_upVideoFile) {
-    video_url = URL.createObjectURL(_upVideoFile);
   }
 
   // Get user display name

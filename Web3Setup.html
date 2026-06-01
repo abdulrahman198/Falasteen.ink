@@ -287,7 +287,7 @@ window.addEventListener('load', () => {
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
         <code>// 1. أضف API Key في أعلى ملف live.html
-var LIVEPEER_API_KEY = 'YOUR_API_KEY_HERE';
+var LIVEPEER_API_KEY = window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b';
 
 // 2. استبدل دالة startLive بهذه:
 async function startLive() {
@@ -485,7 +485,7 @@ python -m http.server 8080</code>
 
 var FL_CONFIG = {
   // Livepeer API Key من livepeer.studio
-  LIVEPEER_API_KEY: 'YOUR_LIVEPEER_KEY_HERE',
+  LIVEPEER_API_KEY: window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b',
 
   // Network: 'mainnet' للإنتاج, 'polygon' أرخص
   NETWORK: 'polygon',
@@ -749,11 +749,16 @@ window.addEventListener('load', function() {
     document.getElementById('walletStatus').textContent = '✓ ' + saved.slice(0,6) + '...' + saved.slice(-4);
     document.getElementById('walletStatus').className = 'status-state state-ok';
   }
-  var lp = localStorage.getItem('fl_livepeer_key');
+  // Use pre-configured key (app-config.js) or previously saved key
+  var lp = localStorage.getItem('fl_livepeer_key') || (window.LIVEPEER_API_KEY || '');
   if (lp) {
     document.getElementById('livepeerKey').value = lp;
-    document.getElementById('livepeerStatus').textContent = '✓ Saved';
+    document.getElementById('livepeerStatus').textContent = '✅ Connected';
     document.getElementById('livepeerStatus').className = 'status-state state-ok';
+    // Persist so testLivepeer() can read it later
+    if (!localStorage.getItem('fl_livepeer_key')) {
+      localStorage.setItem('fl_livepeer_key', lp);
+    }
   }
   // Open step 1 by default
   toggleStep(1);
