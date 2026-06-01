@@ -1,7 +1,8 @@
 {
   "name": "FALASTEEN.INK",
   "short_name": "Falasteen",
-  "start_url": "Index.html",
+  "start_url": "/Index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0e0e0e",
   "theme_color": "#E8221F",
