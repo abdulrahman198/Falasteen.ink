@@ -143,31 +143,6 @@ footer { background:var(--s1); padding:52px 18px 24px; display:grid; grid-templa
 
 
 /* ══ PWA INSTALL ══ */
-.pwa-install-btn {
-  position: fixed;
-  bottom: 84px;
-  left: 50%;
-  transform: translateX(-50%) translateY(120%);
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--red), var(--red2));
-  color: #fff;
-  font-size: .78rem;
-  font-weight: 700;
-  padding: 11px 22px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 8px 32px rgba(232,34,31,.5);
-  transition: transform .4s cubic-bezier(.175,.885,.32,1.275), opacity .3s;
-  opacity: 0;
-  white-space: nowrap;
-}
-.pwa-install-btn.visible {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
 
 </style>
 </head>
@@ -364,11 +339,6 @@ footer { background:var(--s1); padding:52px 18px 24px; display:grid; grid-templa
   <div class="fbot-status"><span>ARCHIVE_SYNC_COMPLETE</span></div>
 </div>
 
-
-<button class="pwa-install-btn" id="pwaInstallBtn" style="display:none;" onclick="triggerInstall()" aria-label="تثبيت التطبيق">
-  ⬇ <span id="pwaInstallText">ثبّت التطبيق / Install App</span>
-</button>
-
 <nav class="bottom-nav">
   <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
   <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
@@ -480,20 +450,6 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <script>
-var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-var isStandalone = window.navigator.standalone;
-if (isIOS && !isStandalone && !sessionStorage.getItem('fl_ios_hint')) {
-  sessionStorage.setItem('fl_ios_hint','1');
-  var btn = document.getElementById('pwaInstallBtn');
-  if (btn) {
-    document.getElementById('pwaInstallText').textContent = 'أضف للشاشة الرئيسية / Add to Home';
-    btn.style.display = 'flex';
-    setTimeout(function(){ btn.classList.add('visible'); }, 1500);
-    btn.onclick = function(){
-      alert('iOS: اضغط مشاركة ← "Add to Home Screen"\niOS: Tap Share → Add to Home Screen');
-      btn.classList.remove('visible');
-    };
-  }
 }
 </script>
 
