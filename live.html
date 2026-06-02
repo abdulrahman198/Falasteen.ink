@@ -129,6 +129,22 @@ body { margin:0; min-height:100vh; background:#080808; color:#e5e2e1; font-famil
     loadDecentralizedStream();
   });
 })();
+
+  window.verifyBlockchainStream = async function() {
+    var apiKey = (window.LIVEPEER_API_KEY) || '7f763967-912a-4243-99e9-92505c2bcb9b';
+    var res = await fetch('https://livepeer.studio/api/stream?streamsonly=1&active=1', {
+      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) throw new Error('فشل الاتصال بـ Livepeer (HTTP ' + res.status + ')');
+    var streams = await res.json();
+    var active = Array.isArray(streams) ? streams.find(function(s){ return s.isActive || s.active; }) : null;
+    if (!active || !active.playbackId) throw new Error('البث غير متاح حالياً، تابعنا للإعلان عن موعد البث القادم 🔴');
+    return 'https://lvpr.tv/?v=' + active.playbackId;
+  };
+
+  window.timestampStreamLink = function(link) {
+    return { timestamp: new Date().toLocaleString('ar-EG') };
+  };
 </script>
 </body>
 </html>
