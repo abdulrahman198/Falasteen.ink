@@ -2,149 +2,248 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<link rel="stylesheet" href="styles.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>بث مباشر — FALASTEEN.INK</title>
 <script src="app-config.js"></script>
 <script src="common.js"></script>
 <script src="app.js" defer></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>بث مباشر | FALASTEEN.INK</title>
 <style>
-body { margin:0; min-height:100vh; background:#080808; color:#e5e2e1; font-family:Arial, "Segoe UI", sans-serif; }
-.live-page { max-width:1140px; margin:0 auto; padding:24px; }
-.topnav { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center; padding:18px 0; }
-.live-hero { margin:24px auto 14px; text-align:center; }
-.live-tag { display:inline-block; font-family:"Courier New", monospace; letter-spacing:0.18em; color:var(--red); text-transform:uppercase; margin-bottom:14px; }
-.live-title { font-size:clamp(2rem,4vw,3rem); font-weight:900; line-height:1.05; margin-bottom:12px; }
-.live-desc { max-width:760px; margin:0 auto; color:var(--dim); line-height:1.75; }
-.toggle-switch { display:flex; justify-content:center; gap:6px; margin:22px auto 0; max-width:420px; border:1px solid rgba(255,255,255,.08); border-radius:999px; background:rgba(255,255,255,.03); overflow:hidden; }
-.toggle-switch button { flex:1; border:none; background:transparent; color:var(--text); padding:12px 14px; font-weight:700; cursor:pointer; transition:all .25s ease; }
-.toggle-switch button.active { background:rgba(232,34,31,0.95); color:#fff; }
-.stream-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:28px; }
-.stream-panel { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.3); min-height:420px; position:relative; }
-.stream-panel h2 { margin:0 0 12px; font-size:.95rem; letter-spacing:.12em; text-transform:uppercase; color:var(--red); font-weight:900; }
-.panel-note { color:var(--dim); line-height:1.7; margin-bottom:18px; }
-.panel-state { position:absolute; top:18px; right:18px; font-size:.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:.15em; }
-.stream-panel.inactive::after { content:'غير نشط'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.75); background:rgba(0,0,0,.45); backdrop-filter:blur(4px); border-radius:24px; font-size:1rem; pointer-events:none; }
-.live-embed-wrap { width:100%; border-radius:18px; overflow:hidden; background:#000; min-height:240px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
-.live-embed { width:100%; aspect-ratio:16/9; border:none; background:#000; display:block; }
-.livepeer-placeholder { min-height:240px; display:flex; align-items:center; justify-content:center; color:var(--dim); background:radial-gradient(circle, rgba(232,34,31,.08), transparent 55%); border:1px dashed rgba(232,34,31,.35); border-radius:18px; padding:18px; text-align:center; }
-.stream-meta { margin-top:16px; color:var(--dim); font-size:0.95rem; line-height:1.6; }
-.stream-note { margin-top:10px; color:var(--dim); font-size:0.92rem; text-align:center; }
-.stream-button { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:12px 24px; border-radius:999px; border:none; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; cursor:pointer; transition:transform .2s; font-weight:700; }
-.stream-button:hover { transform:translateY(-2px); }
-@media (max-width: 940px) { .stream-grid { grid-template-columns:1fr; } }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+.page{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:24px 0 8px;text-align:center}
+.sub{color:#888;text-align:center;margin-bottom:32px;line-height:1.7}
+.broadcast-box{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;margin-bottom:40px}
+.broadcast-box h2{font-size:1.1rem;margin-bottom:16px;color:#e8221f}
+#localVideo{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9;display:none;object-fit:cover}
+.video-placeholder{width:100%;aspect-ratio:16/9;border-radius:12px;background:radial-gradient(circle,rgba(232,34,31,.07),transparent 60%);border:1px dashed rgba(232,34,31,.3);display:flex;align-items:center;justify-content:center;color:#555;font-size:0.95rem;flex-direction:column;gap:10px;text-align:center;padding:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;font-family:inherit}
+.btn-red{background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fff}
+.btn-green{background:linear-gradient(135deg,#166534,#14532d);color:#fff}
+.btn-gray{background:#222;color:#aaa;cursor:not-allowed;opacity:.6}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.stream-title-input{width:100%;padding:12px 16px;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:0.95rem;font-family:inherit;margin-bottom:14px;direction:rtl}
+.stream-title-input:focus{outline:none;border-color:#e8221f}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:#e8221f;color:#fff;border-radius:999px;padding:4px 12px;font-size:0.8rem;font-weight:700;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.streams-section h2{font-size:1.2rem;margin-bottom:18px;font-weight:800}
+.streams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.stream-card{background:#141414;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.stream-card:hover{border-color:rgba(232,34,31,.4)}
+.stream-thumb{aspect-ratio:16/9;background:#000;position:relative}
+.stream-thumb iframe{width:100%;height:100%;border:none;pointer-events:none}
+.stream-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(232,34,31,.1),transparent)}
+.stream-info{padding:14px}
+.stream-name{font-weight:700;margin-bottom:6px;font-size:0.95rem}
+.stream-meta{font-size:0.8rem;color:#666;display:flex;align-items:center;gap:8px}
+.no-streams{text-align:center;color:#555;padding:40px 20px;border:1px dashed rgba(255,255,255,.06);border-radius:16px}
+.watch-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;align-items:center;justify-content:center;padding:16px}
+.watch-overlay.open{display:flex}
+.watch-modal{background:#111;border-radius:20px;width:100%;max-width:840px;overflow:hidden}
+.watch-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.watch-close{background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer}
+.watch-player{aspect-ratio:16/9;background:#000}
+.watch-player iframe{width:100%;height:100%;border:none}
+.toast{position:fixed;bottom:24px;right:24px;background:#166534;color:#fff;padding:12px 20px;border-radius:12px;font-size:0.9rem;display:none;z-index:9999;direction:rtl}
 </style>
 </head>
 <body>
-<div class="live-page">
-  <nav class="topnav">
-    <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
-    <a class="donate-btn" href="donate.html">تبرع / Donate</a>
-  </nav>
-  <section class="live-hero">
-    <span class="live-tag">بث مباشر</span>
-    <h1 class="live-title">اختر وضع المشاهدة</h1>
-    <p class="live-desc">تابع البث التقليدي أو انقل المشاهدة إلى البث اللامركزي المحمي عبر Livepeer.</p>
-  </section>
-  <div class="toggle-switch" role="tablist">
-    <button type="button" id="toggleNormal" class="active">مشاهدة البث العادي</button>
-    <button type="button" id="toggleDecentralized">البث عبر البلوكشين</button>
+<div id="flNav"></div>
+<div class="page">
+  <h1>📡 بث مباشر</h1>
+  <p class="sub">ابدأ بثك المباشر الآن مباشرةً من متصفحك — بدون تحميل أي برنامج.<br/>أو شاهد البثوث الجارية حالياً.</p>
+
+  <div class="broadcast-box">
+    <h2>🎙️ ابدأ بثك المباشر</h2>
+    <input type="text" class="stream-title-input" id="streamTitle" placeholder="عنوان البث (اختياري)..." maxlength="80"/>
+    <div id="videoWrap">
+      <div class="video-placeholder" id="videoPlaceholder">
+        <span style="font-size:2rem">📷</span>
+        <span>معاينة الكاميرا ستظهر هنا</span>
+      </div>
+      <video id="localVideo" autoplay muted playsinline></video>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-red" id="startBtn" onclick="startBroadcast()">🔴 ابدأ البث</button>
+      <button class="btn btn-gray" id="stopBtn" onclick="stopBroadcast()" disabled>⏹ إيقاف البث</button>
+    </div>
+    <div id="broadcastStatus" style="margin-top:12px;font-size:0.85rem;color:#666"></div>
   </div>
-  <div class="stream-grid">
-    <section id="youtubePanel" class="stream-panel active-mode" aria-label="YouTube stream">
-      <div class="panel-state">بث عادي</div>
-      <h2>بث YouTube</h2>
-      <p class="panel-note">مشاهدة البث التقليدي باستخدام مشغل YouTube المدمج.</p>
-      <div class="live-embed-wrap">
-        <iframe id="youtubeEmbed" class="live-embed"
-          src="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-      </div>
-      <div class="stream-meta">اضغط على الزر أدناه للانتقال إلى البث المباشر في يوتيوب.</div>
-      <div class="live-actions" style="justify-content:center; margin-top:18px;">
-        <a href="https://www.youtube.com/channel/YOUR_CHANNEL_ID/live" target="_blank" rel="noreferrer noopener" class="stream-button">
-          🔴 فتح البث في YouTube
-        </a>
-      </div>
-    </section>
-    <section id="decentralizedPanel" class="stream-panel inactive" aria-label="Decentralized stream">
-      <div class="panel-state">بث لامركزي</div>
-      <h2>Livepeer Player</h2>
-      <p class="panel-note">يجلب هذا العرض رابط البث الموثق عبر العقد الذكي ويشغله عبر Livepeer.</p>
-      <div id="livepeerContainer" class="livepeer-placeholder">
-        جاري تحميل رابط البث اللامركزي...
-      </div>
-      <div class="stream-meta">الرابط الثابت والموثق سيظهر هنا بمجرد التحقق من العقد الذكي.</div>
-      <p class="stream-note">تم التحقق من البث آخر مرة على: <strong id="streamTimestamp">--</strong></p>
-    </section>
+
+  <div class="streams-section">
+    <h2>🔴 البثوث الجارية الآن</h2>
+    <div class="streams-grid" id="streamsGrid">
+      <div class="no-streams">جارٍ تحميل البثوث...</div>
+    </div>
   </div>
 </div>
+
+<div class="watch-overlay" id="watchOverlay" onclick="closeWatch(event)">
+  <div class="watch-modal">
+    <div class="watch-header">
+      <span id="watchTitle" style="font-weight:700"></span>
+      <button class="watch-close" onclick="closeWatchModal()">✕</button>
+    </div>
+    <div class="watch-player" id="watchPlayer"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-(function() {
-  function setLiveMode(mode) {
-    var normalBtn = document.getElementById('toggleNormal');
-    var decBtn = document.getElementById('toggleDecentralized');
-    var ytPanel = document.getElementById('youtubePanel');
-    var decPanel = document.getElementById('decentralizedPanel');
-    normalBtn.classList.toggle('active', mode === 'normal');
-    decBtn.classList.toggle('active', mode === 'decentralized');
-    ytPanel.classList.toggle('inactive', mode !== 'normal');
-    decPanel.classList.toggle('inactive', mode !== 'decentralized');
-    ytPanel.classList.toggle('active-mode', mode === 'normal');
-    decPanel.classList.toggle('active-mode', mode === 'decentralized');
-  }
+var LIVEPEER_KEY = window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b';
+var SUPA_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
+var SUPA_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
 
-  function updateTimestamp(ts) {
-    var stamp = document.getElementById('streamTimestamp');
-    if (!stamp) return;
-    stamp.textContent = ts || '--';
-  }
+var localStream = null;
+var pc = null;
+var activeStreamId = null;
 
-  async function loadDecentralizedStream() {
-    var container = document.getElementById('livepeerContainer');
-    if (!container) return;
-    container.textContent = 'جارٍ التحقق من العقد الذكي...';
-    try {
-      if (!window.verifyBlockchainStream) {
-        throw new Error('لم يتم تهيئة دعم العقد الذكي بعد.');
-      }
-      var link = await window.verifyBlockchainStream();
-      if (!link) throw new Error('لا يوجد رابط بث لامركزي متاح.');
-      container.innerHTML = '<iframe class="live-embed" src="' + link + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-      var record = window.timestampStreamLink ? window.timestampStreamLink(link) : { timestamp: new Date().toISOString() };
-      updateTimestamp(record.timestamp);
-    } catch (err) {
-      container.innerHTML = '<div class="livepeer-placeholder">تعذر تحميل البث اللامركزي: ' + err.message + '</div>';
-      updateTimestamp(null);
-      console.warn(err);
-    }
-  }
+function showToast(msg, isErr) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isErr ? '#7f1d1d' : '#166534';
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display='none'; }, 3500);
+}
 
-  document.addEventListener('DOMContentLoaded', function() {
-    var normalBtn = document.getElementById('toggleNormal');
-    var decBtn = document.getElementById('toggleDecentralized');
-    if (normalBtn) normalBtn.addEventListener('click', function(){ setLiveMode('normal'); });
-    if (decBtn) decBtn.addEventListener('click', function(){ setLiveMode('decentralized'); });
-    loadDecentralizedStream();
-  });
-})();
+function setStatus(msg, color) {
+  var el = document.getElementById('broadcastStatus');
+  el.textContent = msg;
+  el.style.color = color || '#888';
+}
 
-  window.verifyBlockchainStream = async function() {
-    var apiKey = (window.LIVEPEER_API_KEY) || '7f763967-912a-4243-99e9-92505c2bcb9b';
-    var res = await fetch('https://livepeer.studio/api/stream?streamsonly=1&active=1', {
-      headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' }
+async function startBroadcast() {
+  var startBtn = document.getElementById('startBtn');
+  var stopBtn = document.getElementById('stopBtn');
+  startBtn.disabled = true;
+  setStatus('جارٍ طلب إذن الكاميرا...', '#f59e0b');
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    var vid = document.getElementById('localVideo');
+    vid.srcObject = localStream;
+    vid.style.display = 'block';
+    document.getElementById('videoPlaceholder').style.display = 'none';
+
+    setStatus('جارٍ إنشاء البث على Livepeer...', '#f59e0b');
+
+    var title = document.getElementById('streamTitle').value.trim() || 'بث مباشر من فلسطين';
+    var res = await fetch('https://livepeer.studio/api/stream', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + LIVEPEER_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: title, profiles: [{ name:'720p', bitrate:2000000, fps:30, width:1280, height:720 }] })
     });
-    if (!res.ok) throw new Error('فشل الاتصال بـ Livepeer (HTTP ' + res.status + ')');
-    var streams = await res.json();
-    var active = Array.isArray(streams) ? streams.find(function(s){ return s.isActive || s.active; }) : null;
-    if (!active || !active.playbackId) throw new Error('البث غير متاح حالياً، تابعنا للإعلان عن موعد البث القادم 🔴');
-    return 'https://lvpr.tv/?v=' + active.playbackId;
-  };
+    if (!res.ok) throw new Error('فشل إنشاء البث (HTTP ' + res.status + ')');
+    var stream = await res.json();
+    activeStreamId = stream.id;
 
-  window.timestampStreamLink = function(link) {
-    return { timestamp: new Date().toLocaleString('ar-EG') };
-  };
+    setStatus('جارٍ الاتصال بالبث اللامركزي...', '#f59e0b');
+    pc = new RTCPeerConnection();
+    localStream.getTracks().forEach(function(t){ pc.addTrack(t, localStream); });
+    var offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    var whipUrl = 'https://livepeer.studio/webrtc/' + stream.streamKey;
+    var whipRes = await fetch(whipUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/sdp', 'Authorization': 'Bearer ' + LIVEPEER_KEY },
+      body: offer.sdp
+    });
+    if (whipRes.ok) {
+      var answer = await whipRes.text();
+      await pc.setRemoteDescription({ type: 'answer', sdp: answer });
+    }
+
+    await fetch(SUPA_URL + '/rest/v1/live_streams', {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ stream_id: stream.id, playback_id: stream.playbackId, title: title, is_active: true })
+    });
+
+    setStatus('', '');
+    var statusDiv = document.getElementById('broadcastStatus');
+    statusDiv.innerHTML = '<span class="live-badge">🔴 يبث الآن</span> <span style="color:#888;font-size:0.8rem">رابط المشاهدة: lvpr.tv/?v=' + stream.playbackId + '</span>';
+
+    stopBtn.disabled = false;
+    stopBtn.classList.remove('btn-gray');
+    stopBtn.classList.add('btn-red');
+    startBtn.style.display = 'none';
+    showToast('🔴 بدأ البث بنجاح!');
+    loadStreams();
+
+  } catch(err) {
+    setStatus('خطأ: ' + err.message, '#ef4444');
+    startBtn.disabled = false;
+    if (localStream) { localStream.getTracks().forEach(function(t){ t.stop(); }); localStream = null; }
+    document.getElementById('localVideo').style.display = 'none';
+    document.getElementById('videoPlaceholder').style.display = 'flex';
+  }
+}
+
+async function stopBroadcast() {
+  if (pc) { pc.close(); pc = null; }
+  if (localStream) { localStream.getTracks().forEach(function(t){ t.stop(); }); localStream = null; }
+
+  document.getElementById('localVideo').style.display = 'none';
+  document.getElementById('videoPlaceholder').style.display = 'flex';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').style.display = '';
+  document.getElementById('stopBtn').disabled = true;
+  document.getElementById('stopBtn').classList.remove('btn-red');
+  document.getElementById('stopBtn').classList.add('btn-gray');
+  setStatus('', '');
+  document.getElementById('broadcastStatus').innerHTML = '';
+
+  if (activeStreamId) {
+    await fetch(SUPA_URL + '/rest/v1/live_streams?stream_id=eq.' + activeStreamId, {
+      method: 'PATCH',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_active: false })
+    });
+    activeStreamId = null;
+  }
+  showToast('تم إيقاف البث');
+  loadStreams();
+}
+
+async function loadStreams() {
+  var grid = document.getElementById('streamsGrid');
+  try {
+    var res = await fetch(SUPA_URL + '/rest/v1/live_streams?is_active=eq.true&order=created_at.desc', {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+    });
+    var streams = await res.json();
+    if (!Array.isArray(streams) || streams.length === 0) {
+      grid.innerHTML = '<div class="no-streams">لا توجد بثوث مباشرة حالياً 📡<br/><span style="font-size:0.85rem;color:#444">كن أول من يبث!</span></div>';
+      return;
+    }
+    grid.innerHTML = streams.map(function(s){
+      return '<div class="stream-card" onclick="watchStream(\'' + s.playback_id + '\',\'' + (s.title||'بث مباشر').replace(/'/g,"\\'") + '\')">' +
+        '<div class="stream-thumb"><div class="stream-thumb-placeholder"><span style="font-size:2.5rem">📡</span></div></div>' +
+        '<div class="stream-info"><div class="stream-name">' + (s.title||'بث مباشر') + '</div>' +
+        '<div class="stream-meta"><span class="live-badge" style="font-size:0.7rem;padding:2px 8px">🔴 مباشر</span></div></div></div>';
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div class="no-streams">تعذر تحميل البثوث</div>';
+  }
+}
+
+function watchStream(playbackId, title) {
+  document.getElementById('watchTitle').textContent = title;
+  document.getElementById('watchPlayer').innerHTML = '<iframe src="https://lvpr.tv/?v=' + playbackId + '&autoplay=1" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;border:none"></iframe>';
+  document.getElementById('watchOverlay').classList.add('open');
+}
+
+function closeWatch(e) { if (e.target === document.getElementById('watchOverlay')) closeWatchModal(); }
+function closeWatchModal() {
+  document.getElementById('watchOverlay').classList.remove('open');
+  document.getElementById('watchPlayer').innerHTML = '';
+}
+
+document.addEventListener('DOMContentLoaded', loadStreams);
+setInterval(loadStreams, 30000);
 </script>
 </body>
 </html>
