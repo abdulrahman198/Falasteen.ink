@@ -10,14 +10,10 @@
 (function(){
   if(!window.FL){return;}
   FL.getSession().then(function(session) {
-    if (!session) {
-      window.location.href='Auth.html';
-      return;
+    if (session) {
+      window.addEventListener('DOMContentLoaded', function(){ FL.injectUserBadge(); });
     }
-    window.addEventListener('DOMContentLoaded', function(){ FL.injectUserBadge(); });
-  }).catch(function() {
-    window.location.href='Auth.html';
-  });
+  }).catch(function() {});
 })();
 </script>
 <link rel="manifest" href="manifest.json"/>

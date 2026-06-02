@@ -404,15 +404,12 @@ function completeMission(){
     window.location.href = activeMission.link;
     return;
   }
-  p.missions[activeMission.id]='done';
-  p.pts=(p.pts||0)+activeMission.pts;
+  p.missions[activeMission.id]='active';
   saveProfile(p);
   closeMission();
-  toast('+'+ activeMission.pts +' XP — '+(isAr?'مكتسب!':'Earned!'));
   setTimeout(function(){
-    init();
     window.location.href=activeMission.link;
-  },800);
+  },300);
 }
 
 function toggleLang(){
