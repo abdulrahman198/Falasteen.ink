@@ -1,5 +1,5 @@
-// FALASTEEN.INK Service Worker v11
-var CACHE = 'fl-v12';
+// FALASTEEN.INK Service Worker v12
+var CACHE = 'fl-v13';
 var APP_SHELL = [
   '/', 'Index.html', 'Feed.html', 'Martyrs.html', 'Landmarks.html',
   'Map.html', 'Archive.html', 'live.html', 'Guardian_hub1.html',
@@ -9,6 +9,7 @@ var APP_SHELL = [
   'styles.css', 'common.js', 'app-config.js', 'app.js',
   'ollama-search.js', 'ollama-auto-tagging.js', 'discovery-engine.js',
   'web3-token.js', 'rewards-system.js',
+  'fl-nav.js', 'rewards.js',
   'manifest.json', 'icon-192.png', 'icon-512.png'
 ];
 

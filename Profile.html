@@ -276,18 +276,44 @@ var _meta = {};
 
 // ── INIT ──
 window.addEventListener('load', async function() {
-  var res = await sb.auth.getSession();
-  if (!res.data.session) {
-    window.location.href = 'Auth.html';
+  if (!sb || !sb.auth) {
+    // Supabase CDN failed to load — show guest placeholder, do not crash
+    showGuestState();
     return;
   }
-  _currentUser = res.data.session.user;
-  _meta = _currentUser.user_metadata || {};
-  renderProfile();
-  loadArchive();
-  // HANDALA: award verification reward (unique index prevents duplicates)
-  if (window.FLHandala) { window.FLHandala.earn('verification'); window.FLHandala.refreshBalance(); }
+  try {
+    var res = await sb.auth.getSession();
+    if (!res.data || !res.data.session) {
+      // Not logged in — show guest placeholder instead of redirecting
+      showGuestState();
+      return;
+    }
+    _currentUser = res.data.session.user;
+    _meta = _currentUser.user_metadata || {};
+    renderProfile();
+    loadArchive();
+    // HANDALA: award verification reward (unique index prevents duplicates)
+    if (window.FLHandala) { window.FLHandala.earn('verification'); window.FLHandala.refreshBalance(); }
+  } catch(e) {
+    showGuestState();
+  }
 });
+
+// ── GUEST STATE (not logged in) ──
+function showGuestState() {
+  document.getElementById('profileName').textContent = isAr ? 'زائر / Guest' : 'Guest';
+  document.getElementById('profileEmail').textContent = '';
+  document.getElementById('profileDesc').textContent = isAr
+    ? 'سجّل الدخول للوصول إلى ملفك الشخصي.'
+    : 'Sign in to access your profile.';
+  document.getElementById('btnEdit').style.display = 'none';
+  document.getElementById('btnLogout').style.display = 'none';
+  document.getElementById('btnShare').style.display = 'none';
+  document.getElementById('archiveGrid').innerHTML =
+    '<div class="empty-archive" style="grid-column:1/-1;">' +
+    '<p>' + (isAr ? 'يجب تسجيل الدخول لعرض المحتوى.' : 'Sign in to view your content.') + '</p>' +
+    '<a href="Auth.html">' + (isAr ? '→ تسجيل الدخول / Sign In' : '→ Sign In') + '</a></div>';
+}
 
 // ── RENDER PROFILE ──
 function renderProfile() {
