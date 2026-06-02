@@ -2,243 +2,277 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<link rel="stylesheet" href="styles.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>القبو الرقمي — FALASTEEN.INK</title>
 <script src="app-config.js"></script>
 <script src="common.js"></script>
 <script src="app.js" defer></script>
-<script>
-(function(){
-  if(!window.FL){return;}
-  FL.getSession().then(function(session) {
-    if (session) {
-      window.addEventListener('DOMContentLoaded', function(){ FL.injectUserBadge(); });
-    }
-  }).catch(function() {});
-})();
-</script>
-<link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#E8221F"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="FALASTEEN"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>القبو | FALASTEEN.INK</title>
 <style>
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --bg: #0e0e0e; --s1: #131313; --s2: #1c1b1b; --s3: #201f1f; --s4: #353534;
-  --red: #E8221F; --red2: #930006; --green: #00b954; --text: #e5e2e1; --dim: #9a9898;
-}
-
-body { background: var(--bg); color: var(--text); font-family: Arial, "Segoe UI", Tahoma, sans-serif; min-height: 100vh; padding-bottom: 72px; }
-
-.topnav { position: fixed; top: 0; width: 100%; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; background: rgba(14,14,14,0.95); }
-.logo { font-family: "Courier New", monospace; font-weight: 900; font-size: 1rem; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
-.logo-dot { color: var(--red); }
-.sys-label { font-family: "Courier New", monospace; font-size: 0.58rem; color: var(--green); letter-spacing: 0.1em; }
-
-.vault-header { padding: 100px 18px 28px; background: radial-gradient(ellipse at 50% 0%, rgba(232,34,31,0.07) 0%, transparent 70%); }
-
-.access-tag { font-family: "Courier New", monospace; font-size: 0.52rem; color: var(--green); letter-spacing: 0.22em; display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
-.access-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,185,84,0.5); } 50% { box-shadow: 0 0 0 5px rgba(0,185,84,0); } }
-
-.vault-title { font-size: clamp(2.2rem, 7vw, 4.2rem); font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
-.vault-title .red { color: var(--red); }
-.vault-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.7; margin-bottom: 24px; max-width: 460px; }
-
-.vault-btns { display: flex; gap: 10px; direction: ltr; flex-wrap: wrap; }
-.btn-red { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--red), var(--red2)); color: #fff; font-size: 0.78rem; font-weight: 700; padding: 11px 22px; border: none; cursor: pointer; text-decoration: none; letter-spacing: 0.04em; transition: transform 0.2s; }
-.btn-red:hover { transform: translateY(-2px); }
-.btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid rgba(93,63,59,0.4); color: var(--dim); font-size: 0.78rem; font-weight: 500; padding: 11px 22px; cursor: pointer; text-decoration: none; transition: background 0.2s; }
-.btn-outline:hover { background: var(--s2); }
-
-.sys-status { background: var(--s2); padding: 18px; margin: 0 18px 2px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.sys-key { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--dim); letter-spacing: 0.14em; margin-bottom: 2px; }
-.sys-val { font-family: "Courier New", monospace; font-size: 0.72rem; color: var(--green); }
-
-.encrypt-bar { background: var(--s2); padding: 14px 18px; margin: 2px 18px; display: flex; align-items: center; gap: 14px; }
-.enc-label { font-family: "Courier New", monospace; font-size: 0.58rem; color: var(--red); letter-spacing: 0.1em; white-space: nowrap; }
-.enc-track { flex: 1; height: 3px; background: var(--s4); border-radius: 2px; }
-.enc-fill { height: 100%; background: linear-gradient(90deg, var(--red2), var(--red)); width: 82%; border-radius: 2px; animation: enc 3s ease-in-out infinite alternate; }
-@keyframes enc { from { width: 78%; } to { width: 88%; } }
-.enc-pct { font-family: "Courier New", monospace; font-size: 0.62rem; color: var(--red); }
-
-.filters { padding: 14px 18px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
-.filters::-webkit-scrollbar { display: none; }
-.chip { font-size: 0.7rem; font-weight: 600; padding: 6px 14px; background: var(--s2); color: var(--dim); border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; border-bottom: 2px solid transparent; }
-.chip.active { color: var(--red); border-bottom-color: var(--red); background: rgba(232,34,31,0.06); }
-
-.section-label { font-family: "Courier New", monospace; font-size: 0.54rem; color: var(--red); letter-spacing: 0.22em; text-transform: uppercase; padding: 16px 18px 8px; display: block; }
-
-.file-list { padding: 0 18px; display: flex; flex-direction: column; gap: 2px; margin-bottom: 2px; }
-.file-card { background: var(--s2); padding: 18px; display: flex; gap: 14px; align-items: flex-start; transition: background 0.2s; cursor: pointer; }
-.file-card:hover { background: var(--s3); }
-.file-icon { width: 44px; height: 44px; background: var(--s4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.4rem; }
-.file-info { flex: 1; }
-.file-type { font-family: "Courier New", monospace; font-size: 0.5rem; color: var(--green); letter-spacing: 0.1em; margin-bottom: 3px; }
-.file-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; line-height: 1.3; }
-.file-desc { font-size: 0.78rem; color: var(--dim); line-height: 1.5; margin-bottom: 9px; }
-.file-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.file-btn { display: flex; align-items: center; gap: 3px; font-size: 0.68rem; color: var(--red); background: none; border: none; cursor: pointer; padding: 0; }
-.file-size { font-family: "Courier New", monospace; font-size: 0.56rem; color: var(--dim); }
-
-.audio-list { padding: 0 18px; display: flex; flex-direction: column; gap: 2px; margin-bottom: 32px; }
-.audio-item { background: var(--s2); padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; }
-.audio-item:hover { background: var(--s3); }
-.play-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; font-size: 1rem; transition: transform 0.2s; }
-.play-btn:hover { transform: scale(1.1); }
-.audio-info { flex: 1; }
-.audio-title { font-size: 0.86rem; font-weight: 700; margin-bottom: 2px; }
-.audio-sub { font-size: 0.7rem; color: var(--dim); }
-.dl-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--dim); }
-
-.bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: rgba(14,14,14,0.97); padding: 10px 0 14px; z-index: 200; }
-.bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--dim); font-size: 0.56rem; }
-.bottom-nav a:hover, .bottom-nav a.active { color: var(--red); }
-.nav-icon { font-size: 1.3rem; line-height: 1; }
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+.page{max-width:960px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;margin:20px 0 6px;text-align:center}
+.sub{color:#666;text-align:center;margin-bottom:28px;font-size:0.9rem;line-height:1.7}
+.upload-zone{border:2px dashed rgba(232,34,31,.4);border-radius:20px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(232,34,31,.03);margin-bottom:28px}
+.upload-zone:hover,.upload-zone.drag{border-color:#e8221f;background:rgba(232,34,31,.07)}
+.upload-icon{font-size:3rem;margin-bottom:12px}
+.upload-label{font-size:1rem;font-weight:700;margin-bottom:6px}
+.upload-sub{font-size:0.82rem;color:#666}
+#fileInput{display:none}
+.progress-bar{width:100%;height:6px;background:#1a1a1a;border-radius:4px;margin:14px 0;display:none}
+.progress-fill{height:100%;background:linear-gradient(90deg,#e8221f,#b91c1c);border-radius:4px;width:0;transition:width .3s}
+.upload-form{background:#141414;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:28px;display:none}
+.upload-form h3{margin-bottom:14px;font-size:1rem}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:0.8rem;color:#888;margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:10px 14px;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:0.9rem;font-family:inherit;direction:rtl}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:#e8221f}
+.file-preview{display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:10px;padding:12px;margin-bottom:14px}
+.file-preview-icon{font-size:2rem}
+.file-preview-info{flex:1}
+.file-preview-name{font-weight:700;font-size:0.9rem;margin-bottom:2px;word-break:break-all}
+.file-preview-size{font-size:0.78rem;color:#666}
+.btn-upload{width:100%;padding:13px;background:linear-gradient(135deg,#b91c1c,#7f1d1d);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-upload:disabled{opacity:.5;cursor:not-allowed}
+.files-section h2{font-size:1.1rem;font-weight:800;margin-bottom:16px}
+.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.file-card{background:#141414;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.file-card:hover{border-color:rgba(232,34,31,.3)}
+.file-thumb{aspect-ratio:16/9;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden}
+.file-thumb img,.file-thumb video{width:100%;height:100%;object-fit:cover}
+.file-body{padding:12px}
+.file-name{font-weight:700;font-size:0.88rem;margin-bottom:4px;word-break:break-all;line-height:1.4}
+.file-desc{font-size:0.78rem;color:#666;margin-bottom:8px;line-height:1.5}
+.file-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:#555}
+.file-dl{color:#e8221f;text-decoration:none;font-weight:700}
+.no-files{text-align:center;color:#444;padding:40px 20px;border:1px dashed rgba(255,255,255,.05);border-radius:14px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#166534;color:#fff;padding:12px 22px;border-radius:12px;font-size:0.9rem;display:none;z-index:9999;white-space:nowrap}
 </style>
 </head>
 <body>
+<div id="flNav"></div>
+<div class="page">
+  <h1>📁 القبو الرقمي</h1>
+  <p class="sub">ارفع صوراً، فيديوهات، وثائق أو تسجيلات صوتية.<br/>كل ملف يُحفظ للتاريخ — محمي ولا يُحذف.</p>
 
-<nav class="topnav">
-  <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
-  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
-  <span class="sys-label">ARCHIVE SYSTEM v1.0</span>
-</nav>
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
+    <div class="upload-icon">📤</div>
+    <div class="upload-label">اضغط هنا أو اسحب الملف</div>
+    <div class="upload-sub">صور · فيديو · PDF · صوت — حتى 50 ميغا</div>
+    <input type="file" id="fileInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" onchange="onFileSelected(this.files[0])"/>
+  </div>
 
-<div class="vault-header">
-  <div class="access-tag"><div class="access-dot"></div>SECURE_ACCESS: GRANTED — الوصول مصرح به</div>
-  <h1 class="vault-title">القبو<br/><span class="red">الرقمي</span></h1>
-  <p class="vault-desc">مستودع لامركزي للسجلات التاريخية والأدلة البصرية والروايات الشفوية من قلب فلسطين. مشفر، أبدي، لا يُحذف.</p>
-  <div class="vault-btns">
-    <a href="#" class="btn-red">⬇ تحميل كل الأرشيف</a>
-    <a href="#" class="btn-outline">📋 سجل العمليات</a>
+  <div class="upload-form" id="uploadForm">
+    <h3>📎 تفاصيل الملف</h3>
+    <div class="file-preview" id="filePreview"></div>
+    <div class="form-row">
+      <label>عنوان الوثيقة</label>
+      <input type="text" id="fileTitle" placeholder="اكتب عنواناً مختصراً..." maxlength="120"/>
+    </div>
+    <div class="form-row">
+      <label>وصف (اختياري)</label>
+      <textarea id="fileDesc" rows="2" placeholder="وصف مختصر للمحتوى..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>نوع المحتوى</label>
+      <select id="fileCategory">
+        <option value="document">وثيقة</option>
+        <option value="photo">صورة</option>
+        <option value="video">فيديو</option>
+        <option value="audio">تسجيل صوتي</option>
+        <option value="other">أخرى</option>
+      </select>
+    </div>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    <button class="btn-upload" id="uploadBtn" onclick="doUpload()">⬆️ رفع الملف</button>
+    <button style="width:100%;margin-top:8px;padding:10px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#888;cursor:pointer;font-family:inherit" onclick="cancelUpload()">إلغاء</button>
+  </div>
+
+  <div class="files-section">
+    <h2>🗃️ الوثائق المرفوعة</h2>
+    <div class="files-grid" id="filesGrid"><div class="no-files">جارٍ التحميل...</div></div>
   </div>
 </div>
 
-<div class="sys-status">
-  <div><div class="sys-key">ENCRYPTION</div><div class="sys-val">AES-256 ✓</div></div>
-  <div><div class="sys-key">FRAGMENTS</div><div class="sys-val">42,901</div></div>
-  <div><div class="sys-key">STATUS</div><div class="sys-val">LIVE_SYNC</div></div>
-  <div><div class="sys-key">LATENCY</div><div class="sys-val">14MS</div></div>
-  <div><div class="sys-key">NODES</div><div class="sys-val">2,847</div></div>
-  <div><div class="sys-key">ORIGIN</div><div class="sys-val">GAZA_METRO</div></div>
-</div>
+<div class="toast" id="toast"></div>
 
-<div class="encrypt-bar">
-  <span class="enc-label">ENCRYPTING...</span>
-  <div class="enc-track"><div class="enc-fill"></div></div>
-  <span class="enc-pct">82%</span>
-</div>
-
-<div class="filters">
-  <button class="chip active">الكل</button>
-  <button class="chip">فيديو</button>
-  <button class="chip">وثائق</button>
-  <button class="chip">صور</button>
-  <button class="chip">صوتي</button>
-</div>
-
-<span class="section-label">الملفات الأخيرة — RECENT FILES</span>
-
-<div class="file-list">
-  <div class="file-card">
-    <div class="file-icon">🎬</div>
-    <div class="file-info">
-      <div class="file-type">HD VIDEO — 4.2 GB · 12:45 دقيقة</div>
-      <div class="file-name">عين على الأفق: أرشيف 001</div>
-      <div class="file-desc">توثيق بصري نادر لمعالم غزة التاريخية قبل الأحداث الأخيرة. مؤرشف على شبكة Arweave.</div>
-      <div class="file-actions">
-        <button class="file-btn">▶ شاهد الآن</button>
-        <button class="file-btn">⬇ تحميل</button>
-      </div>
-    </div>
-  </div>
-  <div class="file-card">
-    <div class="file-icon">📄</div>
-    <div class="file-info">
-      <div class="file-type">PDF DOCUMENT — 124 MB</div>
-      <div class="file-name">سجلات الأراضي — حي الشجاعية</div>
-      <div class="file-desc">وثائق تمليك عقاري تاريخية من منطقة الشجاعية (1920–1948). موثقة من قِبل 14 حارساً.</div>
-      <div class="file-actions">
-        <span class="file-size">SHJ_DEEDS_48.PDF</span>
-        <button class="file-btn">⬇ تحميل</button>
-      </div>
-    </div>
-  </div>
-  <div class="file-card">
-    <div class="file-icon">🖼</div>
-    <div class="file-info">
-      <div class="file-type">PHOTO GALLERY — 847 صورة</div>
-      <div class="file-name">شظايا الذاكرة: سلسلة 1967</div>
-      <div class="file-desc">مجموعة صور أرشيفية نادرة توثق الحياة اليومية في غزة عام 1967. مرقمنة من سلبيات أصلية.</div>
-      <div class="file-actions">
-        <button class="file-btn">📂 فتح المجموعة</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<span class="section-label">الروايات الشفوية — ORAL HISTORIES</span>
-
-<div class="audio-list">
-  <div class="audio-item">
-    <button class="play-btn">▶</button>
-    <div class="audio-info">
-      <div class="audio-title">حاجة مريم — حصاد الزيتون 1948</div>
-      <div class="audio-sub">42:18 · VERIFIED · غزة</div>
-    </div>
-    <button class="dl-btn">⬇</button>
-  </div>
-  <div class="audio-item">
-    <button class="play-btn">▶</button>
-    <div class="audio-info">
-      <div class="audio-title">ميناء غزة — قصص من البحر</div>
-      <div class="audio-sub">28:44 · VERIFIED · غزة</div>
-    </div>
-    <button class="dl-btn">⬇</button>
-  </div>
-  <div class="audio-item">
-    <button class="play-btn">▶</button>
-    <div class="audio-info">
-      <div class="audio-title">المدينة القديمة — حوارات السوق</div>
-      <div class="audio-sub">55:02 · VERIFIED · القدس</div>
-    </div>
-    <button class="dl-btn">⬇</button>
-  </div>
-</div>
-
-<nav class="bottom-nav">
-  <a href="Index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
-  <a href="Map.html"><span class="nav-icon">🗺</span>الخريطة</a>
-  <a href="Feed.html"><span class="nav-icon">▶</span>النبض</a>
-  <a href="Guardian_hub1.html"><span class="nav-icon">🛡</span>الحراس</a>
-  <a href="Profile.html"><span class="nav-icon">👤</span>حسابي</a>
+<nav style="position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-around;padding:8px 0;z-index:100">
+  <a href="Index.html" style="display:flex;flex-direction:column;align-items:center;color:#666;text-decoration:none;font-size:0.65rem;gap:2px"><span>🏠</span>Home</a>
+  <a href="Feed.html" style="display:flex;flex-direction:column;align-items:center;color:#666;text-decoration:none;font-size:0.65rem;gap:2px"><span>▶</span>Reels</a>
+  <a href="live.html" style="display:flex;flex-direction:column;align-items:center;color:#666;text-decoration:none;font-size:0.65rem;gap:2px"><span>🔴</span>Live</a>
+  <a href="Martyrs.html" style="display:flex;flex-direction:column;align-items:center;color:#666;text-decoration:none;font-size:0.65rem;gap:2px"><span>🕊</span>Martyrs</a>
+  <a href="Guardian_hub1.html" style="display:flex;flex-direction:column;align-items:center;color:#e8221f;text-decoration:none;font-size:0.65rem;gap:2px"><span>🛡</span>Guardian</a>
 </nav>
 
 <script>
-document.querySelectorAll('.chip').forEach(function(c) {
-  c.addEventListener('click', function() {
-    document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
-    c.classList.add('active');
-  });
-});
-</script>
+var SUPA = (window.SUPABASE_URL) || 'https://audvtdbylhmumvdrhijk.supabase.co';
+var KEY  = (window.SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+var BUCKET = 'vault-files';
+var selectedFile = null;
 
-
-<script>
-if("serviceWorker" in navigator && window.location.protocol !== "file:"){
-  window.addEventListener("load",function(){
-    navigator.serviceWorker.register("sw.js")
-    .then(function(r){console.log("SW registered ✓");})
-    .catch(function(e){console.log("SW error:",e);});
-  });
+function toast(msg, err) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = err ? '#7f1d1d' : '#166534';
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display='none'; }, 3500);
 }
+
+function fileIcon(type) {
+  if (!type) return '📄';
+  if (type.startsWith('image')) return '🖼️';
+  if (type.startsWith('video')) return '🎬';
+  if (type.startsWith('audio')) return '🎙️';
+  if (type.includes('pdf')) return '📕';
+  return '📄';
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function onDrag(e, over) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.toggle('drag', over);
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  var f = e.dataTransfer.files[0];
+  if (f) onFileSelected(f);
+}
+
+function onFileSelected(file) {
+  if (!file) return;
+  if (file.size > 50 * 1024 * 1024) { toast('الملف أكبر من 50 ميغا', true); return; }
+  selectedFile = file;
+  document.getElementById('fileTitle').value = file.name.replace(/\.[^.]+$/, '');
+  var cat = document.getElementById('fileCategory');
+  if (file.type.startsWith('image')) cat.value = 'photo';
+  else if (file.type.startsWith('video')) cat.value = 'video';
+  else if (file.type.startsWith('audio')) cat.value = 'audio';
+  else if (file.type.includes('pdf') || file.name.endsWith('.pdf')) cat.value = 'document';
+  var preview = document.getElementById('filePreview');
+  preview.innerHTML = '<div class="file-preview-icon">'+fileIcon(file.type)+'</div><div class="file-preview-info"><div class="file-preview-name">'+file.name+'</div><div class="file-preview-size">'+fmtSize(file.size)+'</div></div>';
+  document.getElementById('uploadForm').style.display = 'block';
+  document.getElementById('uploadZone').style.display = 'none';
+}
+
+function cancelUpload() {
+  selectedFile = null;
+  document.getElementById('uploadForm').style.display = 'none';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('fileInput').value = '';
+}
+
+async function doUpload() {
+  if (!selectedFile) return;
+  var title = document.getElementById('fileTitle').value.trim() || selectedFile.name;
+  var desc = document.getElementById('fileDesc').value.trim();
+  var category = document.getElementById('fileCategory').value;
+  var btn = document.getElementById('uploadBtn');
+  btn.disabled = true; btn.textContent = 'جارٍ الرفع...';
+  var bar = document.getElementById('progressBar');
+  var fill = document.getElementById('progressFill');
+  bar.style.display = 'block'; fill.style.width = '10%';
+
+  try {
+    var ext = selectedFile.name.split('.').pop();
+    var path = Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+    fill.style.width = '40%';
+
+    var uploadRes = await fetch(SUPA + '/storage/v1/object/' + BUCKET + '/' + path, {
+      method: 'POST',
+      headers: {
+        'apikey': KEY,
+        'Authorization': 'Bearer ' + KEY,
+        'Content-Type': selectedFile.type || 'application/octet-stream',
+        'x-upsert': 'true'
+      },
+      body: selectedFile
+    });
+
+    if (!uploadRes.ok) {
+      var errText = await uploadRes.text();
+      throw new Error('رفع الملف فشل: ' + uploadRes.status + ' — ' + errText);
+    }
+    fill.style.width = '70%';
+
+    var publicUrl = SUPA + '/storage/v1/object/public/' + BUCKET + '/' + path;
+
+    await fetch(SUPA + '/rest/v1/vault_files', {
+      method: 'POST',
+      headers: {
+        'apikey': KEY,
+        'Authorization': 'Bearer ' + KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        title: title,
+        description: desc,
+        category: category,
+        file_path: path,
+        file_url: publicUrl,
+        file_size: selectedFile.size,
+        file_type: selectedFile.type || 'application/octet-stream'
+      })
+    });
+
+    fill.style.width = '100%';
+    toast('✅ تم رفع الملف بنجاح!');
+    setTimeout(function(){
+      bar.style.display='none'; fill.style.width='0';
+      btn.disabled=false; btn.textContent='⬆️ رفع الملف';
+      cancelUpload();
+      loadFiles();
+    }, 800);
+
+  } catch(err) {
+    bar.style.display='none'; fill.style.width='0';
+    btn.disabled=false; btn.textContent='⬆️ رفع الملف';
+    toast(err.message || 'فشل الرفع، حاول مرة أخرى', true);
+    console.error(err);
+  }
+}
+
+async function loadFiles() {
+  var grid = document.getElementById('filesGrid');
+  try {
+    var res = await fetch(SUPA + '/rest/v1/vault_files?order=created_at.desc', {
+      headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY }
+    });
+    var files = await res.json();
+    if (!Array.isArray(files) || files.length === 0) {
+      grid.innerHTML = '<div class="no-files">لا توجد وثائق بعد — كن أول من يرفع 📁</div>';
+      return;
+    }
+    grid.innerHTML = files.map(function(f) {
+      var icon = fileIcon(f.file_type);
+      var thumb = (f.file_type && f.file_type.startsWith('image'))
+        ? '<img src="'+f.file_url+'" alt="'+f.title+'" loading="lazy" onerror="this.style.display=\'none\'">'
+        : '<span>'+icon+'</span>';
+      return '<div class="file-card">'+
+        '<div class="file-thumb">'+thumb+'</div>'+
+        '<div class="file-body">'+
+          '<div class="file-name">'+f.title+'</div>'+
+          (f.description ? '<div class="file-desc">'+f.description+'</div>' : '')+
+          '<div class="file-meta">'+
+            '<span>'+fmtSize(f.file_size||0)+'</span>'+
+            '<a href="'+f.file_url+'" target="_blank" class="file-dl">⬇ تحميل</a>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div class="no-files">تعذر تحميل الملفات</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadFiles);
 </script>
-<script src="fl-nav.js" defer></script>
 </body>
 </html>
