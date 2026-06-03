@@ -1291,5 +1291,45 @@ function submitSelectedPrayer() {
   sendPrayer();
 }
 </script>
+
+<script>
+window.addEventListener('load', async function() {
+  try {
+    var cfg = window.FL || {};
+    var url = cfg.SUPABASE_URL || '';
+    var key = cfg.SUPABASE_KEY || '';
+    if (!url || !key) return;
+    
+    async function getCount(filter) {
+      var q = url + '/rest/v1/martyrs?select=id&limit=1' + (filter ? '&' + filter : '');
+      var res = await fetch(q, { headers: { apikey: key, Authorization: 'Bearer ' + key, Prefer: 'count=exact' } });
+      var range = res.headers.get('content-range') || '';
+      return parseInt((range.split('/')[1] || '0'), 10) || 0;
+    }
+    
+    var total = await getCount('');
+    var children = await getCount('category=eq.child');
+    var youth = await getCount('category=eq.youth');
+    var adults = await getCount('category=eq.adult');
+    var journalists = await getCount('category=eq.journalist');
+    var prisoners = await getCount('category=eq.prisoner');
+    
+    function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = val.toLocaleString('ar'); }
+    setEl('cntTotal', total);
+    setEl('cntChildren', children);
+    setEl('cntYouth', youth);
+    setEl('cntAdults', adults);
+    setEl('cntJournalists', journalists);
+    setEl('cntPrisoners', prisoners);
+  } catch(e) { console.warn('counter error:', e); }
+  
+  // Also load martyrs list
+  try {
+    if (typeof loadSection === 'function') {
+      await loadSection('children', false);
+    }
+  } catch(e) {}
+});
+</script>
 </body>
 </html>
