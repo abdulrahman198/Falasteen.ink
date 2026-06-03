@@ -39,13 +39,23 @@ if (window.fetch && !window.fetch._flAuditWrapped) {
   window.fetch = flAuditFetch;
 }
 
-FL.SUPABASE_URL = window.SUPABASE_URL || "https://audvtdbylhmumvdrhijk.supabase.co";
-FL.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb";
+// SECURITY FIX: Load config from environment variables
+FL.SUPABASE_URL = window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url ? window.SUPABASE_CONFIG.url : '';
+FL.SUPABASE_KEY = window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.key ? window.SUPABASE_CONFIG.key : '';
+
+// Validate that credentials are configured
+if (!FL.SUPABASE_URL || !FL.SUPABASE_KEY) {
+  FL.error('[SECURITY] Supabase credentials not properly configured. Please set environment variables.');
+}
 
 // ── Supabase Auth ──
 FL.getSupabaseClient = function() {
   if (FL._supabaseClient) return FL._supabaseClient;
   if (!window.supabase || !window.supabase.createClient) return null;
+  if (!FL.SUPABASE_URL || !FL.SUPABASE_KEY) {
+    FL.error('Cannot create Supabase client: credentials missing');
+    return null;
+  }
   FL._supabaseClient = window.supabase.createClient(FL.SUPABASE_URL, FL.SUPABASE_KEY);
   return FL._supabaseClient;
 };
@@ -283,6 +293,6 @@ FL.rest = async function(table, opts) {
 FL.requireAdmin = async function() {
   var user = await FL.getUser();
   if (FL.isAdminUser(user)) return user;
-  document.body.innerHTML = '<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:#0e0e0e;color:#E8221F;font-family:Arial,sans-serif;font-size:1.2rem;text-align:center;padding:24px;">غير مصرح / Unauthorized<br/>Admin role required</div>';
+  document.body.innerHTML = '<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:#0e0e0e;color:#E8221F;font-family:Arial,sans-serif;font-size:1.2rem;text-align:center;">⛔ Admin Role Required</div>';
   throw new Error('Admin role required');
 };
