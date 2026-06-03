@@ -1213,7 +1213,7 @@ function handleOpenPrayerModal(e) {
 
 /* prayer preset buttons replaced by card selection */
 
-async function sendPrayer() {
+async async function sendPrayer() {
   var martyrId = document.getElementById('prayerMartyrId').value;
   var userName = document.getElementById('prayerName').value.trim() || 'زائر';
   var prayerText = document.getElementById('prayerText').value;
@@ -1236,6 +1236,7 @@ async function sendPrayer() {
     if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
   } catch (err) {
     console.warn('Failed to save prayer', err);
+    alert('فشل حفظ الدعاء: ' + (err && err.message ? err.message : err));
     showToast('فشل حفظ الدعاء، حاول مرة أخرى', 'err');
     if (btn) { btn.disabled = false; btn.style.opacity='1'; }
   }
