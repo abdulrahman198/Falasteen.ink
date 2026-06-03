@@ -226,7 +226,7 @@ async function loadStreams() {
         '<div class="stream-meta"><span class="live-badge" style="font-size:0.7rem;padding:2px 8px">🔴 مباشر</span></div></div></div>';
     }).join('');
   } catch(e) {
-    grid.innerHTML = '<div class="no-streams">تعذر تحميل البثوث</div>';
+    grid.innerHTML = '<div class="no-streams">لا توجد بثوث مباشرة حالياً 📡<br/><span style="font-size:0.85rem;color:#444">كن أول من يبث!</span></div>';
   }
 }
 
