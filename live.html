@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>بث مباشر — FALASTEEN.INK</title>
+<title>Ø¨Ø« ÙØ¨Ø§Ø´Ø± â FALASTEEN.INK</title>
 <script src="app-config.js"></script>
 <script src="common.js"></script>
 <script src="app.js" defer></script>
@@ -51,30 +51,30 @@ h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:24px 0 8px;text-ali
 <body>
 <div id="flNav"></div>
 <div class="page">
-  <h1>📡 بث مباشر</h1>
-  <p class="sub">ابدأ بثك المباشر الآن مباشرةً من متصفحك — بدون تحميل أي برنامج.<br/>أو شاهد البثوث الجارية حالياً.</p>
+  <h1>ð¡ Ø¨Ø« ÙØ¨Ø§Ø´Ø±</h1>
+  <p class="sub">Ø§Ø¨Ø¯Ø£ Ø¨Ø«Ù Ø§ÙÙØ¨Ø§Ø´Ø± Ø§ÙØ¢Ù ÙØ¨Ø§Ø´Ø±Ø©Ù ÙÙ ÙØªØµÙØ­Ù â Ø¨Ø¯ÙÙ ØªØ­ÙÙÙ Ø£Ù Ø¨Ø±ÙØ§ÙØ¬.<br/>Ø£Ù Ø´Ø§ÙØ¯ Ø§ÙØ¨Ø«ÙØ« Ø§ÙØ¬Ø§Ø±ÙØ© Ø­Ø§ÙÙØ§Ù.</p>
 
   <div class="broadcast-box">
-    <h2>🎙️ ابدأ بثك المباشر</h2>
-    <input type="text" class="stream-title-input" id="streamTitle" placeholder="عنوان البث (اختياري)..." maxlength="80"/>
+    <h2>ðï¸ Ø§Ø¨Ø¯Ø£ Ø¨Ø«Ù Ø§ÙÙØ¨Ø§Ø´Ø±</h2>
+    <input type="text" class="stream-title-input" id="streamTitle" placeholder="Ø¹ÙÙØ§Ù Ø§ÙØ¨Ø« (Ø§Ø®ØªÙØ§Ø±Ù)..." maxlength="80"/>
     <div id="videoWrap">
       <div class="video-placeholder" id="videoPlaceholder">
-        <span style="font-size:2rem">📷</span>
-        <span>معاينة الكاميرا ستظهر هنا</span>
+        <span style="font-size:2rem">ð·</span>
+        <span>ÙØ¹Ø§ÙÙØ© Ø§ÙÙØ§ÙÙØ±Ø§ Ø³ØªØ¸ÙØ± ÙÙØ§</span>
       </div>
       <video id="localVideo" autoplay muted playsinline></video>
     </div>
     <div class="btn-row">
-      <button class="btn btn-red" id="startBtn" onclick="startBroadcast()">🔴 ابدأ البث</button>
-      <button class="btn btn-gray" id="stopBtn" onclick="stopBroadcast()" disabled>⏹ إيقاف البث</button>
+      <button class="btn btn-red" id="startBtn" onclick="startBroadcast()">ð´ Ø§Ø¨Ø¯Ø£ Ø§ÙØ¨Ø«</button>
+      <button class="btn btn-gray" id="stopBtn" onclick="stopBroadcast()" disabled>â¹ Ø¥ÙÙØ§Ù Ø§ÙØ¨Ø«</button>
     </div>
     <div id="broadcastStatus" style="margin-top:12px;font-size:0.85rem;color:#666"></div>
   </div>
 
   <div class="streams-section">
-    <h2>🔴 البثوث الجارية الآن</h2>
+    <h2>ð´ Ø§ÙØ¨Ø«ÙØ« Ø§ÙØ¬Ø§Ø±ÙØ© Ø§ÙØ¢Ù</h2>
     <div class="streams-grid" id="streamsGrid">
-      <div class="no-streams">جارٍ تحميل البثوث...</div>
+      <div class="no-streams">Ø¬Ø§Ø±Ù ØªØ­ÙÙÙ Ø§ÙØ¨Ø«ÙØ«...</div>
     </div>
   </div>
 </div>
@@ -83,7 +83,7 @@ h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:24px 0 8px;text-ali
   <div class="watch-modal">
     <div class="watch-header">
       <span id="watchTitle" style="font-weight:700"></span>
-      <button class="watch-close" onclick="closeWatchModal()">✕</button>
+      <button class="watch-close" onclick="closeWatchModal()">â</button>
     </div>
     <div class="watch-player" id="watchPlayer"></div>
   </div>
@@ -118,7 +118,7 @@ async function startBroadcast() {
   var startBtn = document.getElementById('startBtn');
   var stopBtn = document.getElementById('stopBtn');
   startBtn.disabled = true;
-  setStatus('جارٍ طلب إذن الكاميرا...', '#f59e0b');
+  setStatus('Ø¬Ø§Ø±Ù Ø·ÙØ¨ Ø¥Ø°Ù Ø§ÙÙØ§ÙÙØ±Ø§...', '#f59e0b');
 
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -127,19 +127,24 @@ async function startBroadcast() {
     vid.style.display = 'block';
     document.getElementById('videoPlaceholder').style.display = 'none';
 
-    setStatus('جارٍ إنشاء البث على Livepeer...', '#f59e0b');
+    setStatus('Ø¬Ø§Ø±Ù Ø¥ÙØ´Ø§Ø¡ Ø§ÙØ¨Ø« Ø¹ÙÙ Livepeer...', '#f59e0b');
 
-    var title = document.getElementById('streamTitle').value.trim() || 'بث مباشر من فلسطين';
-    var res = await fetch('https://livepeer.studio/api/stream', {
+    var title = document.getElementById('streamTitle').value.trim() || 'Ø¨Ø« ÙØ¨Ø§Ø´Ø± ÙÙ ÙÙØ³Ø·ÙÙ';
+    var res = await fetch('https://audvtdbylhmumvdrhijk.supabase.co/functions/v1/create-stream', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + LIVEPEER_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: title, profiles: [{ name:'720p', bitrate:2000000, fps:30, width:1280, height:720 }] })
+      headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY5MTY3MDYsImV4cCI6MjAzMjQ5MjcwNn0.KqCE7GxIUqXqMNXbDYbNFBxJH38lAHBMkdQjBCBN5qA',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title: title || 'بث مباشر' })
     });
-    if (!res.ok) throw new Error('فشل إنشاء البث (HTTP ' + res.status + ')');
+
+
+    if (!res.ok) throw new Error('ÙØ´Ù Ø¥ÙØ´Ø§Ø¡ Ø§ÙØ¨Ø« (HTTP ' + res.status + ')');
     var stream = await res.json();
     activeStreamId = stream.id;
 
-    setStatus('جارٍ الاتصال بالبث اللامركزي...', '#f59e0b');
+    setStatus('Ø¬Ø§Ø±Ù Ø§ÙØ§ØªØµØ§Ù Ø¨Ø§ÙØ¨Ø« Ø§ÙÙØ§ÙØ±ÙØ²Ù...', '#f59e0b');
     pc = new RTCPeerConnection();
     localStream.getTracks().forEach(function(t){ pc.addTrack(t, localStream); });
     var offer = await pc.createOffer();
@@ -164,17 +169,17 @@ async function startBroadcast() {
 
     setStatus('', '');
     var statusDiv = document.getElementById('broadcastStatus');
-    statusDiv.innerHTML = '<span class="live-badge">🔴 يبث الآن</span> <span style="color:#888;font-size:0.8rem">رابط المشاهدة: lvpr.tv/?v=' + stream.playbackId + '</span>';
+    statusDiv.innerHTML = '<span class="live-badge">ð´ ÙØ¨Ø« Ø§ÙØ¢Ù</span> <span style="color:#888;font-size:0.8rem">Ø±Ø§Ø¨Ø· Ø§ÙÙØ´Ø§ÙØ¯Ø©: lvpr.tv/?v=' + stream.playbackId + '</span>';
 
     stopBtn.disabled = false;
     stopBtn.classList.remove('btn-gray');
     stopBtn.classList.add('btn-red');
     startBtn.style.display = 'none';
-    showToast('🔴 بدأ البث بنجاح!');
+    showToast('ð´ Ø¨Ø¯Ø£ Ø§ÙØ¨Ø« Ø¨ÙØ¬Ø§Ø­!');
     loadStreams();
 
   } catch(err) {
-    setStatus('خطأ: ' + err.message, '#ef4444');
+    setStatus('Ø®Ø·Ø£: ' + err.message, '#ef4444');
     startBtn.disabled = false;
     if (localStream) { localStream.getTracks().forEach(function(t){ t.stop(); }); localStream = null; }
     document.getElementById('localVideo').style.display = 'none';
@@ -204,7 +209,7 @@ async function stopBroadcast() {
     });
     activeStreamId = null;
   }
-  showToast('تم إيقاف البث');
+  showToast('ØªÙ Ø¥ÙÙØ§Ù Ø§ÙØ¨Ø«');
   loadStreams();
 }
 
@@ -216,17 +221,17 @@ async function loadStreams() {
     });
     var streams = await res.json();
     if (!Array.isArray(streams) || streams.length === 0) {
-      grid.innerHTML = '<div class="no-streams">لا توجد بثوث مباشرة حالياً 📡<br/><span style="font-size:0.85rem;color:#444">كن أول من يبث!</span></div>';
+      grid.innerHTML = '<div class="no-streams">ÙØ§ ØªÙØ¬Ø¯ Ø¨Ø«ÙØ« ÙØ¨Ø§Ø´Ø±Ø© Ø­Ø§ÙÙØ§Ù ð¡<br/><span style="font-size:0.85rem;color:#444">ÙÙ Ø£ÙÙ ÙÙ ÙØ¨Ø«!</span></div>';
       return;
     }
     grid.innerHTML = streams.map(function(s){
-      return '<div class="stream-card" onclick="watchStream(\'' + s.playback_id + '\',\'' + (s.title||'بث مباشر').replace(/'/g,"\\'") + '\')">' +
-        '<div class="stream-thumb"><div class="stream-thumb-placeholder"><span style="font-size:2.5rem">📡</span></div></div>' +
-        '<div class="stream-info"><div class="stream-name">' + (s.title||'بث مباشر') + '</div>' +
-        '<div class="stream-meta"><span class="live-badge" style="font-size:0.7rem;padding:2px 8px">🔴 مباشر</span></div></div></div>';
+      return '<div class="stream-card" onclick="watchStream(\'' + s.playback_id + '\',\'' + (s.title||'Ø¨Ø« ÙØ¨Ø§Ø´Ø±').replace(/'/g,"\\'") + '\')">' +
+        '<div class="stream-thumb"><div class="stream-thumb-placeholder"><span style="font-size:2.5rem">ð¡</span></div></div>' +
+        '<div class="stream-info"><div class="stream-name">' + (s.title||'Ø¨Ø« ÙØ¨Ø§Ø´Ø±') + '</div>' +
+        '<div class="stream-meta"><span class="live-badge" style="font-size:0.7rem;padding:2px 8px">ð´ ÙØ¨Ø§Ø´Ø±</span></div></div></div>';
     }).join('');
   } catch(e) {
-    grid.innerHTML = '<div class="no-streams">لا توجد بثوث مباشرة حالياً 📡<br/><span style="font-size:0.85rem;color:#444">كن أول من يبث!</span></div>';
+    grid.innerHTML = '<div class="no-streams">ÙØ§ ØªÙØ¬Ø¯ Ø¨Ø«ÙØ« ÙØ¨Ø§Ø´Ø±Ø© Ø­Ø§ÙÙØ§Ù ð¡<br/><span style="font-size:0.85rem;color:#444">ÙÙ Ø£ÙÙ ÙÙ ÙØ¨Ø«!</span></div>';
   }
 }
 
