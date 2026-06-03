@@ -44,11 +44,11 @@ function editMartyr(id) {
   var addModal = document.getElementById('addModal');
   if (addModal) addModal.classList.add('active');
   document.body.style.overflow = 'hidden';
-  FL.toast('â ÙØ¶Ø¹ Ø§ÙØªØ¹Ø¯ÙÙ / Edit mode');
+  FL.toast('Ã¢ÂÂ ÃÂÃÂ¶ÃÂ¹ ÃÂ§ÃÂÃÂªÃÂ¹ÃÂ¯ÃÂÃÂ / Edit mode');
 }
 
 function deleteMartyr(id) {
-  if (!confirm('ÙÙ Ø£ÙØª ÙØªØ£ÙØ¯ ÙÙ Ø­Ø°Ù ÙØ°Ø§ Ø§ÙØ´ÙÙØ¯Ø / Delete this martyr?')) return;
+  if (!confirm('ÃÂÃÂ ÃÂ£ÃÂÃÂª ÃÂÃÂªÃÂ£ÃÂÃÂ¯ ÃÂÃÂ ÃÂ­ÃÂ°ÃÂ ÃÂÃÂ°ÃÂ§ ÃÂ§ÃÂÃÂ´ÃÂÃÂÃÂ¯ÃÂ / Delete this martyr?')) return;
   var martyrs = [];
   try { martyrs = JSON.parse(localStorage.getItem('fl_martyrs')||'[]'); } catch(e){}
   martyrs = martyrs.filter(function(x){ return x.id !== id; });
@@ -61,12 +61,12 @@ function deleteMartyr(id) {
   }
   closeDetail();
   if (typeof loadSection === 'function') loadSection(currentTab, false);
-  FL.toast('â ØªÙ Ø§ÙØ­Ø°Ù / Deleted');
+  FL.toast('Ã¢ÂÂ ÃÂªÃÂ ÃÂ§ÃÂÃÂ­ÃÂ°ÃÂ / Deleted');
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ø³Ø¬Ù Ø§ÙØ´ÙØ¯Ø§Ø¡ | FALASTEEN.INK</title>
+<title>ÃÂ³ÃÂ¬ÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ | FALASTEEN.INK</title>
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -80,7 +80,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 /* HERO */
 .hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,0.06) 0%,transparent 100%); position:relative; overflow:hidden; }
-.hero::before { content:'Ø´ÙØ¯Ø§Ø¡'; position:absolute; bottom:-20px; left:-10px; font-size:clamp(5rem,18vw,10rem); font-weight:900; color:rgba(232,34,31,0.04); pointer-events:none; }
+.hero::before { content:'ÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡'; position:absolute; bottom:-20px; left:-10px; font-size:clamp(5rem,18vw,10rem); font-weight:900; color:rgba(232,34,31,0.04); pointer-events:none; }
 .hero-tag { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:0.28em; margin-bottom:8px; display:block; }
 .hero-title { font-size:clamp(1.8rem,5vw,3rem); font-weight:900; line-height:1.1; margin-bottom:8px; }
 .hero-title .red { color:var(--red); }
@@ -252,164 +252,167 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .pager-btn{background:var(--s2);border:1px solid rgba(93,63,59,.3);color:var(--text);font-size:.78rem;font-weight:700;padding:10px 18px;cursor:pointer;}
 .pager-btn:disabled{opacity:.45;cursor:not-allowed;}
 </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <div id="namesOverlay" class="names-overlay" aria-hidden="true"></div>
 
 <nav class="topnav">
   <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
-  <span id="hanzalaBadge" class="hanzala-badge" title="Ø±ØµÙØ¯Ù ÙÙ Ø­ÙØ¸ÙØ© â ÙÙÙØªØ³Ø¨ Ø¨Ø¥Ø¶Ø§Ø¡Ø© Ø´ÙØ¹Ø© Ø£Ù ÙØ±Ø¯Ø© Ø£Ù Ø¯Ø¹Ø§Ø¡">ð 0 Ø­ÙØ¸ÙØ©</span>
-  <a  class="donate-btn" href="donate.html">ØªØ¨Ø±Ø¹ / Donate</a>
-  <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ Ø£Ø¶Ù / Add</button>
+  <span id="hanzalaBadge" class="hanzala-badge" title="ÃÂ±ÃÂµÃÂÃÂ¯ÃÂ ÃÂÃÂ ÃÂ­ÃÂÃÂ¸ÃÂÃÂ© Ã¢ÂÂ ÃÂÃÂÃÂÃÂªÃÂ³ÃÂ¨ ÃÂ¨ÃÂ¥ÃÂ¶ÃÂ§ÃÂ¡ÃÂ© ÃÂ´ÃÂÃÂ¹ÃÂ© ÃÂ£ÃÂ ÃÂÃÂ±ÃÂ¯ÃÂ© ÃÂ£ÃÂ ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡">Ã°ÂÂÂ 0 ÃÂ­ÃÂÃÂ¸ÃÂÃÂ©</span>
+  <a  class="donate-btn" href="donate.html">ÃÂªÃÂ¨ÃÂ±ÃÂ¹ / Donate</a>
+  <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ ÃÂ£ÃÂ¶ÃÂ / Add</button>
 </nav>
 
 <div class="hero">
-  <span class="hero-tag">Ø³Ø¬Ù Ø§ÙØ´ÙØ¯Ø§Ø¡ â MARTYRS REGISTRY</span>
-  <h1 class="hero-title">ÙÙ <span class="red">ÙÙØ³ÙØ§ Ø£Ø±ÙØ§ÙØ§Ù</span></h1>
+  <span class="hero-tag">ÃÂ³ÃÂ¬ÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ Ã¢ÂÂ MARTYRS REGISTRY</span>
+  <h1 class="hero-title">ÃÂÃÂ <span class="red">ÃÂÃÂÃÂ³ÃÂÃÂ§ ÃÂ£ÃÂ±ÃÂÃÂ§ÃÂÃÂ§ÃÂ</span></h1>
   <p class="hero-desc">They are not numbers. Every name is a complete human story.</p>
 </div>
 
 <!-- LIVE COUNTERS -->
 <div class="counters" id="counters">
   <div class="counter-card counter-total" style="grid-column:1/-1;">
-    <div class="counter-num" id="cntTotal">â</div>
-    <div class="counter-label">Ø¥Ø¬ÙØ§ÙÙ Ø§ÙØ´ÙØ¯Ø§Ø¡ / Total Martyrs</div>
+    <div class="counter-num" id="cntTotal">Ã¢ÂÂ</div>
+    <div class="counter-label">ÃÂ¥ÃÂ¬ÃÂÃÂ§ÃÂÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ / Total Martyrs</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntChildren">â</div>
-    <div class="counter-label">ð¸ Ø£Ø·ÙØ§Ù / Children</div>
+    <div class="counter-num" id="cntChildren">Ã¢ÂÂ</div>
+    <div class="counter-label">Ã°ÂÂÂ¸ ÃÂ£ÃÂ·ÃÂÃÂ§ÃÂ / Children</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntYouth">â</div>
-    <div class="counter-label">ð¿ Ø´Ø¨Ø§Ø¨ / Youth</div>
+    <div class="counter-num" id="cntYouth">Ã¢ÂÂ</div>
+    <div class="counter-label">Ã°ÂÂÂ¿ ÃÂ´ÃÂ¨ÃÂ§ÃÂ¨ / Youth</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntAdults">â</div>
-    <div class="counter-label">ð ÙØ¨Ø§Ø± / Adults</div>
+    <div class="counter-num" id="cntAdults">Ã¢ÂÂ</div>
+    <div class="counter-label">Ã°ÂÂÂ ÃÂÃÂ¨ÃÂ§ÃÂ± / Adults</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntFemale">â</div>
-    <div class="counter-label">ð© Ø£ÙØ«Ù / Female</div>
+    <div class="counter-num" id="cntFemale">Ã¢ÂÂ</div>
+    <div class="counter-label">Ã°ÂÂÂ© ÃÂ£ÃÂÃÂ«ÃÂ / Female</div>
   </div>
 </div>
 
 <!-- SEARCH -->
 <div class="search-wrap">
-  <span>ð</span>
-  <input type="text" class="search-input" id="searchInput" placeholder="Ø§Ø¨Ø­Ø« Ø¹Ù Ø§Ø³Ù / Search name..." oninput="debounceSearch()"/>
+  <span>Ã°ÂÂÂ</span>
+  <input type="text" class="search-input" id="searchInput" placeholder="ÃÂ§ÃÂ¨ÃÂ­ÃÂ« ÃÂ¹ÃÂ ÃÂ§ÃÂ³ÃÂ / Search name..." oninput="debounceSearch()"/>
 </div>
 
 <!-- TABS -->
 <div class="tabs-wrap">
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('children',this)">ð¸ Ø£Ø·ÙØ§Ù <span class="tc" id="tc-children">0</span></button>
-    <button class="tab-btn" onclick="switchTab('youth',this)">ð¿ Ø´Ø¨Ø§Ø¨ <span class="tc" id="tc-youth">0</span></button>
-    <button class="tab-btn" onclick="switchTab('adults',this)">ð ÙØ¨Ø§Ø± <span class="tc" id="tc-adults">0</span></button>
-    <button class="tab-btn" onclick="switchTab('journalists',this)">ð¸ ØµØ­ÙÙÙÙ <span class="tc" id="tc-journalists">0</span></button>
-    <button class="tab-btn" onclick="switchTab('prisoners',this)">â Ø£Ø³Ø±Ù <span class="tc" id="tc-prisoners">0</span></button>
+    <button class="tab-btn active" onclick="switchTab('children',this)">Ã°ÂÂÂ¸ ÃÂ£ÃÂ·ÃÂÃÂ§ÃÂ <span class="tc" id="tc-children">0</span></button>
+    <button class="tab-btn" onclick="switchTab('youth',this)">Ã°ÂÂÂ¿ ÃÂ´ÃÂ¨ÃÂ§ÃÂ¨ <span class="tc" id="tc-youth">0</span></button>
+    <button class="tab-btn" onclick="switchTab('adults',this)">Ã°ÂÂÂ ÃÂÃÂ¨ÃÂ§ÃÂ± <span class="tc" id="tc-adults">0</span></button>
+    <button class="tab-btn" onclick="switchTab('journalists',this)">Ã°ÂÂÂ¸ ÃÂµÃÂ­ÃÂÃÂÃÂÃÂ <span class="tc" id="tc-journalists">0</span></button>
+    <button class="tab-btn" onclick="switchTab('prisoners',this)">Ã¢ÂÂ ÃÂ£ÃÂ³ÃÂ±ÃÂ <span class="tc" id="tc-prisoners">0</span></button>
+    <button class="tab-btn" id="tab-map" onclick="showMapTab()">🗺️ خريطة</button>
   </div>
 </div>
 
 <div class="section active" id="sec-children">
-  <div class="section-header"><span class="section-icon">ð¸</span><div><div class="section-title">Ø§ÙØ£Ø·ÙØ§Ù Ø§ÙØ´ÙØ¯Ø§Ø¡ / Child Martyrs</div><div class="section-sub">ÙÙ ÙÙ ÙØªØ¬Ø§ÙØ²ÙØ§ Ø§ÙØ«Ø§ÙÙØ© Ø¹Ø´Ø±Ø© / Under 18</div></div></div>
+  <div class="section-header"><span class="section-icon">Ã°ÂÂÂ¸</span><div><div class="section-title">ÃÂ§ÃÂÃÂ£ÃÂ·ÃÂÃÂ§ÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ / Child Martyrs</div><div class="section-sub">ÃÂÃÂ ÃÂÃÂ ÃÂÃÂªÃÂ¬ÃÂ§ÃÂÃÂ²ÃÂÃÂ§ ÃÂ§ÃÂÃÂ«ÃÂ§ÃÂÃÂÃÂ© ÃÂ¹ÃÂ´ÃÂ±ÃÂ© / Under 18</div></div></div>
   <div class="martyrs-grid" id="grid-children"></div>
 </div>
 <div class="section" id="sec-youth">
-  <div class="section-header"><span class="section-icon">ð¿</span><div><div class="section-title">Ø´ÙØ¯Ø§Ø¡ Ø§ÙØ´Ø¨Ø§Ø¨ / Youth Martyrs</div><div class="section-sub">18 Ø¥ÙÙ 35 Ø³ÙØ© / Ages 18â35</div></div></div>
+  <div class="section-header"><span class="section-icon">Ã°ÂÂÂ¿</span><div><div class="section-title">ÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂ´ÃÂ¨ÃÂ§ÃÂ¨ / Youth Martyrs</div><div class="section-sub">18 ÃÂ¥ÃÂÃÂ 35 ÃÂ³ÃÂÃÂ© / Ages 18Ã¢ÂÂ35</div></div></div>
   <div class="martyrs-grid" id="grid-youth"></div>
 </div>
 <div class="section" id="sec-adults">
-  <div class="section-header"><span class="section-icon">ð</span><div><div class="section-title">Ø´ÙØ¯Ø§Ø¡ Ø§ÙÙØ¨Ø§Ø± / Adult Martyrs</div><div class="section-sub">ÙÙÙ 35 Ø³ÙØ© / Above 35</div></div></div>
+  <div class="section-header"><span class="section-icon">Ã°ÂÂÂ</span><div><div class="section-title">ÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂÃÂ¨ÃÂ§ÃÂ± / Adult Martyrs</div><div class="section-sub">ÃÂÃÂÃÂ 35 ÃÂ³ÃÂÃÂ© / Above 35</div></div></div>
   <div class="martyrs-grid" id="grid-adults"></div>
 </div>
 <div class="section" id="sec-journalists">
-  <div class="section-header"><span class="section-icon">ð¸</span><div><div class="section-title">Ø§ÙØµØ­ÙÙÙÙ Ø§ÙØ´ÙØ¯Ø§Ø¡ / Press Martyrs</div><div class="section-sub">Ø³ÙØ·ÙØ§ ÙÙÙ ÙØ­ÙÙÙÙ Ø§ÙØ­ÙÙÙØ©</div></div></div>
+  <div class="section-header"><span class="section-icon">Ã°ÂÂÂ¸</span><div><div class="section-title">ÃÂ§ÃÂÃÂµÃÂ­ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ / Press Martyrs</div><div class="section-sub">ÃÂ³ÃÂÃÂ·ÃÂÃÂ§ ÃÂÃÂÃÂ ÃÂÃÂ­ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ­ÃÂÃÂÃÂÃÂ©</div></div></div>
   <div id="list-journalists"></div>
 </div>
 <div class="section" id="sec-prisoners">
-  <div class="section-header"><span class="section-icon">â</span><div><div class="section-title">Ø§ÙØ£Ø³Ø±Ù Ø§ÙÙÙØ³Ø·ÙÙÙÙÙ / Prisoners</div><div class="section-sub">Ø£Ø³ÙØ§Ø¤ÙÙ ÙÙ ØªÙÙØ³Ù / Their names live on</div></div></div>
+  <div class="section-header"><span class="section-icon">Ã¢ÂÂ</span><div><div class="section-title">ÃÂ§ÃÂÃÂ£ÃÂ³ÃÂ±ÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂ·ÃÂÃÂÃÂÃÂÃÂ / Prisoners</div><div class="section-sub">ÃÂ£ÃÂ³ÃÂÃÂ§ÃÂ¤ÃÂÃÂ ÃÂÃÂ ÃÂªÃÂÃÂÃÂ³ÃÂ / Their names live on</div></div></div>
   <div id="list-prisoners"></div>
 </div>
 
 <div class="pager" id="martyrsPager">
   <span class="pager-info" id="pagerInfo"></span>
-  <button class="pager-btn" id="loadMoreBtn" onclick="loadMoreMartyrs()">ØªØ­ÙÙÙ Ø§ÙÙØ²ÙØ¯ / Load more</button>
+  <button class="pager-btn" id="loadMoreBtn" onclick="loadMoreMartyrs()">ÃÂªÃÂ­ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ²ÃÂÃÂ¯ / Load more</button>
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal" onclick="closeOnOverlay(event,'addModal')">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modalTitle">Ø¥Ø¶Ø§ÙØ© Ø´ÙÙØ¯ / Add Martyr</div>
-      <button class="modal-close" onclick="closeModal('addModal')">â</button>
+      <div class="modal-title" id="modalTitle">ÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© ÃÂ´ÃÂÃÂÃÂ¯ / Add Martyr</div>
+      <button class="modal-close" onclick="closeModal('addModal')">Ã¢ÂÂ</button>
     </div>
     <form onsubmit="saveMartyr(event)">
       <div class="form-group">
         <div class="photo-slot">
           <input type="file" accept="image/*" id="photoInput" onchange="previewPhoto(this);showUploadProgress(this)"/>
-          <span class="slot-icon">ð·</span>
-          <p>ØµÙØ±Ø© Ø§ÙØ´ÙÙØ¯ (Ø§Ø®ØªÙØ§Ø±Ù) / Photo optional</p>
+          <span class="slot-icon">Ã°ÂÂÂ·</span>
+          <p>ÃÂµÃÂÃÂ±ÃÂ© ÃÂ§ÃÂÃÂ´ÃÂÃÂÃÂ¯ (ÃÂ§ÃÂ®ÃÂªÃÂÃÂ§ÃÂ±ÃÂ) / Photo optional</p>
           <img class="preview" id="photoPreview" alt=""/>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Ø§ÙØ§Ø³Ù Ø§ÙÙØ§ÙÙ *</label>
-        <input type="text" class="form-input" id="mName" placeholder="Ø§ÙØ§Ø³Ù Ø§ÙØ±Ø¨Ø§Ø¹Ù / Full name" required/>
+        <label class="form-label">ÃÂ§ÃÂÃÂ§ÃÂ³ÃÂ ÃÂ§ÃÂÃÂÃÂ§ÃÂÃÂ *</label>
+        <input type="text" class="form-input" id="mName" placeholder="ÃÂ§ÃÂÃÂ§ÃÂ³ÃÂ ÃÂ§ÃÂÃÂ±ÃÂ¨ÃÂ§ÃÂ¹ÃÂ / Full name" required/>
       </div>
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">Ø§ÙØªØµÙÙÙ *</label>
+          <label class="form-label">ÃÂ§ÃÂÃÂªÃÂµÃÂÃÂÃÂ *</label>
           <select class="form-select" id="mCategory" required>
-            <option value="">Ø§Ø®ØªØ± / Select...</option>
-            <option value="child">ð¸ Ø·ÙÙ / Child</option>
-            <option value="youth">ð¿ Ø´Ø§Ø¨ / Youth</option>
-            <option value="adult">ð ÙØ¨ÙØ± / Adult</option>
-            <option value="journalist">ð¸ ØµØ­ÙÙ / Journalist</option>
-            <option value="prisoner">â Ø£Ø³ÙØ± / Prisoner</option>
+            <option value="">ÃÂ§ÃÂ®ÃÂªÃÂ± / Select...</option>
+            <option value="child">Ã°ÂÂÂ¸ ÃÂ·ÃÂÃÂ / Child</option>
+            <option value="youth">Ã°ÂÂÂ¿ ÃÂ´ÃÂ§ÃÂ¨ / Youth</option>
+            <option value="adult">Ã°ÂÂÂ ÃÂÃÂ¨ÃÂÃÂ± / Adult</option>
+            <option value="journalist">Ã°ÂÂÂ¸ ÃÂµÃÂ­ÃÂÃÂ / Journalist</option>
+            <option value="prisoner">Ã¢ÂÂ ÃÂ£ÃÂ³ÃÂÃÂ± / Prisoner</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">Ø§ÙØ¹ÙØ± / Age</label>
-          <input type="number" class="form-input" id="mAge" placeholder="Ø§ÙØ¹ÙØ±" min="0" max="120"/>
+          <label class="form-label">ÃÂ§ÃÂÃÂ¹ÃÂÃÂ± / Age</label>
+          <input type="number" class="form-input" id="mAge" placeholder="ÃÂ§ÃÂÃÂ¹ÃÂÃÂ±" min="0" max="120"/>
         </div>
       </div>
       <div class="form-row" style="margin-top:14px;">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">Ø§ÙØ¬ÙØ³ / Gender</label>
+          <label class="form-label">ÃÂ§ÃÂÃÂ¬ÃÂÃÂ³ / Gender</label>
           <select class="form-select" id="mGender">
-            <option value="">â Ø§Ø®ØªØ± â</option>
-            <option value="Ø°ÙØ±">Ø°ÙØ± / Male</option>
-            <option value="Ø£ÙØ«Ù">Ø£ÙØ«Ù / Female</option>
+            <option value="">Ã¢ÂÂ ÃÂ§ÃÂ®ÃÂªÃÂ± Ã¢ÂÂ</option>
+            <option value="ÃÂ°ÃÂÃÂ±">ÃÂ°ÃÂÃÂ± / Male</option>
+            <option value="ÃÂ£ÃÂÃÂ«ÃÂ">ÃÂ£ÃÂÃÂ«ÃÂ / Female</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ØªØ§Ø±ÙØ® Ø§ÙØ§Ø³ØªØ´ÙØ§Ø¯ / Date</label>
+          <label class="form-label">ÃÂªÃÂ§ÃÂ±ÃÂÃÂ® ÃÂ§ÃÂÃÂ§ÃÂ³ÃÂªÃÂ´ÃÂÃÂ§ÃÂ¯ / Date</label>
           <input type="date" class="form-input" id="mDate" style="color-scheme:dark;"/>
         </div>
       </div>
       <div class="form-row" style="margin-top:14px;">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">Ø§ÙÙØ¯ÙÙØ© / City</label>
-          <input type="text" class="form-input" id="mCity" placeholder="ØºØ²Ø©Ø Ø®Ø§Ù ÙÙÙØ³..."/>
+          <label class="form-label">ÃÂ§ÃÂÃÂÃÂ¯ÃÂÃÂÃÂ© / City</label>
+          <input type="text" class="form-input" id="mCity" placeholder="ÃÂºÃÂ²ÃÂ©ÃÂ ÃÂ®ÃÂ§ÃÂ ÃÂÃÂÃÂÃÂ³..."/>
         </div>
         <div class="form-group" style="margin-bottom:0;"></div>
       </div>
       <div class="form-group" style="margin-top:14px;">
-        <label class="form-label">ÙØµØªÙ / Story (Ø§Ø®ØªÙØ§Ø±Ù)</label>
-        <textarea class="form-textarea" id="mStory" placeholder="ÙÙ ÙØ§Ù ÙØ°Ø§ Ø§ÙØ´Ø®ØµØ / Who were they?"></textarea>
+        <label class="form-label">ÃÂÃÂµÃÂªÃÂ / Story (ÃÂ§ÃÂ®ÃÂªÃÂÃÂ§ÃÂ±ÃÂ)</label>
+        <textarea class="form-textarea" id="mStory" placeholder="ÃÂÃÂ ÃÂÃÂ§ÃÂ ÃÂÃÂ°ÃÂ§ ÃÂ§ÃÂÃÂ´ÃÂ®ÃÂµÃÂ / Who were they?"></textarea>
       </div>
       <div class="form-group fl-ai-tags-panel">
         <input type="hidden" id="mTags"/>
         <div class="fl-ai-tags-actions">
-          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">â¨ ØªÙÙÙØ¯ Ø§ÙÙØ³ÙÙ</button>
+          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">Ã¢ÂÂ¨ ÃÂªÃÂÃÂÃÂÃÂ¯ ÃÂ§ÃÂÃÂÃÂ³ÃÂÃÂ</button>
         </div>
         <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
       </div>
       <div class="form-group">
-        <label class="form-label">Ø§ÙÙØµØ¯Ø± / Source</label>
-        <input type="text" class="form-input" id="mSource" placeholder="ÙÙ ÙØ¹Ø±Ù ÙØ°Ù Ø§ÙÙØ¹ÙÙÙØ© / Who knows this"/>
+        <label class="form-label">ÃÂ§ÃÂÃÂÃÂµÃÂ¯ÃÂ± / Source</label>
+        <input type="text" class="form-input" id="mSource" placeholder="ÃÂÃÂ ÃÂÃÂ¹ÃÂ±ÃÂ ÃÂÃÂ°ÃÂ ÃÂ§ÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ© / Who knows this"/>
       </div>
-      <button type="submit" class="save-btn" id="saveBtn">ð Ø­ÙØ¸ ÙÙ Ø§ÙØ³Ø¬Ù / Save</button>
+      <button type="submit" class="save-btn" id="saveBtn">Ã°ÂÂÂ ÃÂ­ÃÂÃÂ¸ ÃÂÃÂ ÃÂ§ÃÂÃÂ³ÃÂ¬ÃÂ / Save</button>
     </form>
   </div>
 </div>
@@ -423,33 +426,33 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <div class="modal-overlay" id="prayerModal" onclick="closeOnOverlay(event,'prayerModal')">
   <div class="modal prayer-modal" id="prayerModalContent">
     <div class="modal-header">
-      <div class="modal-title">Ø§Ø®ØªØ± Ø¯Ø¹Ø§Ø¡Ù ÙÙØ´ÙÙØ¯</div>
-      <button class="modal-close" onclick="closeModal('prayerModal')">â</button>
+      <div class="modal-title">ÃÂ§ÃÂ®ÃÂªÃÂ± ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ÃÂ ÃÂÃÂÃÂ´ÃÂÃÂÃÂ¯</div>
+      <button class="modal-close" onclick="closeModal('prayerModal')">Ã¢ÂÂ</button>
     </div>
     <input type="hidden" id="prayerMartyrId" value="" />
     <div class="form-group" style="padding:0 4px;">
-      <label class="form-label">Ø§Ø³ÙÙ</label>
-      <input type="text" class="form-input" id="prayerName" placeholder="Ø§ÙØªØ¨ Ø§Ø³ÙÙ Ø£Ù ÙÙØ¨Ù" />
+      <label class="form-label">ÃÂ§ÃÂ³ÃÂÃÂ</label>
+      <input type="text" class="form-input" id="prayerName" placeholder="ÃÂ§ÃÂÃÂªÃÂ¨ ÃÂ§ÃÂ³ÃÂÃÂ ÃÂ£ÃÂ ÃÂÃÂÃÂ¨ÃÂ" />
     </div>
 <!-- 3 Prayer Option Cards -->
 <div class="prayer-options-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
-  <div onclick="chooseDua(this)" data-text="Ø§ÙÙÙÙ Ø§Ø±Ø­ÙÙ ÙØ£Ø¯Ø®ÙÙ ÙØ³ÙØ­ Ø¬ÙØ§ØªÙØ ÙØ§Ø¬Ø¹ÙÙ ÙÙ Ø§ÙØ´ÙØ¯Ø§Ø¡ Ø§ÙØµØ¯ÙÙÙÙ ð¿"
+  <div onclick="chooseDua(this)" data-text="ÃÂ§ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂ±ÃÂ­ÃÂÃÂ ÃÂÃÂ£ÃÂ¯ÃÂ®ÃÂÃÂ ÃÂÃÂ³ÃÂÃÂ­ ÃÂ¬ÃÂÃÂ§ÃÂªÃÂÃÂ ÃÂÃÂ§ÃÂ¬ÃÂ¹ÃÂÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂµÃÂ¯ÃÂÃÂÃÂÃÂ Ã°ÂÂÂ¿"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    Ø§ÙÙÙÙ Ø§Ø±Ø­ÙÙ ÙØ£Ø¯Ø®ÙÙ ÙØ³ÙØ­ Ø¬ÙØ§ØªÙØ ÙØ§Ø¬Ø¹ÙÙ ÙÙ Ø§ÙØ´ÙØ¯Ø§Ø¡ Ø§ÙØµØ¯ÙÙÙÙ ð¿
+    ÃÂ§ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂ±ÃÂ­ÃÂÃÂ ÃÂÃÂ£ÃÂ¯ÃÂ®ÃÂÃÂ ÃÂÃÂ³ÃÂÃÂ­ ÃÂ¬ÃÂÃÂ§ÃÂªÃÂÃÂ ÃÂÃÂ§ÃÂ¬ÃÂ¹ÃÂÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂµÃÂ¯ÃÂÃÂÃÂÃÂ Ã°ÂÂÂ¿
   </div>
-  <div onclick="chooseDua(this)" data-text="Ø±Ø­ÙÙ Ø§ÙÙÙ ÙØ§ Ø´ÙÙØ¯ÙØ§Ø ÙØ¬ÙØ¹ÙØ§ Ø¨Ù ÙÙ Ø§ÙÙØ±Ø¯ÙØ³ Ø§ÙØ£Ø¹ÙÙ ðï¸"
+  <div onclick="chooseDua(this)" data-text="ÃÂ±ÃÂ­ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ§ ÃÂ´ÃÂÃÂÃÂ¯ÃÂÃÂ§ÃÂ ÃÂÃÂ¬ÃÂÃÂ¹ÃÂÃÂ§ ÃÂ¨ÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ±ÃÂ¯ÃÂÃÂ³ ÃÂ§ÃÂÃÂ£ÃÂ¹ÃÂÃÂ Ã°ÂÂÂÃ¯Â¸Â"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    Ø±Ø­ÙÙ Ø§ÙÙÙ ÙØ§ Ø´ÙÙØ¯ÙØ§Ø ÙØ¬ÙØ¹ÙØ§ Ø¨Ù ÙÙ Ø§ÙÙØ±Ø¯ÙØ³ Ø§ÙØ£Ø¹ÙÙ ðï¸
+    ÃÂ±ÃÂ­ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂÃÂ§ ÃÂ´ÃÂÃÂÃÂ¯ÃÂÃÂ§ÃÂ ÃÂÃÂ¬ÃÂÃÂ¹ÃÂÃÂ§ ÃÂ¨ÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂ±ÃÂ¯ÃÂÃÂ³ ÃÂ§ÃÂÃÂ£ÃÂ¹ÃÂÃÂ Ã°ÂÂÂÃ¯Â¸Â
   </div>
-  <div onclick="chooseDua(this)" data-text="Ø§ÙÙÙÙ Ø§ØºÙØ± ÙÙ ÙØ§Ø±ÙØ¹ Ø¯Ø±Ø¬ØªÙ ÙÙ Ø§ÙÙÙØ¯ÙÙÙØ ÙÙÙ ÙÙ Ø®ÙØ± Ø®ÙÙ ÙÙ Ø¹ÙØ¨Ù ð¸"
+  <div onclick="chooseDua(this)" data-text="ÃÂ§ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂºÃÂÃÂ± ÃÂÃÂ ÃÂÃÂ§ÃÂ±ÃÂÃÂ¹ ÃÂ¯ÃÂ±ÃÂ¬ÃÂªÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ ÃÂ®ÃÂÃÂ± ÃÂ®ÃÂÃÂ ÃÂÃÂ ÃÂ¹ÃÂÃÂ¨ÃÂ Ã°ÂÂÂ¸"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    Ø§ÙÙÙÙ Ø§ØºÙØ± ÙÙ ÙØ§Ø±ÙØ¹ Ø¯Ø±Ø¬ØªÙ ÙÙ Ø§ÙÙÙØ¯ÙÙÙØ ÙÙÙ ÙÙ Ø®ÙØ± Ø®ÙÙ ÙÙ Ø¹ÙØ¨Ù ð¸
+    ÃÂ§ÃÂÃÂÃÂÃÂ ÃÂ§ÃÂºÃÂÃÂ± ÃÂÃÂ ÃÂÃÂ§ÃÂ±ÃÂÃÂ¹ ÃÂ¯ÃÂ±ÃÂ¬ÃÂªÃÂ ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂ ÃÂÃÂ ÃÂ®ÃÂÃÂ± ÃÂ®ÃÂÃÂ ÃÂÃÂ ÃÂ¹ÃÂÃÂ¨ÃÂ Ã°ÂÂÂ¸
   </div>
 </div>
 <input type="hidden" id="prayerText" value="" />
 <button id="duaSubmitBtn" onclick="submitSelectedPrayer()" disabled
   style="width:100%;padding:14px;background:linear-gradient(135deg,#c0392b,#1a6b3a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:not-allowed;opacity:0.45;margin-top:8px;">
-  Ø§Ø®ØªØ± Ø¯Ø¹Ø§Ø¡Ù Ø£ÙÙØ§Ù
+  ÃÂ§ÃÂ®ÃÂªÃÂ± ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ÃÂ ÃÂ£ÃÂÃÂÃÂ§ÃÂ
 </button>
   </div>
 </div>
@@ -458,11 +461,11 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <div class="toast" id="toast"></div>
 
 <nav class="bottom-nav">
-  <a href="Index.html"><span class="nav-icon">ð </span>Home</a>
-  <a href="live.html"><span class="nav-icon">ð´</span>Live</a>
-  <a href="Feed.html"><span class="nav-icon">â¶</span>Reels</a>
-  <a href="Martyrs.html"><span class="nav-icon">ð</span>Martyrs</a>
-  <a href="Landmarks.html"><span class="nav-icon">ð</span>Landmarks</a>
+  <a href="Index.html"><span class="nav-icon">Ã°ÂÂÂ </span>Home</a>
+  <a href="live.html"><span class="nav-icon">Ã°ÂÂÂ´</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">Ã¢ÂÂ¶</span>Reels</a>
+  <a href="Martyrs.html"><span class="nav-icon">Ã°ÂÂÂ</span>Martyrs</a>
+  <a href="Landmarks.html"><span class="nav-icon">Ã°ÂÂÂ</span>Landmarks</a>
 </nav>
 
 <script>
@@ -480,12 +483,12 @@ var prayerCounts = {};
 
 function renderPrayerCountBadge(id) {
   var count = prayerCounts[id] || 0;
-  return '<div class="prayer-count-badge '+(count===0?' prayer-count-empty':'')+'">'+(count ? 'ð¯ï¸ '+count+' Ø¯Ø¹Ø§Ø¡' : 'ÙØ§ Ø£Ø¯Ø¹ÙØ© Ø­ØªÙ Ø§ÙØ¢Ù')+'</div>';
+  return '<div class="prayer-count-badge '+(count===0?' prayer-count-empty':'')+'">'+(count ? 'Ã°ÂÂÂ¯Ã¯Â¸Â '+count+' ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡' : 'ÃÂÃÂ§ ÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ© ÃÂ­ÃÂªÃÂ ÃÂ§ÃÂÃÂ¢ÃÂ')+'</div>';
 }
 
 function renderPrayerCountText(id) {
   var count = prayerCounts[id] || 0;
-  return count ? 'ð¯ï¸ '+count+' Ø¯Ø¹Ø§Ø¡' : 'ÙØ§ ØªÙØ¬Ø¯ Ø£Ø¯Ø¹ÙØ© Ø¨Ø¹Ø¯';
+  return count ? 'Ã°ÂÂÂ¯Ã¯Â¸Â '+count+' ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡' : 'ÃÂÃÂ§ ÃÂªÃÂÃÂ¬ÃÂ¯ ÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ© ÃÂ¨ÃÂ¹ÃÂ¯';
 }
 
 async function loadPrayerCounts(items) {
@@ -527,13 +530,13 @@ async function requireMartyrsAdmin(){
     martyrsAdmin = false;
   }
   if (!martyrsAdmin) {
-    showToast('ØºÙØ± ÙØµØ±Ø­ Ø¨Ø§ÙØ¥Ø¶Ø§ÙØ© / Admin only');
+    showToast('ÃÂºÃÂÃÂ± ÃÂÃÂµÃÂ±ÃÂ­ ÃÂ¨ÃÂ§ÃÂÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© / Admin only');
     return false;
   }
   return true;
 }
 
-// ââ FETCH FROM SUPABASE ââ
+// Ã¢ÂÂÃ¢ÂÂ FETCH FROM SUPABASE Ã¢ÂÂÃ¢ÂÂ
 async function fetchData(category, search, limit, offset) {
   limit = limit || PAGE_SIZE;
   offset = offset || 0;
@@ -578,7 +581,7 @@ async function fetchCounts() {
     var adults   = await getCount('category=eq.adult');
     var journal  = await getCount('category=eq.journalist');
     var prisoner = await getCount('category=eq.prisoner');
-    var female   = await getCount('gender=eq.' + encodeURIComponent('Ø£ÙØ«Ù'));
+    var female   = await getCount('gender=eq.' + encodeURIComponent('ÃÂ£ÃÂÃÂ«ÃÂ'));
 
     return {
       _counts: true,
@@ -596,7 +599,7 @@ async function fetchCounts() {
   }
 }
 
-// ââ ANIMATED COUNTER ââ
+// Ã¢ÂÂÃ¢ÂÂ ANIMATED COUNTER Ã¢ÂÂÃ¢ÂÂ
 function animateTo(elId, target, duration) {
   var el = document.getElementById(elId);
   if (!el) return;
@@ -620,7 +623,7 @@ async function loadCounters() {
     var ad    = data._counts ? data.adult    : data.filter(function(m){return m.category==='adult';}).length;
     var jo    = data._counts ? data.journalist : data.filter(function(m){return m.category==='journalist';}).length;
     var pr    = data._counts ? data.prisoner : data.filter(function(m){return m.category==='prisoner';}).length;
-    var fe    = data._counts ? data.female   : data.filter(function(m){return m.gender==='Ø£ÙØ«Ù';}).length;
+    var fe    = data._counts ? data.female   : data.filter(function(m){return m.gender==='ÃÂ£ÃÂÃÂ«ÃÂ';}).length;
     // Animate all counters
     animateTo('cntTotal', total, 2000);
     animateTo('cntChildren', ch, 1800);
@@ -648,7 +651,7 @@ function loadLocalCounters() {
     else if(m.category==='adult')ad++;
     else if(m.category==='journalist')jo++;
     else if(m.category==='prisoner')pr++;
-    if(m.gender==='Ø£ÙØ«Ù')fe++;
+    if(m.gender==='ÃÂ£ÃÂÃÂ«ÃÂ')fe++;
   });
   animateTo('cntTotal',data.length,1500);
   animateTo('cntChildren',ch,1300);
@@ -662,7 +665,7 @@ function loadLocalCounters() {
   document.getElementById('tc-prisoners').textContent=pr;
 }
 
-// ââ LOAD SECTION ââ
+// Ã¢ÂÂÃ¢ÂÂ LOAD SECTION Ã¢ÂÂÃ¢ÂÂ
 function updatePager(loaded, total) {
   var pager = document.getElementById('martyrsPager');
   var info = document.getElementById('pagerInfo');
@@ -731,16 +734,16 @@ async function loadSection(tab, append) {
 function renderGrid(container, items, tab) {
   container.innerHTML = '';
   if (items.length === 0) {
-    container.innerHTML = '<div class="empty"><span class="empty-icon">ð</span><p class="empty-text">ÙÙ ÙÙØ¶Ù Ø£Ø­Ø¯ Ø¨Ø¹Ø¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ Ø£Ø¶Ù / Add</button>':'')+'</div>';
+    container.innerHTML = '<div class="empty"><span class="empty-icon">Ã°ÂÂÂ</span><p class="empty-text">ÃÂÃÂ ÃÂÃÂÃÂ¶ÃÂ ÃÂ£ÃÂ­ÃÂ¯ ÃÂ¨ÃÂ¹ÃÂ¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ ÃÂ£ÃÂ¶ÃÂ / Add</button>':'')+'</div>';
     return;
   }
   items.forEach(function(m) {
     var card = document.createElement('div');
     card.className = 'martyr-card';
     card.onclick = function(){ showDetail(m); };
-    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : '<span class="no-photo">ð¤</span>';
+    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : '<span class="no-photo">Ã°ÂÂ¤Â</span>';
     var date = m.date ? '<span class="date-badge">'+fmtDate(m.date)+'</span>' : '';
-    card.innerHTML = '<div class="martyr-photo">'+photo+date+'</div><div class="martyr-body"><div class="martyr-name">'+esc(m.name)+'</div><div class="martyr-meta">'+(m.age?m.age+' Ø¹Ø§ÙØ§Ù Â· ':'')+esc(m.city||'ØºØ²Ø©')+'</div>'+renderPrayerCountBadge(m.id)+'<div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div>';
+    card.innerHTML = '<div class="martyr-photo">'+photo+date+'</div><div class="martyr-body"><div class="martyr-name">'+esc(m.name)+'</div><div class="martyr-meta">'+(m.age?m.age+' ÃÂ¹ÃÂ§ÃÂÃÂ§ÃÂ ÃÂ· ':'')+esc(m.city||'ÃÂºÃÂ²ÃÂ©')+'</div>'+renderPrayerCountBadge(m.id)+'<div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div>';
     container.appendChild(card);
     setupTributeButtons(card);
   });
@@ -752,18 +755,18 @@ function renderGrid(container, items, tab) {
     var add = document.createElement('div');
     add.className = 'add-card';
     add.onclick = function(){ openModal(tab); };
-    add.innerHTML = '<span class="plus">+</span><span>Ø£Ø¶Ù / Add</span>';
+    add.innerHTML = '<span class="plus">+</span><span>ÃÂ£ÃÂ¶ÃÂ / Add</span>';
     container.appendChild(add);
   }
 }
 
 function renderList(container, items, type) {
   container.innerHTML = '';
-  var icon = type==='journalists' ? 'ð¸' : 'â';
+  var icon = type==='journalists' ? 'Ã°ÂÂÂ¸' : 'Ã¢ÂÂ';
   var badgeClass = type==='journalists' ? 'badge-j' : 'badge-p';
-  var badgeText = type==='journalists' ? 'ØµØ­ÙÙ / Press' : 'Ø£Ø³ÙØ± / Prisoner';
+  var badgeText = type==='journalists' ? 'ÃÂµÃÂ­ÃÂÃÂ / Press' : 'ÃÂ£ÃÂ³ÃÂÃÂ± / Prisoner';
   if (items.length === 0) {
-    container.innerHTML = '<div class="empty"><span class="empty-icon">'+icon+'</span><p class="empty-text">ÙÙ ÙÙØ¶Ù Ø£Ø­Ø¯ Ø¨Ø¹Ø¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ Ø£Ø¶Ù / Add</button>':'')+'</div>';
+    container.innerHTML = '<div class="empty"><span class="empty-icon">'+icon+'</span><p class="empty-text">ÃÂÃÂ ÃÂÃÂÃÂ¶ÃÂ ÃÂ£ÃÂ­ÃÂ¯ ÃÂ¨ÃÂ¹ÃÂ¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ ÃÂ£ÃÂ¶ÃÂ / Add</button>':'')+'</div>';
     return;
   }
   items.forEach(function(m) {
@@ -771,7 +774,7 @@ function renderList(container, items, type) {
     row.className = 'list-card';
     row.onclick = function(){ showDetail(m); };
     var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : icon;
-    row.innerHTML = '<div class="list-avatar">'+photo+'</div><div style="flex:1;"><div class="list-name">'+esc(m.name)+'</div><div class="list-meta">'+(m.age?m.age+' Ø¹Ø§ÙØ§Ù Â· ':'')+esc(m.city||'')+(m.date?' Â· '+fmtDate(m.date):'')+'</div>'+(m.story?'<div class="list-story">'+esc(m.story)+'</div>':'')+'<div class="prayer-count-label">'+renderPrayerCountText(m.id)+'</div><div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div><span class="badge '+badgeClass+'">'+badgeText+'</span>';
+    row.innerHTML = '<div class="list-avatar">'+photo+'</div><div style="flex:1;"><div class="list-name">'+esc(m.name)+'</div><div class="list-meta">'+(m.age?m.age+' ÃÂ¹ÃÂ§ÃÂÃÂ§ÃÂ ÃÂ· ':'')+esc(m.city||'')+(m.date?' ÃÂ· '+fmtDate(m.date):'')+'</div>'+(m.story?'<div class="list-story">'+esc(m.story)+'</div>':'')+'<div class="prayer-count-label">'+renderPrayerCountText(m.id)+'</div><div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div><span class="badge '+badgeClass+'">'+badgeText+'</span>';
     container.appendChild(row);
     setupTributeButtons(row);
   });
@@ -782,7 +785,7 @@ function renderList(container, items, type) {
   if (martyrsAdmin) {
     var addRow = document.createElement('div');
     addRow.className = 'add-list-row';
-    addRow.textContent = '+ Ø£Ø¶Ù Ø§Ø³ÙØ§Ù / Add';
+    addRow.textContent = '+ ÃÂ£ÃÂ¶ÃÂ ÃÂ§ÃÂ³ÃÂÃÂ§ÃÂ / Add';
     addRow.onclick = function(){ openModal(type==='journalists'?'journalist':'prisoner'); };
     container.appendChild(addRow);
   }
@@ -897,24 +900,24 @@ function startFloatingNames(names) {
 // stop generator
 function stopFloatingNames(){ if (__floatingTimer) clearTimeout(__floatingTimer); __floatingTimer=null; }
 
-// ââ DETAIL ââ
+// Ã¢ÂÂÃ¢ÂÂ DETAIL Ã¢ÂÂÃ¢ÂÂ
 async function showDetail(m) {
   currentDetailMartyrId = m.id || null;
-  var catLabels = {child:'ð¸ Ø·ÙÙ / Child',youth:'ð¿ Ø´Ø§Ø¨ / Youth',adult:'ð ÙØ¨ÙØ± / Adult',journalist:'ð¸ ØµØ­ÙÙ / Journalist',prisoner:'â Ø£Ø³ÙØ± / Prisoner'};
+  var catLabels = {child:'Ã°ÂÂÂ¸ ÃÂ·ÃÂÃÂ / Child',youth:'Ã°ÂÂÂ¿ ÃÂ´ÃÂ§ÃÂ¨ / Youth',adult:'Ã°ÂÂÂ ÃÂÃÂ¨ÃÂÃÂ± / Adult',journalist:'Ã°ÂÂÂ¸ ÃÂµÃÂ­ÃÂÃÂ / Journalist',prisoner:'Ã¢ÂÂ ÃÂ£ÃÂ³ÃÂÃÂ± / Prisoner'};
   var content = document.getElementById('detailContent');
   content.innerHTML =
-    '<div class="modal-header"><div class="modal-title">'+esc(m.name)+'</div><button class="modal-close" onclick="closeModal(\'detailModal\')">â</button></div>'+
-    (m.photo?'<img class="detail-photo" src="'+m.photo+'" alt=""/>':'<div class="detail-placeholder">ð¤</div>')+
+    '<div class="modal-header"><div class="modal-title">'+esc(m.name)+'</div><button class="modal-close" onclick="closeModal(\'detailModal\')">Ã¢ÂÂ</button></div>'+
+    (m.photo?'<img class="detail-photo" src="'+m.photo+'" alt=""/>':'<div class="detail-placeholder">Ã°ÂÂ¤Â</div>')+
     '<div class="detail-name">'+esc(m.name)+'</div>'+ 
-    '<div class="detail-meta">'+(m.age?m.age+' Ø¹Ø§ÙØ§Ù Â· ':'')+esc(m.city||'ØºØ²Ø©')+(m.date?' Â· '+fmtDate(m.date):'')+'</div>'+ 
+    '<div class="detail-meta">'+(m.age?m.age+' ÃÂ¹ÃÂ§ÃÂÃÂ§ÃÂ ÃÂ· ':'')+esc(m.city||'ÃÂºÃÂ²ÃÂ©')+(m.date?' ÃÂ· '+fmtDate(m.date):'')+'</div>'+ 
     '<span class="detail-badge">'+(catLabels[m.category]||m.category)+'</span>'+ 
     (m.story?'<div class="detail-story">'+esc(m.story)+'</div>':'')+
-    '<div class="detail-prayer-actions"><button class="share-btn add-prayer-btn" data-id="'+esc(m.id)+'" data-name="'+esc(m.name)+'">ð¯ï¸ Ø£Ø¶Ù Ø¯Ø¹Ø§Ø¡</button></div>'+ 
+    '<div class="detail-prayer-actions"><button class="share-btn add-prayer-btn" data-id="'+esc(m.id)+'" data-name="'+esc(m.name)+'">Ã°ÂÂÂ¯Ã¯Â¸Â ÃÂ£ÃÂ¶ÃÂ ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡</button></div>'+ 
     '<div id="detailPrayers" class="detail-prayers"></div>'+ 
     '<div class="share-row">'+
-    '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">ð ØªØºØ±ÙØ¯</button>'+ 
-    '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">ð ÙØ³Ø® Ø§ÙØ±Ø§Ø¨Ø·</button>'+ 
-    '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">â ÙØ´Ø§Ø±ÙØ©</button>'+ 
+    '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">Ã°ÂÂÂ ÃÂªÃÂºÃÂ±ÃÂÃÂ¯</button>'+ 
+    '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">Ã°ÂÂÂ ÃÂÃÂ³ÃÂ® ÃÂ§ÃÂÃÂ±ÃÂ§ÃÂ¨ÃÂ·</button>'+ 
+    '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">Ã¢ÂÂ ÃÂÃÂ´ÃÂ§ÃÂ±ÃÂÃÂ©</button>'+ 
     '</div>';
   // remove any floating-name elements immediately and stop generator
   try {
@@ -931,29 +934,29 @@ async function showDetail(m) {
   document.body.style.overflow = 'hidden';
 }
 
-// ââ SHARE FUNCTIONS ââ
+// Ã¢ÂÂÃ¢ÂÂ SHARE FUNCTIONS Ã¢ÂÂÃ¢ÂÂ
 function shareX(name) {
-  var text = 'Ø´ÙÙØ¯ ÙÙ ØºØ²Ø©: ' + name + ' â Ø³Ø¬Ù Ø§ÙØ´ÙØ¯Ø§Ø¡ Ø§ÙÙÙØ³Ø·ÙÙÙÙÙ\nð ' + window.location.origin + '/Martyrs.html\n#ØºØ²Ø© #ÙÙØ³Ø·ÙÙ #Gaza';
+  var text = 'ÃÂ´ÃÂÃÂÃÂ¯ ÃÂÃÂ ÃÂºÃÂ²ÃÂ©: ' + name + ' Ã¢ÂÂ ÃÂ³ÃÂ¬ÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂ·ÃÂÃÂÃÂÃÂÃÂ\nÃ°ÂÂÂ ' + window.location.origin + '/Martyrs.html\n#ÃÂºÃÂ²ÃÂ© #ÃÂÃÂÃÂ³ÃÂ·ÃÂÃÂ #Gaza';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
 }
 function copyLink(name) {
   var url = window.location.origin + '/Martyrs.html?q=' + encodeURIComponent(name);
-  navigator.clipboard.writeText(url).then(function(){ showToast('â ØªÙ ÙØ³Ø® Ø§ÙØ±Ø§Ø¨Ø· / Link copied'); }).catch(function(){ showToast('â ' + url); });
+  navigator.clipboard.writeText(url).then(function(){ showToast('Ã¢ÂÂ ÃÂªÃÂ ÃÂÃÂ³ÃÂ® ÃÂ§ÃÂÃÂ±ÃÂ§ÃÂ¨ÃÂ· / Link copied'); }).catch(function(){ showToast('Ã¢ÂÂ ' + url); });
 }
 function nativeShare(name) {
   if (navigator.share) {
-    navigator.share({ title: 'Ø´ÙÙØ¯: ' + name, text: 'ÙÙ Ø³Ø¬Ù Ø§ÙØ´ÙØ¯Ø§Ø¡ Ø§ÙÙÙØ³Ø·ÙÙÙÙÙ â FALASTEEN.INK', url: window.location.href }).catch(function(){});
+    navigator.share({ title: 'ÃÂ´ÃÂÃÂÃÂ¯: ' + name, text: 'ÃÂÃÂ ÃÂ³ÃÂ¬ÃÂ ÃÂ§ÃÂÃÂ´ÃÂÃÂ¯ÃÂ§ÃÂ¡ ÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂ·ÃÂÃÂÃÂÃÂÃÂ Ã¢ÂÂ FALASTEEN.INK', url: window.location.href }).catch(function(){});
   } else { copyLink(name); }
 }
 
-// ââ MODAL ââ
+// Ã¢ÂÂÃ¢ÂÂ MODAL Ã¢ÂÂÃ¢ÂÂ
 async function openModal(tab) {
   if (!(await requireMartyrsAdmin())) return;
   if (tab) {
     var catMap = {children:'child',youth:'youth',adults:'adult',journalist:'journalist',prisoner:'prisoner',child:'child'};
     var val = catMap[tab]||'';
     document.getElementById('mCategory').value = val;
-    document.getElementById('modalTitle').textContent = tab==='journalist'?'Ø¥Ø¶Ø§ÙØ© ØµØ­ÙÙ Ø´ÙÙØ¯':tab==='prisoner'?'Ø¥Ø¶Ø§ÙØ© Ø£Ø³ÙØ±':'Ø¥Ø¶Ø§ÙØ© Ø´ÙÙØ¯';
+    document.getElementById('modalTitle').textContent = tab==='journalist'?'ÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© ÃÂµÃÂ­ÃÂÃÂ ÃÂ´ÃÂÃÂÃÂ¯':tab==='prisoner'?'ÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© ÃÂ£ÃÂ³ÃÂÃÂ±':'ÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© ÃÂ´ÃÂÃÂÃÂ¯';
   }
   document.getElementById('addModal').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -1000,7 +1003,7 @@ async function saveMartyr(e) {
   e.preventDefault();
   if (!(await requireMartyrsAdmin())) return;
   var btn = document.getElementById('saveBtn');
-  btn.disabled=true; btn.textContent='â³ Ø¬Ø§Ø±Ù Ø§ÙØ­ÙØ¸...';
+  btn.disabled=true; btn.textContent='Ã¢ÂÂ³ ÃÂ¬ÃÂ§ÃÂ±ÃÂ ÃÂ§ÃÂÃÂ­ÃÂÃÂ¸...';
   var martyr = {
     id:'M_'+Date.now(),
     name:document.getElementById('mName').value.trim(),
@@ -1008,7 +1011,7 @@ async function saveMartyr(e) {
     gender:document.getElementById('mGender').value||null,
     age:document.getElementById('mAge').value||null,
     date:document.getElementById('mDate').value||null,
-    city:document.getElementById('mCity').value.trim()||'ØºØ²Ø©',
+    city:document.getElementById('mCity').value.trim()||'ÃÂºÃÂ²ÃÂ©',
     story:document.getElementById('mStory').value.trim()||null,
     source:document.getElementById('mSource').value.trim()||null,
     photo:photoData||null,
@@ -1022,18 +1025,18 @@ async function saveMartyr(e) {
     });
     if (!res.ok && res.status !== 201) throw new Error('Save failed');
   } catch(err){
-    showToast('ÙØ´Ù Ø§ÙØ­ÙØ¸ â ØªØ­ÙÙ ÙÙ ØµÙØ§Ø­ÙØ§Øª Ø§ÙØ£Ø¯ÙÙ / Save failed');
-    btn.disabled=false; btn.innerHTML='ð Ø­ÙØ¸ ÙÙ Ø§ÙØ³Ø¬Ù / Save';
+    showToast('ÃÂÃÂ´ÃÂ ÃÂ§ÃÂÃÂ­ÃÂÃÂ¸ Ã¢ÂÂ ÃÂªÃÂ­ÃÂÃÂ ÃÂÃÂ ÃÂµÃÂÃÂ§ÃÂ­ÃÂÃÂ§ÃÂª ÃÂ§ÃÂÃÂ£ÃÂ¯ÃÂÃÂ / Save failed');
+    btn.disabled=false; btn.innerHTML='Ã°ÂÂÂ ÃÂ­ÃÂÃÂ¸ ÃÂÃÂ ÃÂ§ÃÂÃÂ³ÃÂ¬ÃÂ / Save';
     return;
   }
   closeModal('addModal');
-  showToast('â ØªÙ Ø§ÙØ­ÙØ¸ / Saved');
+  showToast('Ã¢ÂÂ ÃÂªÃÂ ÃÂ§ÃÂÃÂ­ÃÂÃÂ¸ / Saved');
   await loadCounters();
   await loadSection(currentTab, false);
-  btn.disabled=false; btn.innerHTML='ð Ø­ÙØ¸ ÙÙ Ø§ÙØ³Ø¬Ù / Save';
+  btn.disabled=false; btn.innerHTML='Ã°ÂÂÂ ÃÂ­ÃÂÃÂ¸ ÃÂÃÂ ÃÂ§ÃÂÃÂ³ÃÂ¬ÃÂ / Save';
 }
 
-// ââ TABS ââ
+// Ã¢ÂÂÃ¢ÂÂ TABS Ã¢ÂÂÃ¢ÂÂ
 function switchTab(tab, btn) {
   currentTab = tab;
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
@@ -1043,13 +1046,13 @@ function switchTab(tab, btn) {
   loadSection(tab, false);
 }
 
-// ââ SEARCH ââ
+// Ã¢ÂÂÃ¢ÂÂ SEARCH Ã¢ÂÂÃ¢ÂÂ
 function debounceSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(function(){ loadSection(currentTab, false); }, 400);
 }
 
-// ââ LOCAL FALLBACK ââ
+// Ã¢ÂÂÃ¢ÂÂ LOCAL FALLBACK Ã¢ÂÂÃ¢ÂÂ
 function getLocal() { try{return JSON.parse(localStorage.getItem('fl_martyrs')||'[]');}catch(e){return[];} }
 function getMartyrTributes(id) {
   if (!id) return {candles:0,roses:0,prayers:0};
@@ -1068,17 +1071,17 @@ function addMartyrTribute(id, type) {
 }
 function tributeButtonsHtml(m) {
   var t = getMartyrTributes(m.id);
-  return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">ð¯ï¸ '+t.candles+'</button>' +
-         '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">ð¹ '+t.roses+'</button>' +
-         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">ð¤² '+t.prayers+'</button>';
+  return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">Ã°ÂÂÂ¯Ã¯Â¸Â '+t.candles+'</button>' +
+         '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">Ã°ÂÂÂ¹ '+t.roses+'</button>' +
+         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">Ã°ÂÂ¤Â² '+t.prayers+'</button>';
 }
 function updateTributeButtons(id, tributes) {
   var safeId = id.replace(/"/g,'\\"');
   document.querySelectorAll('[data-id="'+safeId+'"]').forEach(function(btn){
     var type = btn.dataset.type;
-    if (type === 'candles') btn.textContent = 'ð¯ï¸ ' + (tributes.candles || 0);
-    if (type === 'roses') btn.textContent = 'ð¹ ' + (tributes.roses || 0);
-    if (type === 'prayers') btn.textContent = 'ð¤² ' + (tributes.prayers || 0);
+    if (type === 'candles') btn.textContent = 'Ã°ÂÂÂ¯Ã¯Â¸Â ' + (tributes.candles || 0);
+    if (type === 'roses') btn.textContent = 'Ã°ÂÂÂ¹ ' + (tributes.roses || 0);
+    if (type === 'prayers') btn.textContent = 'Ã°ÂÂ¤Â² ' + (tributes.prayers || 0);
   });
 }
 function setupTributeButtons(root) {
@@ -1087,7 +1090,7 @@ function setupTributeButtons(root) {
     btn.addEventListener('click', handleTributeClick);
   });
 }
-// ââ HANZALA REWARDS ââ
+// Ã¢ÂÂÃ¢ÂÂ HANZALA REWARDS Ã¢ÂÂÃ¢ÂÂ
 // Visitors earn HANZALA points for each tribute. Points are stored locally and
 // can later be claimed/airdropped to their wallet (on-chain distribution needs
 // a backend signer, so for now we accrue the balance the user has earned).
@@ -1149,7 +1152,7 @@ async function earnHanzala(amount) {
 async function updateHanzalaBadge(total) {
   if (total === undefined) total = await loadHanzalaPoints();
   var el = document.getElementById('hanzalaBadge');
-  if (el) el.textContent = 'ð ' + total + ' Ø­ÙØ¸ÙØ©';
+  if (el) el.textContent = 'Ã°ÂÂÂ ' + total + ' ÃÂ­ÃÂÃÂ¸ÃÂÃÂ©';
 }
 
 function handleTributeClick(e) {
@@ -1160,20 +1163,20 @@ function handleTributeClick(e) {
   if (!id || !type) return;
   var counts = addMartyrTribute(id, type);
   updateTributeButtons(id, counts);
-  var label = type === 'candles' ? 'Ø´ÙØ¹Ø©' : type === 'roses' ? 'ÙØ±Ø¯Ø©' : 'Ø¯Ø¹Ø§Ø¡';
+  var label = type === 'candles' ? 'ÃÂ´ÃÂÃÂ¹ÃÂ©' : type === 'roses' ? 'ÃÂÃÂ±ÃÂ¯ÃÂ©' : 'ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡';
   var reward = HANZALA_REWARD[type] || 1;
   earnHanzala(reward);
-  showToast('â ØªÙØª Ø¥Ø¶Ø§ÙØ© ' + label + ' Â· +' + reward + ' Ø­ÙØ¸ÙØ© ð');
+  showToast('Ã¢ÂÂ ÃÂªÃÂÃÂª ÃÂ¥ÃÂ¶ÃÂ§ÃÂÃÂ© ' + label + ' ÃÂ· +' + reward + ' ÃÂ­ÃÂÃÂ¸ÃÂÃÂ© Ã°ÂÂÂ');
   // HANDALA rewards
   if (type === 'roses' && window.FLHandala) window.FLHandala.earn('rose');
 }
 
-// ââ HELPERS ââ
+// Ã¢ÂÂÃ¢ÂÂ HELPERS Ã¢ÂÂÃ¢ÂÂ
 function fmtDate(d){if(!d)return'';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
 function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
 
-// ââ INIT ââ
+// Ã¢ÂÂÃ¢ÂÂ INIT Ã¢ÂÂÃ¢ÂÂ
 window.addEventListener('load',async function(){
   updateHanzalaBadge();
   await initMartyrsAdmin();
@@ -1203,26 +1206,26 @@ async function loadMartyrPrayers(martyrId) {
   var container = document.getElementById('detailPrayers');
   if (!container) return;
   if (!martyrId) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÙØ§ ØªÙØ¬Ø¯ Ø¨ÙØ§ÙØ§Øª ÙØ¹Ø±Ø¶ Ø§ÙØ£Ø¯Ø¹ÙØ©.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂ§ ÃÂªÃÂÃÂ¬ÃÂ¯ ÃÂ¨ÃÂÃÂ§ÃÂÃÂ§ÃÂª ÃÂÃÂ¹ÃÂ±ÃÂ¶ ÃÂ§ÃÂÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ©.</div>';
     return;
   }
   try {
     var prayers = await FL.rest('martyr_prayers', { query: 'martyr_id=eq.' + encodeURIComponent(martyrId) + '&order=created_at.desc' });
     renderPrayerList(prayers, container);
   } catch (e) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÙØ´Ù ØªØ­ÙÙÙ Ø§ÙØ£Ø¯Ø¹ÙØ©. Ø­Ø§ÙÙ ÙØ±Ø© Ø£Ø®Ø±Ù.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂ´ÃÂ ÃÂªÃÂ­ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ©. ÃÂ­ÃÂ§ÃÂÃÂ ÃÂÃÂ±ÃÂ© ÃÂ£ÃÂ®ÃÂ±ÃÂ.</div>';
   }
 }
 
 function renderPrayerList(prayers, container) {
   if (!container) return;
   if (!Array.isArray(prayers) || prayers.length === 0) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÙØ§ ØªÙØ¬Ø¯ Ø£Ø¯Ø¹ÙØ© Ø¨Ø¹Ø¯. ÙÙ Ø£ÙÙ ÙÙ ÙØ¯Ø¹Ù.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂ§ ÃÂªÃÂÃÂ¬ÃÂ¯ ÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ© ÃÂ¨ÃÂ¹ÃÂ¯. ÃÂÃÂ ÃÂ£ÃÂÃÂ ÃÂÃÂ ÃÂÃÂ¯ÃÂ¹ÃÂ.</div>';
     return;
   }
-  container.innerHTML = '<div class="detail-prayers-header"><span>Ø¢Ø®Ø± Ø§ÙØ£Ø¯Ø¹ÙØ©</span><span>'+prayers.length+' Ø¯Ø¹Ø§Ø¡</span></div>' +
+  container.innerHTML = '<div class="detail-prayers-header"><span>ÃÂ¢ÃÂ®ÃÂ± ÃÂ§ÃÂÃÂ£ÃÂ¯ÃÂ¹ÃÂÃÂ©</span><span>'+prayers.length+' ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡</span></div>' +
     prayers.map(function(p) {
-      return '<div class="prayer-card"><div class="prayer-meta"><span class="prayer-user">'+esc(p.user_name || 'Ø²Ø§Ø¦Ø±')+'</span><span>'+fmtDateTime(p.created_at)+'</span></div><div class="prayer-text">'+esc(p.prayer_text)+'</div></div>';
+      return '<div class="prayer-card"><div class="prayer-meta"><span class="prayer-user">'+esc(p.user_name || 'ÃÂ²ÃÂ§ÃÂ¦ÃÂ±')+'</span><span>'+fmtDateTime(p.created_at)+'</span></div><div class="prayer-text">'+esc(p.prayer_text)+'</div></div>';
     }).join('');
 }
 
@@ -1233,7 +1236,7 @@ function openPrayerModal(martyrId, martyrName) {
     c.style.border='2px solid #333'; c.style.background='#1c1c1c';
   });
   var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.textContent = 'Ø§Ø®ØªØ± Ø¯Ø¹Ø§Ø¡Ù Ø£ÙÙØ§Ù'; }
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.textContent = 'ÃÂ§ÃÂ®ÃÂªÃÂ± ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ÃÂ ÃÂ£ÃÂÃÂÃÂ§ÃÂ'; }
   document.getElementById('prayerText').value = '';
   document.getElementById('prayerModal').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -1260,10 +1263,10 @@ function handleOpenPrayerModal(e) {
 
 async async function sendPrayer() {
   var martyrId = document.getElementById('prayerMartyrId').value;
-  var userName = document.getElementById('prayerName').value.trim() || 'Ø²Ø§Ø¦Ø±';
+  var userName = document.getElementById('prayerName').value.trim() || 'ÃÂ²ÃÂ§ÃÂ¦ÃÂ±';
   var prayerText = document.getElementById('prayerText').value;
   if (!martyrId || !prayerText) {
-    showToast('ÙØ±Ø¬Ù Ø§Ø®ØªÙØ§Ø± Ø¯Ø¹Ø§Ø¡ Ø£ÙÙØ§Ù');
+    showToast('ÃÂÃÂ±ÃÂ¬ÃÂ ÃÂ§ÃÂ®ÃÂªÃÂÃÂ§ÃÂ± ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ ÃÂ£ÃÂÃÂÃÂ§ÃÂ');
     return;
   }
   var payload = {
@@ -1276,13 +1279,13 @@ async async function sendPrayer() {
   try {
     await FL.rest('martyr_prayers', { method: 'POST', body: payload, prefer: 'return=minimal' });
     closePrayerModal();
-    showToast('ð¤² ØªÙ Ø¥Ø±Ø³Ø§Ù Ø¯Ø¹Ø§Ø¡ÙØ Ø¬Ø²Ø§Ù Ø§ÙÙÙ Ø®ÙØ±Ø§Ù +5 HANDALA');
+    showToast('Ã°ÂÂ¤Â² ÃÂªÃÂ ÃÂ¥ÃÂ±ÃÂ³ÃÂ§ÃÂ ÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ÃÂÃÂ ÃÂ¬ÃÂ²ÃÂ§ÃÂ ÃÂ§ÃÂÃÂÃÂ ÃÂ®ÃÂÃÂ±ÃÂ§ÃÂ +5 HANDALA');
     if (window.FLHandala) window.FLHandala.earn('prayer');
     if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
   } catch (err) {
     console.warn('Failed to save prayer', err);
-    alert('ÙØ´Ù Ø­ÙØ¸ Ø§ÙØ¯Ø¹Ø§Ø¡: ' + (err && err.message ? err.message : err));
-    showToast('ÙØ´Ù Ø­ÙØ¸ Ø§ÙØ¯Ø¹Ø§Ø¡Ø Ø­Ø§ÙÙ ÙØ±Ø© Ø£Ø®Ø±Ù', 'err');
+    alert('ÃÂÃÂ´ÃÂ ÃÂ­ÃÂÃÂ¸ ÃÂ§ÃÂÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡: ' + (err && err.message ? err.message : err));
+    showToast('ÃÂÃÂ´ÃÂ ÃÂ­ÃÂÃÂ¸ ÃÂ§ÃÂÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ÃÂ ÃÂ­ÃÂ§ÃÂÃÂ ÃÂÃÂ±ÃÂ© ÃÂ£ÃÂ®ÃÂ±ÃÂ', 'err');
     if (btn) { btn.disabled = false; btn.style.opacity='1'; }
   }
 }
@@ -1317,6 +1320,74 @@ function showUploadProgress(inp) {
 </script>
 <script src="rewards.js"></script>
 <script src="fl-nav.js" defer></script>
+
+<div id="martyrs-m
+var martyrsMap = null;
+
+function showMapTab() {
+  document.querySelectorAll('[id^="grid-"],[id^="list-"]').forEach(el => el.style.display='none');
+  var mapEl = document.getElementById('martyrs-map');
+  mapEl.style.display = 'block';
+  
+  if (!martyrsMap) {
+    martyrsMap = L.map('martyrs-map').setView([31.9, 35.2], 8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '\u00a9 OpenStreetMap'
+    }).addTo(martyrsMap);
+    loadMapMarkers();
+  }
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-map').classList.add('active');
+}
+
+async function loadMapMarkers() {
+  var cityCoords = {
+    '\u063a\u0632\u0629': [31.5, 34.47], '\u0631\u0641\u062d': [31.29, 34.25], '\u062e\u0627\u0646\u064a\u0648\u0646\u0633': [31.34, 34.3],
+    '\u062c\u0628\u0627\u0644\u064a\u0627': [31.53, 34.49], '\u0628\u064a\u062a \u0644\u0627\u0647\u064a\u0627': [31.55, 34.49],
+    '\u0627\u0644\u0634\u062c\u0627\u0639\u064a\u0629': [31.49, 34.5], '\u0627\u0644\u0646\u0635\u064a\u0631\u0627\u062a': [31.44, 34.39],
+    '\u062f\u064a\u0631 \u0627\u0644\u0628\u0644\u062d': [31.42, 34.35], '\u0628\u064a\u062a \u062d\u0627\u0646\u0648\u0646': [31.55, 34.53],
+    '\u0627\u0644\u0642\u062f\u0633': [31.78, 35.21], '\u0627\u0644\u062e\u0644\u064a\u0644': [31.53, 35.09],
+    '\u0646\u0627\u0628\u0644\u0633': [32.22, 35.26], '\u062c\u0646\u064a\u0646': [32.46, 35.29],
+    '\u0631\u0627\u0645 \u0627\u0644\u0644\u0647': [31.9, 35.2], '\u0637\u0648\u0644\u0643\u0631\u0645': [32.31, 35.02],
+    '\u0623\u0631\u064a\u062d\u0627': [31.86, 35.44], '\u0642\u0644\u0642\u064a\u0644\u064a\u0629': [32.19, 34.97]
+  };
+  
+  try {
+    const res = await fetch(FL.SUPABASE_URL + '/rest/v1/martyrs?select=id,name,city,category,date&limit=500', {
+      headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY }
+    });
+    const martyrs = await res.json();
+    
+    var cityGroups = {};
+    martyrs.forEach(m => {
+      var city = m.city || '\u063a\u0632\u0629';
+      if (!cityGroups[city]) cityGroups[city] = [];
+      cityGroups[city].push(m);
+    });
+    
+    Object.keys(cityGroups).forEach(city => {
+      var coords = cityCoords[city];
+      if (!coords) coords = cityCoords['\u063a\u0632\u0629'];
+      var count = cityGroups[city].length;
+      var names = cityGroups[city].slice(0,5).map(m => m.name).join('<br/>');
+      var more = count > 5 ? '<br/>...' + (count-5) + ' \u0622\u062e\u0631\u0648\u0646' : '';
+      
+      var marker = L.circleMarker(coords, {
+        radius: Math.min(5 + count * 2, 30),
+        fillColor: '#e63946',
+        color: '#fff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).addTo(martyrsMap);
+      
+      marker.bindPopup('<b>' + city + '</b><br/>' + count + ' \u0634\u0647\u064a\u062f<br/>' + names + more);
+    });
+  } catch(e) {
+    console.warn('Map load error:', e);
+  }
+}
+ap" style="height:500px;width:100%;border-radius:12px;display:none;"></div>
 <script>
 function chooseDua(el) {
   document.querySelectorAll('[onclick="chooseDua(this)"]').forEach(function(c) {
@@ -1327,7 +1398,7 @@ function chooseDua(el) {
   el.style.background = '#0a2016';
   document.getElementById('prayerText').value = el.getAttribute('data-text');
   var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'Ø¥Ø±Ø³Ø§Ù Ø§ÙØ¯Ø¹Ø§Ø¡ ð¤²'; }
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'ÃÂ¥ÃÂ±ÃÂ³ÃÂ§ÃÂ ÃÂ§ÃÂÃÂ¯ÃÂ¹ÃÂ§ÃÂ¡ Ã°ÂÂ¤Â²'; }
 }
 
 function submitSelectedPrayer() {
