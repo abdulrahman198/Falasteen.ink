@@ -1,5 +1,5 @@
 // FALASTEEN.INK Service Worker v12
-var CACHE = 'fl-v14';
+var CACHE = 'fl-v15';
 var APP_SHELL = [
   '/', 'Index.html', 'Feed.html', 'Martyrs.html', 'Landmarks.html',
   'Map.html', 'Archive.html', 'live.html', 'Guardian_hub1.html',
@@ -50,7 +50,7 @@ self.addEventListener('fetch', function(e) {
         return caches.match(e.request).then(function(cached) {
           if (cached) return cached;
           return caches.match('Index.html').then(function(home) {
-            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>Offline</h1><p>النسخة المخزنة غير متاحة. أعد التحميل عند الاتصال أو امسح cache المتصفح.</p></body>', {
+            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>Offline</h1><p>Ø§ÙÙØ³Ø®Ø© Ø§ÙÙØ®Ø²ÙØ© ØºÙØ± ÙØªØ§Ø­Ø©. Ø£Ø¹Ø¯ Ø§ÙØªØ­ÙÙÙ Ø¹ÙØ¯ Ø§ÙØ§ØªØµØ§Ù Ø£Ù Ø§ÙØ³Ø­ cache Ø§ÙÙØªØµÙØ­.</p></body>', {
               status: 503,
               headers: { 'Content-Type': 'text/html; charset=utf-8' }
             });
