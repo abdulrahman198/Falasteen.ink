@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <link rel="stylesheet" href="styles.css"/>
-<script src="app-config.js"></script>
-<script src="common.js"></script>
-<script src="app.js" defer></script>
+<script src="app-config.js"><\/script>
+<script src="common.js"><\/script>
+<script src="app.js" defer><\/script>
 <script src="ollama-auto-tagging.js" defer></script>
 <script>
   // Respect user reduced-motion preference early for JS-driven enhancements
@@ -22,7 +22,7 @@
       var _ov = document.getElementById('namesOverlay'); if(_ov) _ov.remove();
     });
   } catch(e) {}
-</script>
+<\/script>
 <script>
 var _editingMartyrId = null;
 
@@ -63,8 +63,8 @@ function deleteMartyr(id) {
   if (typeof loadSection === 'function') loadSection(currentTab, false);
   FL.toast('✓ تم الحذف / Deleted');
 }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<\/script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"><\/script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>سجل الشهداء | FALASTEEN.INK</title>
 
@@ -263,7 +263,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .comment-submit-btn { background: linear-gradient(135deg, #e63946, #c1121f); color: #fff; border: none; border-radius: 8px; padding: 10px; cursor: pointer; font-size: 0.9rem; }
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 </head>
 <body>
 <div id="namesOverlay" class="names-overlay" aria-hidden="true"></div>
@@ -1338,9 +1338,9 @@ function showUploadProgress(inp) {
   };
   reader.readAsDataURL(file);
 }
-</script>
-<script src="rewards.js"></script>
-<script src="fl-nav.js" defer></script>
+<\/script>
+<script src="rewards.js"><\/script>
+<script src="fl-nav.js" defer><\/script>
 
 <div id="martyrs-m
 var martyrsMap = null;
@@ -1427,7 +1427,7 @@ function submitSelectedPrayer() {
   if (!pt || !pt.value) return;
   sendPrayer();
 }
-</script>
+<\/script>
 
 <script>
 function downloadCertificate() {
