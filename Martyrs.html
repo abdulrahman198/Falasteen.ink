@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <link rel="stylesheet" href="styles.css"/>
-<script src="app-config.js"><\/script>
-<script src="common.js"><\/script>
-<script src="app.js" defer><\/script>
-<script src="ollama-auto-tagging.js" defer><\/script>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
+<script src="ollama-auto-tagging.js" defer></script>
 <script>
   // Respect user reduced-motion preference early for JS-driven enhancements
   try {
@@ -64,7 +64,7 @@ function deleteMartyr(id) {
   FL.toast('✓ تم الحذف / Deleted');
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>سجل الشهداء | FALASTEEN.INK</title>
 
@@ -76,7 +76,6 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .logo { font-family:"Courier New",monospace; font-weight:900; font-size:1rem; letter-spacing:0.08em; color:var(--text); text-decoration:none; }
 .logo-dot { color:var(--red); }
 .add-btn { display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:0.72rem; font-weight:700; padding:8px 18px; border:none; cursor:pointer; }
-.hanzala-badge { font-family:"Courier New",monospace; font-size:0.66rem; font-weight:700; color:#ffd24a; background:rgba(255,210,74,.08); border:1px solid rgba(255,210,74,.25); border-radius:999px; padding:6px 12px; white-space:nowrap; }
 
 /* HERO */
 .hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,0.06) 0%,transparent 100%); position:relative; overflow:hidden; }
@@ -223,15 +222,6 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .preset-btn { background:rgba(255,255,255,.05); color:var(--text); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px 12px; cursor:pointer; font-size:0.84rem; transition:all .2s; text-align:left; }
 .preset-btn:hover { background:rgba(232,34,31,.16); border-color:rgba(232,34,31,.24); }
 .preset-btn.active { background:rgba(232,34,31,.22); border-color:rgba(232,34,31,.3); }
-.prayer-options { display:flex; flex-direction:column; gap:12px; margin:14px 0; }
-.prayer-option-card { background:#1a1a1a; border:2px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px; cursor:pointer; transition:all .25s; text-align:right; direction:rtl; }
-.prayer-option-card:hover { border-color:rgba(34,197,94,.4); background:#1f2a1f; }
-.prayer-option-card.selected { border-color:#22c55e; background:rgba(34,197,94,.08); box-shadow:0 0 16px rgba(34,197,94,.15); }
-.prayer-option-text { color:#fff; font-size:1rem; line-height:1.8; font-family:inherit; }
-.prayer-option-check { display:none; color:#22c55e; font-size:1.1rem; margin-bottom:6px; }
-.prayer-option-card.selected .prayer-option-check { display:block; }
-.prayer-submit-btn { width:100%; padding:14px; border:none; border-radius:14px; background:linear-gradient(135deg,#b91c1c,#166534); color:#fff; font-size:1rem; font-weight:700; cursor:pointer; margin-top:6px; transition:opacity .2s; }
-.prayer-submit-btn:disabled { opacity:.45; cursor:not-allowed; }
 
 /* SHARE */
 .share-row { display:flex; gap:8px; padding:0 18px 20px; direction:ltr; }
@@ -258,7 +248,6 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 <nav class="topnav">
   <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
-  <span id="hanzalaBadge" class="hanzala-badge" title="رصيدك من حنظلة — يُكتسب بإضاءة شمعة أو وردة أو دعاء">🏅 0 حنظلة</span>
   <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
   <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ أضف / Add</button>
 </nav>
@@ -423,34 +412,30 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <div class="modal-overlay" id="prayerModal" onclick="closeOnOverlay(event,'prayerModal')">
   <div class="modal prayer-modal" id="prayerModalContent">
     <div class="modal-header">
-      <div class="modal-title">اختر دعاءً للشهيد</div>
+      <div class="modal-title">أضف دعاء للشهيد</div>
       <button class="modal-close" onclick="closeModal('prayerModal')">✕</button>
     </div>
-    <input type="hidden" id="prayerMartyrId" value="" />
-    <div class="form-group" style="padding:0 4px;">
-      <label class="form-label">اسمك</label>
-      <input type="text" class="form-input" id="prayerName" placeholder="اكتب اسمك أو لقبك" />
-    </div>
-<!-- 3 Prayer Option Cards -->
-<div class="prayer-options-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
-  <div onclick="chooseDua(this)" data-text="اللهم ارحمه وأدخله فسيح جناتك، واجعله من الشهداء الصديقين 🌿"
-       style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    اللهم ارحمه وأدخله فسيح جناتك، واجعله من الشهداء الصديقين 🌿
-  </div>
-  <div onclick="chooseDua(this)" data-text="رحمك الله يا شهيدنا، وجمعنا بك في الفردوس الأعلى 🕊️"
-       style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    رحمك الله يا شهيدنا، وجمعنا بك في الفردوس الأعلى 🕊️
-  </div>
-  <div onclick="chooseDua(this)" data-text="اللهم اغفر له وارفع درجته في المهديين، وكن له خير خلف في عقبه 🌸"
-       style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    اللهم اغفر له وارفع درجته في المهديين، وكن له خير خلف في عقبه 🌸
-  </div>
-</div>
-<input type="hidden" id="prayerText" value="" />
-<button id="duaSubmitBtn" onclick="submitSelectedPrayer()" disabled
-  style="width:100%;padding:14px;background:linear-gradient(135deg,#c0392b,#1a6b3a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:not-allowed;opacity:0.45;margin-top:8px;">
-  اختر دعاءً أولاً
-</button>
+    <form id="prayerForm" onsubmit="sendPrayer(event)">
+      <input type="hidden" id="prayerMartyrId" value="" />
+      <div class="form-group">
+        <label class="form-label">اسمك</label>
+        <input type="text" class="form-input" id="prayerName" placeholder="اكتب اسمك أو لقبك" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">اختر دعاء جاهز</label>
+        <div class="prayer-presets">
+          <button type="button" class="preset-btn" data-text="اللهم ارحمه واغفر له وتقبله في الشهداء الصالحين.">اللهم ارحمه واغفر له</button>
+          <button type="button" class="preset-btn" data-text="اللهم اجعل قبره روضة من رياض الجنة وألهم أهله الصبر والسلوان.">اللهم اجعل قبره روضة</button>
+          <button type="button" class="preset-btn" data-text="رحمك الله يا بطل، عشت كريماً ورحلت شهيداً عظيماً.">رحمك الله يا بطل</button>
+          <button type="button" class="preset-btn" data-text="اللهم اكتبه عندك في أعلى عليين مع النبيين والصديقين.">اللهم اكتبه في عليين</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">نص الدعاء</label>
+        <textarea class="form-textarea" id="prayerText" rows="4" placeholder="اكتب دعاءك هنا أو اختر من الأدعية الجاهزة" required></textarea>
+      </div>
+      <button type="submit" class="save-btn">إرسال الدعاء</button>
+    </form>
   </div>
 </div>
 
@@ -1087,26 +1072,6 @@ function setupTributeButtons(root) {
     btn.addEventListener('click', handleTributeClick);
   });
 }
-// ── HANZALA REWARDS ──
-// Visitors earn HANZALA points for each tribute. Points are stored locally and
-// can later be claimed/airdropped to their wallet (on-chain distribution needs
-// a backend signer, so for now we accrue the balance the user has earned).
-var HANZALA_REWARD = { candles: 1, roses: 2, prayers: 3 };
-function getHanzalaPoints() {
-  try { return parseInt(localStorage.getItem('fl_hanzala_points') || '0', 10) || 0; } catch(e) { return 0; }
-}
-function earnHanzala(amount) {
-  var total = getHanzalaPoints() + amount;
-  try { localStorage.setItem('fl_hanzala_points', String(total)); } catch(e) {}
-  updateHanzalaBadge(total);
-  return total;
-}
-function updateHanzalaBadge(total) {
-  if (total === undefined) total = getHanzalaPoints();
-  var el = document.getElementById('hanzalaBadge');
-  if (el) el.textContent = '🏅 ' + total + ' حنظلة';
-}
-
 function handleTributeClick(e) {
   e.stopPropagation();
   var btn = e.currentTarget;
@@ -1116,11 +1081,7 @@ function handleTributeClick(e) {
   var counts = addMartyrTribute(id, type);
   updateTributeButtons(id, counts);
   var label = type === 'candles' ? 'شمعة' : type === 'roses' ? 'وردة' : 'دعاء';
-  var reward = HANZALA_REWARD[type] || 1;
-  earnHanzala(reward);
-  showToast('✓ تمت إضافة ' + label + ' · +' + reward + ' حنظلة 🏅');
-  // HANDALA rewards
-  if (type === 'roses' && window.FLHandala) window.FLHandala.earn('rose');
+  showToast('✓ تمت إضافة ' + label);
 }
 
 // ── HELPERS ──
@@ -1130,10 +1091,10 @@ function showToast(msg){var t=document.getElementById('toast');t.textContent=msg
 
 // ── INIT ──
 window.addEventListener('load',async function(){
-  updateHanzalaBadge();
   await initMartyrsAdmin();
   await loadCounters();
   initPrayerRealtime();
+  setupPrayerPresetButtons();
   await loadSection('children', false);
 });
 
@@ -1182,20 +1143,20 @@ function renderPrayerList(prayers, container) {
 }
 
 function openPrayerModal(martyrId, martyrName) {
+  var form = document.getElementById('prayerForm');
+  if (!form) return;
   document.getElementById('prayerMartyrId').value = martyrId || '';
   document.getElementById('prayerName').value = '';
-  document.querySelectorAll('[onclick="chooseDua(this)"]').forEach(function(c){
-    c.style.border='2px solid #333'; c.style.background='#1c1c1c';
-  });
-  var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.textContent = 'اختر دعاءً أولاً'; }
   document.getElementById('prayerText').value = '';
+  document.querySelectorAll('.preset-btn').forEach(function(btn){ btn.classList.remove('active'); });
   document.getElementById('prayerModal').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
 function closePrayerModal() {
   closeModal('prayerModal');
+  var form = document.getElementById('prayerForm');
+  if (form) form.reset();
 }
 
 function setupPrayerButtons(root) {
@@ -1211,14 +1172,23 @@ function handleOpenPrayerModal(e) {
   openPrayerModal(btn.dataset.id, btn.dataset.name);
 }
 
-/* prayer preset buttons replaced by card selection */
+function setupPrayerPresetButtons() {
+  document.querySelectorAll('.preset-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.preset-btn').forEach(function(item){ item.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('prayerText').value = btn.dataset.text || '';
+    });
+  });
+}
 
-async async function sendPrayer() {
+async function sendPrayer(e) {
+  e.preventDefault();
   var martyrId = document.getElementById('prayerMartyrId').value;
   var userName = document.getElementById('prayerName').value.trim() || 'زائر';
-  var prayerText = document.getElementById('prayerText').value;
+  var prayerText = document.getElementById('prayerText').value.trim();
   if (!martyrId || !prayerText) {
-    showToast('يرجى اختيار دعاء أولاً');
+    showToast('يرجى إدخال اسمك ونص الدعاء');
     return;
   }
   var payload = {
@@ -1226,19 +1196,14 @@ async async function sendPrayer() {
     user_name: userName,
     prayer_text: prayerText
   };
-  var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = true; btn.style.opacity='0.5'; }
   try {
     await FL.rest('martyr_prayers', { method: 'POST', body: payload, prefer: 'return=minimal' });
     closePrayerModal();
-    showToast('🤲 تم إرسال دعاءك، جزاك الله خيراً +5 HANDALA');
-    if (window.FLHandala) window.FLHandala.earn('prayer');
+    showToast('✓ تم حفظ الدعاء');
     if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
   } catch (err) {
     console.warn('Failed to save prayer', err);
-    alert('فشل حفظ الدعاء: ' + (err && err.message ? err.message : err));
     showToast('فشل حفظ الدعاء، حاول مرة أخرى', 'err');
-    if (btn) { btn.disabled = false; btn.style.opacity='1'; }
   }
 }
 
@@ -1270,74 +1235,6 @@ function showUploadProgress(inp) {
   reader.readAsDataURL(file);
 }
 </script>
-<script src="rewards.js"><\/script>
-<script src="fl-nav.js" defer><\/script>
-<script>
-function chooseDua(el) {
-  document.querySelectorAll('[onclick="chooseDua(this)"]').forEach(function(c) {
-    c.style.border = '2px solid #333';
-    c.style.background = '#1c1c1c';
-  });
-  el.style.border = '2px solid #2d9b57';
-  el.style.background = '#0a2016';
-  document.getElementById('prayerText').value = el.getAttribute('data-text');
-  var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'إرسال الدعاء 🤲'; }
-}
-
-function submitSelectedPrayer() {
-  var pt = document.getElementById('prayerText');
-  if (!pt || !pt.value) return;
-  sendPrayer();
-}
-</script>
-
-<script>
-window.addEventListener('load', async function() {
-  try {
-    var cfg = window.FL || {};
-    var url = cfg.SUPABASE_URL || '';
-    var key = cfg.SUPABASE_KEY || '';
-    if (!url || !key) return;
-    
-    async function getCount(filter) {
-      var q = url + '/rest/v1/martyrs?select=id&limit=1' + (filter ? '&' + filter : '');
-      var res = await fetch(q, { headers: { apikey: key, Authorization: 'Bearer ' + key, Prefer: 'count=exact' } });
-      var range = res.headers.get('content-range') || '';
-      return parseInt((range.split('/')[1] || '0'), 10) || 0;
-    }
-    
-    var total = await getCount('');
-    var children = await getCount('category=eq.child');
-    var youth = await getCount('category=eq.youth');
-    var adults = await getCount('category=eq.adult');
-    var journalists = await getCount('category=eq.journalist');
-    var prisoners = await getCount('category=eq.prisoner');
-    
-    function animateCounter(id, target) {
-      var el = document.getElementById(id); if (!el) return;
-      var duration = 1500, startTime = null;
-      function step(ts) {
-        if (!startTime) startTime = ts;
-        var p = Math.min((ts-startTime)/duration,1);
-        var ease = 1-Math.pow(1-p,3);
-        el.textContent = Math.round(ease*target).toLocaleString('ar');
-        if (p<1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-    animateCounter('cntTotal',total); animateCounter('cntChildren',children);
-    animateCounter('cntYouth',youth); animateCounter('cntAdults',adults);
-    animateCounter('cntJournalists',journalists); animateCounter('cntPrisoners',prisoners);
-  } catch(e) { console.warn('counter error:', e); }
-  
-  // Also load martyrs list
-  try {
-    if (typeof loadSection === 'function') {
-      await loadSection('children', false);
-    }
-  } catch(e) {}
-});
-</script>
+<script src="fl-nav.js" defer></script>
 </body>
 </html>
