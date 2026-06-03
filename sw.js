@@ -1,5 +1,5 @@
 // FALASTEEN.INK Service Worker v12
-var CACHE = 'fl-v24';
+var CACHE = 'fl-v25';
 var APP_SHELL = [
   '/', 'Index.html', 'Feed.html', 'Martyrs.html', 'Landmarks.html',
   'Map.html', 'Archive.html', 'live.html', 'Guardian_hub1.html',
