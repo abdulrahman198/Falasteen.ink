@@ -130,3 +130,38 @@ if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
     }
   });
 }
+
+
+// ── Handala Badge (global) ──
+(function() {
+  function showHanzalaBadge() {
+    if (document.getElementById('hanzala-badge-global')) return;
+    var pts = 0;
+    try { pts = parseInt(localStorage.getItem('fl_hanzala_points') || '0') || 0; } catch(e) {}
+    var badge = document.createElement('div');
+    badge.id = 'hanzala-badge-global';
+    badge.style.cssText = 'position:fixed;bottom:70px;left:16px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(255,215,0,0.4);border-radius:20px;padding:6px 14px;font-size:0.85rem;color:#f4d03f;z-index:9999;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4);';
+    badge.innerHTML = '&#x1FA99; <span id="hanzala-pts-display">' + pts.toLocaleString('ar') + '</span>';
+    badge.title = 'عملة حنظلة';
+    badge.onclick = function() { window.location.href = '/rewards'; };
+    document.body.appendChild(badge);
+  }
+  
+  function updateHanzalaBadge() {
+    var el = document.getElementById('hanzala-pts-display');
+    if (!el) return;
+    try {
+      var pts = parseInt(localStorage.getItem('fl_hanzala_points') || '0') || 0;
+      el.textContent = pts.toLocaleString('ar');
+    } catch(e) {}
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showHanzalaBadge);
+  } else {
+    showHanzalaBadge();
+  }
+  
+  // Expose globally
+  window.updateHanzalaBadge = updateHanzalaBadge;
+})();
