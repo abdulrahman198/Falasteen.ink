@@ -241,6 +241,16 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .pager-info{font-family:"Courier New",monospace;font-size:.56rem;color:var(--dim);}
 .pager-btn{background:var(--s2);border:1px solid rgba(93,63,59,.3);color:var(--text);font-size:.78rem;font-weight:700;padding:10px 18px;cursor:pointer;}
 .pager-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+.donate-btn, a[href*="donate"] {
+  background: linear-gradient(135deg, #e63946, #c1121f) !important;
+  color: #fff !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  border: none !important;
+}
 </style>
 </head>
 <body>
@@ -1236,5 +1246,18 @@ function showUploadProgress(inp) {
 }
 </script>
 <script src="fl-nav.js" defer></script>
+
+<div id="hanzala-badge" style="position:fixed;bottom:70px;left:16px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:6px 12px;font-size:0.85rem;color:#f4d03f;z-index:999;display:flex;align-items:center;gap:6px;">
+  🪙 <span id="hanzala-points">0</span>
+</div>
+<script>
+window.addEventListener('load', function() {
+  try {
+    var pts = parseInt(localStorage.getItem('fl_hanzala_points') || '0') || 0;
+    var el = document.getElementById('hanzala-points');
+    if (el) el.textContent = pts.toLocaleString('ar');
+  } catch(e) {}
+});
+</script>
 </body>
 </html>
