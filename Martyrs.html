@@ -44,11 +44,11 @@ function editMartyr(id) {
   var addModal = document.getElementById('addModal');
   if (addModal) addModal.classList.add('active');
   document.body.style.overflow = 'hidden';
-  FL.toast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Edit mode');
+  FL.toast('✏ وضع التعديل / Edit mode');
 }
 
 function deleteMartyr(id) {
-  if (!confirm('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ / Delete this martyr?')) return;
+  if (!confirm('هل أنت متأكد من حذف هذا الشهيد؟ / Delete this martyr?')) return;
   var martyrs = [];
   try { martyrs = JSON.parse(localStorage.getItem('fl_martyrs')||'[]'); } catch(e){}
   martyrs = martyrs.filter(function(x){ return x.id !== id; });
@@ -61,12 +61,12 @@ function deleteMartyr(id) {
   }
   closeDetail();
   if (typeof loadSection === 'function') loadSection(currentTab, false);
-  FL.toast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ / Deleted');
+  FL.toast('✓ تم الحذف / Deleted');
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ | FALASTEEN.INK</title>
+<title>سجل الشهداء | FALASTEEN.INK</title>
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -80,7 +80,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 /* HERO */
 .hero { padding:88px 18px 24px; background:linear-gradient(180deg,rgba(232,34,31,0.06) 0%,transparent 100%); position:relative; overflow:hidden; }
-.hero::before { content:'ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡'; position:absolute; bottom:-20px; left:-10px; font-size:clamp(5rem,18vw,10rem); font-weight:900; color:rgba(232,34,31,0.04); pointer-events:none; }
+.hero::before { content:'شهداء'; position:absolute; bottom:-20px; left:-10px; font-size:clamp(5rem,18vw,10rem); font-weight:900; color:rgba(232,34,31,0.04); pointer-events:none; }
 .hero-tag { font-family:"Courier New",monospace; font-size:0.54rem; color:var(--red); letter-spacing:0.28em; margin-bottom:8px; display:block; }
 .hero-title { font-size:clamp(1.8rem,5vw,3rem); font-weight:900; line-height:1.1; margin-bottom:8px; }
 .hero-title .red { color:var(--red); }
@@ -270,160 +270,160 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 <nav class="topnav">
   <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
-  <span id="hanzalaBadge" class="hanzala-badge" title="ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ 0 ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©</span>
-  <button onclick="downloadCertificate()" style="margin-top:16px;padding:12px 24px;background:linear-gradient(135deg,#ce1126,#8b0000);color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;font-family:inherit;display:block;margin-left:auto;margin-right:auto;">ð ØªØ­ÙÙÙ Ø´ÙØ§Ø¯ØªÙ</button>
-  <a  class="donate-btn" href="donate.html">ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¹ / Donate</a>
-  <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ / Add</button>
+  <span id="hanzalaBadge" class="hanzala-badge" title="رصيدك من حنظلة — يُكتسب بإضاءة شمعة أو وردة أو دعاء">🏅 0 حنظلة</span>
+  <button onclick="downloadCertificate()" style="margin-top:16px;padding:12px 24px;background:linear-gradient(135deg,#ce1126,#8b0000);color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;font-family:inherit;display:block;margin-left:auto;margin-right:auto;"><� *-EJD 4G'/*J</button>
+  <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
+  <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ أضف / Add</button>
 </nav>
 
 <div class="hero">
-  <span class="hero-tag">ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MARTYRS REGISTRY</span>
-  <h1 class="hero-title">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ <span class="red">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ</span></h1>
+  <span class="hero-tag">سجل الشهداء — MARTYRS REGISTRY</span>
+  <h1 class="hero-title">هم <span class="red">ليسوا أرقاماً</span></h1>
   <p class="hero-desc">They are not numbers. Every name is a complete human story.</p>
 </div>
 
 <!-- LIVE COUNTERS -->
 <div class="counters" id="counters">
   <div class="counter-card counter-total" style="grid-column:1/-1;">
-    <div class="counter-num" id="cntTotal">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
-    <div class="counter-label">ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ / Total Martyrs</div>
+    <div class="counter-num" id="cntTotal">—</div>
+    <div class="counter-label">إجمالي الشهداء / Total Martyrs</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntChildren">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
-    <div class="counter-label">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ / Children</div>
+    <div class="counter-num" id="cntChildren">—</div>
+    <div class="counter-label">🌸 أطفال / Children</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntYouth">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
-    <div class="counter-label">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ / Youth</div>
+    <div class="counter-num" id="cntYouth">—</div>
+    <div class="counter-label">🌿 شباب / Youth</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntAdults">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
-    <div class="counter-label">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ± / Adults</div>
+    <div class="counter-num" id="cntAdults">—</div>
+    <div class="counter-label">🕊 كبار / Adults</div>
   </div>
   <div class="counter-card">
-    <div class="counter-num" id="cntFemale">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
-    <div class="counter-label">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ / Female</div>
+    <div class="counter-num" id="cntFemale">—</div>
+    <div class="counter-label">👩 أنثى / Female</div>
   </div>
 </div>
 
 <!-- SEARCH -->
 <div class="search-wrap">
-  <span>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
-  <input type="text" class="search-input" id="searchInput" placeholder="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ« ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ / Search name..." oninput="debounceSearch()"/>
+  <span>🔍</span>
+  <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن اسم / Search name..." oninput="debounceSearch()"/>
 </div>
 
 <!-- TABS -->
 <div class="tabs-wrap">
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('children',this)">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ <span class="tc" id="tc-children">0</span></button>
-    <button class="tab-btn" onclick="switchTab('youth',this)">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ <span class="tc" id="tc-youth">0</span></button>
-    <button class="tab-btn" onclick="switchTab('adults',this)">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ± <span class="tc" id="tc-adults">0</span></button>
-    <button class="tab-btn" onclick="switchTab('journalists',this)">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ <span class="tc" id="tc-journalists">0</span></button>
-    <button class="tab-btn" onclick="switchTab('prisoners',this)">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ <span class="tc" id="tc-prisoners">0</span></button>
-    <button class="tab-btn" id="tab-map" onclick="showMapTab()">Ã°ÂÂÂºÃ¯Â¸Â ÃÂ®ÃÂ±ÃÂÃÂ·ÃÂ©</button>
+    <button class="tab-btn active" onclick="switchTab('children',this)">🌸 أطفال <span class="tc" id="tc-children">0</span></button>
+    <button class="tab-btn" onclick="switchTab('youth',this)">🌿 شباب <span class="tc" id="tc-youth">0</span></button>
+    <button class="tab-btn" onclick="switchTab('adults',this)">🕊 كبار <span class="tc" id="tc-adults">0</span></button>
+    <button class="tab-btn" onclick="switchTab('journalists',this)">📸 صحفيون <span class="tc" id="tc-journalists">0</span></button>
+    <button class="tab-btn" onclick="switchTab('prisoners',this)">⛓ أسرى <span class="tc" id="tc-prisoners">0</span></button>
+    <button class="tab-btn" id="tab-map" onclick="showMapTab()">=� .1J7)</button>
   </div>
 </div>
 
 <div class="section active" id="sec-children">
-  <div class="section-header"><span class="section-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸</span><div><div class="section-title">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ / Child Martyrs</div><div class="section-sub">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© / Under 18</div></div></div>
+  <div class="section-header"><span class="section-icon">🌸</span><div><div class="section-title">الأطفال الشهداء / Child Martyrs</div><div class="section-sub">من لم يتجاوزوا الثامنة عشرة / Under 18</div></div></div>
   <div class="martyrs-grid" id="grid-children"></div>
 </div>
 <div class="section" id="sec-youth">
-  <div class="section-header"><span class="section-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿</span><div><div class="section-title">ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ / Youth Martyrs</div><div class="section-sub">18 ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 35 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© / Ages 18ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ35</div></div></div>
+  <div class="section-header"><span class="section-icon">🌿</span><div><div class="section-title">شهداء الشباب / Youth Martyrs</div><div class="section-sub">18 إلى 35 سنة / Ages 18–35</div></div></div>
   <div class="martyrs-grid" id="grid-youth"></div>
 </div>
 <div class="section" id="sec-adults">
-  <div class="section-header"><span class="section-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span><div><div class="section-title">ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ± / Adult Martyrs</div><div class="section-sub">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 35 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© / Above 35</div></div></div>
+  <div class="section-header"><span class="section-icon">🕊</span><div><div class="section-title">شهداء الكبار / Adult Martyrs</div><div class="section-sub">فوق 35 سنة / Above 35</div></div></div>
   <div class="martyrs-grid" id="grid-adults"></div>
 </div>
 <div class="section" id="sec-journalists">
-  <div class="section-header"><span class="section-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸</span><div><div class="section-title">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ / Press Martyrs</div><div class="section-sub">ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©</div></div></div>
+  <div class="section-header"><span class="section-icon">📸</span><div><div class="section-title">الصحفيون الشهداء / Press Martyrs</div><div class="section-sub">سقطوا وهم يحملون الحقيقة</div></div></div>
   <div id="list-journalists"></div>
 </div>
 <div class="section" id="sec-prisoners">
-  <div class="section-header"><span class="section-icon">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span><div><div class="section-title">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Prisoners</div><div class="section-sub">ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ / Their names live on</div></div></div>
+  <div class="section-header"><span class="section-icon">⛓</span><div><div class="section-title">الأسرى الفلسطينيون / Prisoners</div><div class="section-sub">أسماؤهم لن تُنسى / Their names live on</div></div></div>
   <div id="list-prisoners"></div>
 </div>
 
 <div class="pager" id="martyrsPager">
   <span class="pager-info" id="pagerInfo"></span>
-  <button class="pager-btn" id="loadMoreBtn" onclick="loadMoreMartyrs()">ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ / Load more</button>
+  <button class="pager-btn" id="loadMoreBtn" onclick="loadMoreMartyrs()">تحميل المزيد / Load more</button>
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal" onclick="closeOnOverlay(event,'addModal')">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modalTitle">ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ / Add Martyr</div>
-      <button class="modal-close" onclick="closeModal('addModal')">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+      <div class="modal-title" id="modalTitle">إضافة شهيد / Add Martyr</div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
     </div>
     <form onsubmit="saveMartyr(event)">
       <div class="form-group">
         <div class="photo-slot">
           <input type="file" accept="image/*" id="photoInput" onchange="previewPhoto(this);showUploadProgress(this)"/>
-          <span class="slot-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·</span>
-          <p>ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ (ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ) / Photo optional</p>
+          <span class="slot-icon">📷</span>
+          <p>صورة الشهيد (اختياري) / Photo optional</p>
           <img class="preview" id="photoPreview" alt=""/>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ *</label>
-        <input type="text" class="form-input" id="mName" placeholder="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ / Full name" required/>
+        <label class="form-label">الاسم الكامل *</label>
+        <input type="text" class="form-input" id="mName" placeholder="الاسم الرباعي / Full name" required/>
       </div>
       <div class="form-row">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ *</label>
+          <label class="form-label">التصنيف *</label>
           <select class="form-select" id="mCategory" required>
-            <option value="">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ± / Select...</option>
-            <option value="child">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Child</option>
-            <option value="youth">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ / Youth</option>
-            <option value="adult">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Adult</option>
-            <option value="journalist">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Journalist</option>
-            <option value="prisoner">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Prisoner</option>
+            <option value="">اختر / Select...</option>
+            <option value="child">🌸 طفل / Child</option>
+            <option value="youth">🌿 شاب / Youth</option>
+            <option value="adult">🕊 كبير / Adult</option>
+            <option value="journalist">📸 صحفي / Journalist</option>
+            <option value="prisoner">⛓ أسير / Prisoner</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Age</label>
-          <input type="number" class="form-input" id="mAge" placeholder="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±" min="0" max="120"/>
+          <label class="form-label">العمر / Age</label>
+          <input type="number" class="form-input" id="mAge" placeholder="العمر" min="0" max="120"/>
         </div>
       </div>
       <div class="form-row" style="margin-top:14px;">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ / Gender</label>
+          <label class="form-label">الجنس / Gender</label>
           <select class="form-select" id="mGender">
-            <option value="">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</option>
-            <option value="ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±">ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Male</option>
-            <option value="ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ">ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ / Female</option>
+            <option value="">— اختر —</option>
+            <option value="ذكر">ذكر / Male</option>
+            <option value="أنثى">أنثى / Female</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ® ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¯ / Date</label>
+          <label class="form-label">تاريخ الاستشهاد / Date</label>
           <input type="date" class="form-input" id="mDate" style="color-scheme:dark;"/>
         </div>
       </div>
       <div class="form-row" style="margin-top:14px;">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© / City</label>
-          <input type="text" class="form-input" id="mCity" placeholder="ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ©ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³..."/>
+          <label class="form-label">المدينة / City</label>
+          <input type="text" class="form-input" id="mCity" placeholder="غزة، خان يونس..."/>
         </div>
         <div class="form-group" style="margin-bottom:0;"></div>
       </div>
       <div class="form-group" style="margin-top:14px;">
-        <label class="form-label">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ / Story (ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ)</label>
-        <textarea class="form-textarea" id="mStory" placeholder="ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ / Who were they?"></textarea>
+        <label class="form-label">قصته / Story (اختياري)</label>
+        <textarea class="form-textarea" id="mStory" placeholder="من كان هذا الشخص؟ / Who were they?"></textarea>
       </div>
       <div class="form-group fl-ai-tags-panel">
         <input type="hidden" id="mTags"/>
         <div class="fl-ai-tags-actions">
-          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ</button>
+          <button type="button" id="generateTagsBtn" class="fl-ai-tags-btn">✨ توليد الوسوم</button>
         </div>
         <div id="aiTagsOutput" class="fl-ai-tags-output is-empty" aria-live="polite"></div>
       </div>
       <div class="form-group">
-        <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ± / Source</label>
-        <input type="text" class="form-input" id="mSource" placeholder="ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© / Who knows this"/>
+        <label class="form-label">المصدر / Source</label>
+        <input type="text" class="form-input" id="mSource" placeholder="من يعرف هذه المعلومة / Who knows this"/>
       </div>
-      <button type="submit" class="save-btn" id="saveBtn">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ / Save</button>
+      <button type="submit" class="save-btn" id="saveBtn">🕊 حفظ في السجل / Save</button>
     </form>
   </div>
 </div>
@@ -437,33 +437,33 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <div class="modal-overlay" id="prayerModal" onclick="closeOnOverlay(event,'prayerModal')">
   <div class="modal prayer-modal" id="prayerModalContent">
     <div class="modal-header">
-      <div class="modal-title">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯</div>
-      <button class="modal-close" onclick="closeModal('prayerModal')">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+      <div class="modal-title">اختر دعاءً للشهيد</div>
+      <button class="modal-close" onclick="closeModal('prayerModal')">✕</button>
     </div>
     <input type="hidden" id="prayerMartyrId" value="" />
     <div class="form-group" style="padding:0 4px;">
-      <label class="form-label">ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ</label>
-      <input type="text" class="form-input" id="prayerName" placeholder="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ" />
+      <label class="form-label">اسمك</label>
+      <input type="text" class="form-input" id="prayerName" placeholder="اكتب اسمك أو لقبك" />
     </div>
 <!-- 3 Prayer Option Cards -->
 <div class="prayer-options-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
-  <div onclick="chooseDua(this)" data-text="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿"
+  <div onclick="chooseDua(this)" data-text="اللهم ارحمه وأدخله فسيح جناتك، واجعله من الشهداء الصديقين 🌿"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿
+    اللهم ارحمه وأدخله فسيح جناتك، واجعله من الشهداء الصديقين 🌿
   </div>
-  <div onclick="chooseDua(this)" data-text="ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ"
+  <div onclick="chooseDua(this)" data-text="رحمك الله يا شهيدنا، وجمعنا بك في الفردوس الأعلى 🕊️"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ
+    رحمك الله يا شهيدنا، وجمعنا بك في الفردوس الأعلى 🕊️
   </div>
-  <div onclick="chooseDua(this)" data-text="ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸"
+  <div onclick="chooseDua(this)" data-text="اللهم اغفر له وارفع درجته في المهديين، وكن له خير خلف في عقبه 🌸"
        style="background:#1c1c1c;border:2px solid #333;border-radius:12px;padding:14px 18px;cursor:pointer;text-align:right;direction:rtl;color:#eee;font-size:14px;line-height:1.8;">
-    ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸
+    اللهم اغفر له وارفع درجته في المهديين، وكن له خير خلف في عقبه 🌸
   </div>
 </div>
 <input type="hidden" id="prayerText" value="" />
 <button id="duaSubmitBtn" onclick="submitSelectedPrayer()" disabled
   style="width:100%;padding:14px;background:linear-gradient(135deg,#c0392b,#1a6b3a);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:not-allowed;opacity:0.45;margin-top:8px;">
-  ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ
+  اختر دعاءً أولاً
 </button>
   </div>
 </div>
@@ -472,11 +472,11 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <div class="toast" id="toast"></div>
 
 <nav class="bottom-nav">
-  <a href="Index.html"><span class="nav-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ </span>Home</a>
-  <a href="live.html"><span class="nav-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´</span>Live</a>
-  <a href="Feed.html"><span class="nav-icon">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¶</span>Reels</a>
-  <a href="Martyrs.html"><span class="nav-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>Martyrs</a>
-  <a href="Landmarks.html"><span class="nav-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>Landmarks</a>
+  <a href="Index.html"><span class="nav-icon">🏠</span>Home</a>
+  <a href="live.html"><span class="nav-icon">🔴</span>Live</a>
+  <a href="Feed.html"><span class="nav-icon">▶</span>Reels</a>
+  <a href="Martyrs.html"><span class="nav-icon">🕊</span>Martyrs</a>
+  <a href="Landmarks.html"><span class="nav-icon">🏛</span>Landmarks</a>
 </nav>
 
 <script>
@@ -494,12 +494,12 @@ var prayerCounts = {};
 
 function renderPrayerCountBadge(id) {
   var count = prayerCounts[id] || 0;
-  return '<div class="prayer-count-badge '+(count===0?' prayer-count-empty':'')+'">'+(count ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ '+count+' ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡' : 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ')+'</div>';
+  return '<div class="prayer-count-badge '+(count===0?' prayer-count-empty':'')+'">'+(count ? '🕯️ '+count+' دعاء' : 'لا أدعية حتى الآن')+'</div>';
 }
 
 function renderPrayerCountText(id) {
   var count = prayerCounts[id] || 0;
-  return count ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ '+count+' ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡' : 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯';
+  return count ? '🕯️ '+count+' دعاء' : 'لا توجد أدعية بعد';
 }
 
 async function loadPrayerCounts(items) {
@@ -541,13 +541,13 @@ async function requireMartyrsAdmin(){
     martyrsAdmin = false;
   }
   if (!martyrsAdmin) {
-    showToast('ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ­ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© / Admin only');
+    showToast('غير مصرح بالإضافة / Admin only');
     return false;
   }
   return true;
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FETCH FROM SUPABASE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── FETCH FROM SUPABASE ──
 async function fetchData(category, search, limit, offset) {
   limit = limit || PAGE_SIZE;
   offset = offset || 0;
@@ -592,7 +592,7 @@ async function fetchCounts() {
     var adults   = await getCount('category=eq.adult');
     var journal  = await getCount('category=eq.journalist');
     var prisoner = await getCount('category=eq.prisoner');
-    var female   = await getCount('gender=eq.' + encodeURIComponent('ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ'));
+    var female   = await getCount('gender=eq.' + encodeURIComponent('أنثى'));
 
     return {
       _counts: true,
@@ -610,7 +610,7 @@ async function fetchCounts() {
   }
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ANIMATED COUNTER ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── ANIMATED COUNTER ──
 function animateTo(elId, target, duration) {
   var el = document.getElementById(elId);
   if (!el) return;
@@ -634,7 +634,7 @@ async function loadCounters() {
     var ad    = data._counts ? data.adult    : data.filter(function(m){return m.category==='adult';}).length;
     var jo    = data._counts ? data.journalist : data.filter(function(m){return m.category==='journalist';}).length;
     var pr    = data._counts ? data.prisoner : data.filter(function(m){return m.category==='prisoner';}).length;
-    var fe    = data._counts ? data.female   : data.filter(function(m){return m.gender==='ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ';}).length;
+    var fe    = data._counts ? data.female   : data.filter(function(m){return m.gender==='أنثى';}).length;
     // Animate all counters
     animateTo('cntTotal', total, 2000);
     animateTo('cntChildren', ch, 1800);
@@ -662,7 +662,7 @@ function loadLocalCounters() {
     else if(m.category==='adult')ad++;
     else if(m.category==='journalist')jo++;
     else if(m.category==='prisoner')pr++;
-    if(m.gender==='ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ')fe++;
+    if(m.gender==='أنثى')fe++;
   });
   animateTo('cntTotal',data.length,1500);
   animateTo('cntChildren',ch,1300);
@@ -676,7 +676,7 @@ function loadLocalCounters() {
   document.getElementById('tc-prisoners').textContent=pr;
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ LOAD SECTION ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── LOAD SECTION ──
 function updatePager(loaded, total) {
   var pager = document.getElementById('martyrsPager');
   var info = document.getElementById('pagerInfo');
@@ -745,16 +745,16 @@ async function loadSection(tab, append) {
 function renderGrid(container, items, tab) {
   container.innerHTML = '';
   if (items.length === 0) {
-    container.innerHTML = '<div class="empty"><span class="empty-icon">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span><p class="empty-text">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ / Add</button>':'')+'</div>';
+    container.innerHTML = '<div class="empty"><span class="empty-icon">🕊</span><p class="empty-text">لم يُضف أحد بعد.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ أضف / Add</button>':'')+'</div>';
     return;
   }
   items.forEach(function(m) {
     var card = document.createElement('div');
     card.className = 'martyr-card';
     card.onclick = function(){ showDetail(m); };
-    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : '<span class="no-photo">ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ</span>';
+    var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : '<span class="no-photo">🤍</span>';
     var date = m.date ? '<span class="date-badge">'+fmtDate(m.date)+'</span>' : '';
-    card.innerHTML = '<div class="martyr-photo">'+photo+date+'</div><div class="martyr-body"><div class="martyr-name">'+esc(m.name)+'</div><div class="martyr-meta">'+(m.age?m.age+' ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ':'')+esc(m.city||'ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ©')+'</div>'+renderPrayerCountBadge(m.id)+'<div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div>';
+    card.innerHTML = '<div class="martyr-photo">'+photo+date+'</div><div class="martyr-body"><div class="martyr-name">'+esc(m.name)+'</div><div class="martyr-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'غزة')+'</div>'+renderPrayerCountBadge(m.id)+'<div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div>';
     container.appendChild(card);
     setupTributeButtons(card);
   });
@@ -766,18 +766,18 @@ function renderGrid(container, items, tab) {
     var add = document.createElement('div');
     add.className = 'add-card';
     add.onclick = function(){ openModal(tab); };
-    add.innerHTML = '<span class="plus">+</span><span>ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ / Add</span>';
+    add.innerHTML = '<span class="plus">+</span><span>أضف / Add</span>';
     container.appendChild(add);
   }
 }
 
 function renderList(container, items, type) {
   container.innerHTML = '';
-  var icon = type==='journalists' ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸' : 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ';
+  var icon = type==='journalists' ? '📸' : '⛓';
   var badgeClass = type==='journalists' ? 'badge-j' : 'badge-p';
-  var badgeText = type==='journalists' ? 'ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Press' : 'ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Prisoner';
+  var badgeText = type==='journalists' ? 'صحفي / Press' : 'أسير / Prisoner';
   if (items.length === 0) {
-    container.innerHTML = '<div class="empty"><span class="empty-icon">'+icon+'</span><p class="empty-text">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ / Add</button>':'')+'</div>';
+    container.innerHTML = '<div class="empty"><span class="empty-icon">'+icon+'</span><p class="empty-text">لم يُضف أحد بعد.<br/>No entries yet.</p>'+(martyrsAdmin?'<button class="empty-btn" onclick="openModal()">+ أضف / Add</button>':'')+'</div>';
     return;
   }
   items.forEach(function(m) {
@@ -785,7 +785,7 @@ function renderList(container, items, type) {
     row.className = 'list-card';
     row.onclick = function(){ showDetail(m); };
     var photo = m.photo ? '<img src="'+m.photo+'" alt=""/>' : icon;
-    row.innerHTML = '<div class="list-avatar">'+photo+'</div><div style="flex:1;"><div class="list-name">'+esc(m.name)+'</div><div class="list-meta">'+(m.age?m.age+' ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ':'')+esc(m.city||'')+(m.date?' ÃÂÃÂÃÂÃÂ· '+fmtDate(m.date):'')+'</div>'+(m.story?'<div class="list-story">'+esc(m.story)+'</div>':'')+'<div class="prayer-count-label">'+renderPrayerCountText(m.id)+'</div><div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div><span class="badge '+badgeClass+'">'+badgeText+'</span>';
+    row.innerHTML = '<div class="list-avatar">'+photo+'</div><div style="flex:1;"><div class="list-name">'+esc(m.name)+'</div><div class="list-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'')+(m.date?' · '+fmtDate(m.date):'')+'</div>'+(m.story?'<div class="list-story">'+esc(m.story)+'</div>':'')+'<div class="prayer-count-label">'+renderPrayerCountText(m.id)+'</div><div class="tribute-row">'+tributeButtonsHtml(m)+'</div></div><span class="badge '+badgeClass+'">'+badgeText+'</span>';
     container.appendChild(row);
     setupTributeButtons(row);
   });
@@ -796,7 +796,7 @@ function renderList(container, items, type) {
   if (martyrsAdmin) {
     var addRow = document.createElement('div');
     addRow.className = 'add-list-row';
-    addRow.textContent = '+ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ / Add';
+    addRow.textContent = '+ أضف اسماً / Add';
     addRow.onclick = function(){ openModal(type==='journalists'?'journalist':'prisoner'); };
     container.appendChild(addRow);
   }
@@ -911,32 +911,32 @@ function startFloatingNames(names) {
 // stop generator
 function stopFloatingNames(){ if (__floatingTimer) clearTimeout(__floatingTimer); __floatingTimer=null; }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ DETAIL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── DETAIL ──
 async function showDetail(m) {
   currentDetailMartyrId = m.id || null;
-  var catLabels = {child:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Child',youth:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¿ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ / Youth',adult:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Adult',journalist:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Journalist',prisoner:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± / Prisoner'};
+  var catLabels = {child:'🌸 طفل / Child',youth:'🌿 شاب / Youth',adult:'🕊 كبير / Adult',journalist:'📸 صحفي / Journalist',prisoner:'⛓ أسير / Prisoner'};
   var content = document.getElementById('detailContent');
   content.innerHTML =
-    '<div class="modal-header"><div class="modal-title">'+esc(m.name)+'</div><button class="modal-close" onclick="closeModal(\'detailModal\')">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button></div>'+
-    (m.photo?'<img class="detail-photo" src="'+m.photo+'" alt=""/>':'<div class="detail-placeholder">ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ</div>')+
+    '<div class="modal-header"><div class="modal-title">'+esc(m.name)+'</div><button class="modal-close" onclick="closeModal(\'detailModal\')">✕</button></div>'+
+    (m.photo?'<img class="detail-photo" src="'+m.photo+'" alt=""/>':'<div class="detail-placeholder">🤍</div>')+
     '<div class="detail-name">'+esc(m.name)+'</div>'+ 
-    '<div class="detail-meta">'+(m.age?m.age+' ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ':'')+esc(m.city||'ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ©')+(m.date?' ÃÂÃÂÃÂÃÂ· '+fmtDate(m.date):'')+'</div>'+ 
+    '<div class="detail-meta">'+(m.age?m.age+' عاماً · ':'')+esc(m.city||'غزة')+(m.date?' · '+fmtDate(m.date):'')+'</div>'+ 
     '<span class="detail-badge">'+(catLabels[m.category]||m.category)+'</span>'+ 
     (m.story?'<div class="detail-story">'+esc(m.story)+'</div>':'')+
-    '<div class="detail-prayer-actions"><button class="share-btn add-prayer-btn" data-id="'+esc(m.id)+'" data-name="'+esc(m.name)+'">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡</button></div>'+ 
+    '<div class="detail-prayer-actions"><button class="share-btn add-prayer-btn" data-id="'+esc(m.id)+'" data-name="'+esc(m.name)+'">🕯️ أضف دعاء</button></div>'+ 
     '<div id="detailPrayers" class="detail-prayers"></div>'+ 
     '<div class="share-row">'+
-    '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯</button>'+ 
-    '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ® ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ·</button>'+ 
-    '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©</button>'+ 
+    '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">𝕏 تغريد</button>'+ 
+    '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">🔗 نسخ الرابط</button>'+ 
+    '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">↗ مشاركة</button>'+ 
     '</div>'+
     '<div class=\"comments-section\" id=\"comments-section\">'+
-    '<h3 class=\"comments-title\">&#x1F4AC; التعليقات</h3>'+
+    '<h3 class=\"comments-title\">&#x1F4AC; 'D*9DJB'*</h3>'+
     '<div id=\"comments-list\" class=\"comments-list\"></div>'+
     '<div class=\"comment-form\">'+
-    '<input type=\"text\" id=\"comment-name\" placeholder=\"اسمك (اختياري)\" maxlength=\"50\"/>'+
-    '<textarea id=\"comment-text\" placeholder=\"اكتب تعليقك...\" maxlength=\"500\" rows=\"3\"></textarea>'+
-    '<button onclick=\"submitComment()\" class=\"comment-submit-btn\">إرسال &#x1F4AC;</button>'+
+    '<input type=\"text\" id=\"comment-name\" placeholder=\"'3EC ('.*J'1J)\" maxlength=\"50\"/>'+
+    '<textarea id=\"comment-text\" placeholder=\"'C*( *9DJBC...\" maxlength=\"500\" rows=\"3\"></textarea>'+
+    '<button onclick=\"submitComment()\" class=\"comment-submit-btn\">%13'D &#x1F4AC;</button>'+
     '</div>'+
     '</div>';
   // remove any floating-name elements immediately and stop generator
@@ -955,29 +955,29 @@ async function showDetail(m) {
   loadComments(m.id);
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SHARE FUNCTIONS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── SHARE FUNCTIONS ──
 function shareX(name) {
-  var text = 'ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ©: ' + name + ' ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ\nÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ' + window.location.origin + '/Martyrs.html\n#ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ© #ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ #Gaza';
+  var text = 'شهيد من غزة: ' + name + ' — سجل الشهداء الفلسطينيين\n🔗 ' + window.location.origin + '/Martyrs.html\n#غزة #فلسطين #Gaza';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
 }
 function copyLink(name) {
   var url = window.location.origin + '/Martyrs.html?q=' + encodeURIComponent(name);
-  navigator.clipboard.writeText(url).then(function(){ showToast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ® ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ· / Link copied'); }).catch(function(){ showToast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ' + url); });
+  navigator.clipboard.writeText(url).then(function(){ showToast('✓ تم نسخ الرابط / Link copied'); }).catch(function(){ showToast('✓ ' + url); });
 }
 function nativeShare(name) {
   if (navigator.share) {
-    navigator.share({ title: 'ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯: ' + name, text: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FALASTEEN.INK', url: window.location.href }).catch(function(){});
+    navigator.share({ title: 'شهيد: ' + name, text: 'من سجل الشهداء الفلسطينيين — FALASTEEN.INK', url: window.location.href }).catch(function(){});
   } else { copyLink(name); }
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MODAL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── MODAL ──
 async function openModal(tab) {
   if (!(await requireMartyrsAdmin())) return;
   if (tab) {
     var catMap = {children:'child',youth:'youth',adults:'adult',journalist:'journalist',prisoner:'prisoner',child:'child'};
     var val = catMap[tab]||'';
     document.getElementById('mCategory').value = val;
-    document.getElementById('modalTitle').textContent = tab==='journalist'?'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯':tab==='prisoner'?'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±':'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯';
+    document.getElementById('modalTitle').textContent = tab==='journalist'?'إضافة صحفي شهيد':tab==='prisoner'?'إضافة أسير':'إضافة شهيد';
   }
   document.getElementById('addModal').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -1024,7 +1024,7 @@ async function saveMartyr(e) {
   e.preventDefault();
   if (!(await requireMartyrsAdmin())) return;
   var btn = document.getElementById('saveBtn');
-  btn.disabled=true; btn.textContent='ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸...';
+  btn.disabled=true; btn.textContent='⏳ جاري الحفظ...';
   var martyr = {
     id:'M_'+Date.now(),
     name:document.getElementById('mName').value.trim(),
@@ -1032,7 +1032,7 @@ async function saveMartyr(e) {
     gender:document.getElementById('mGender').value||null,
     age:document.getElementById('mAge').value||null,
     date:document.getElementById('mDate').value||null,
-    city:document.getElementById('mCity').value.trim()||'ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ©',
+    city:document.getElementById('mCity').value.trim()||'غزة',
     story:document.getElementById('mStory').value.trim()||null,
     source:document.getElementById('mSource').value.trim()||null,
     photo:photoData||null,
@@ -1046,18 +1046,18 @@ async function saveMartyr(e) {
     });
     if (!res.ok && res.status !== 201) throw new Error('Save failed');
   } catch(err){
-    showToast('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ / Save failed');
-    btn.disabled=false; btn.innerHTML='ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ / Save';
+    showToast('فشل الحفظ — تحقق من صلاحيات الأدمن / Save failed');
+    btn.disabled=false; btn.innerHTML='🕊 حفظ في السجل / Save';
     return;
   }
   closeModal('addModal');
-  showToast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ / Saved');
+  showToast('✅ تم الحفظ / Saved');
   await loadCounters();
   await loadSection(currentTab, false);
-  btn.disabled=false; btn.innerHTML='ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ / Save';
+  btn.disabled=false; btn.innerHTML='🕊 حفظ في السجل / Save';
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TABS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── TABS ──
 function switchTab(tab, btn) {
   currentTab = tab;
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
@@ -1067,13 +1067,13 @@ function switchTab(tab, btn) {
   loadSection(tab, false);
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SEARCH ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── SEARCH ──
 function debounceSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(function(){ loadSection(currentTab, false); }, 400);
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ LOCAL FALLBACK ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── LOCAL FALLBACK ──
 function getLocal() { try{return JSON.parse(localStorage.getItem('fl_martyrs')||'[]');}catch(e){return[];} }
 function getMartyrTributes(id) {
   if (!id) return {candles:0,roses:0,prayers:0};
@@ -1092,17 +1092,17 @@ function addMartyrTribute(id, type) {
 }
 function tributeButtonsHtml(m) {
   var t = getMartyrTributes(m.id);
-  return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ '+t.candles+'</button>' +
-         '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ '+t.roses+'</button>' +
-         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ² '+t.prayers+'</button>';
+  return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">🕯️ '+t.candles+'</button>' +
+         '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">🌹 '+t.roses+'</button>' +
+         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">🤲 '+t.prayers+'</button>';
 }
 function updateTributeButtons(id, tributes) {
   var safeId = id.replace(/"/g,'\\"');
   document.querySelectorAll('[data-id="'+safeId+'"]').forEach(function(btn){
     var type = btn.dataset.type;
-    if (type === 'candles') btn.textContent = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ ' + (tributes.candles || 0);
-    if (type === 'roses') btn.textContent = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ ' + (tributes.roses || 0);
-    if (type === 'prayers') btn.textContent = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ² ' + (tributes.prayers || 0);
+    if (type === 'candles') btn.textContent = '🕯️ ' + (tributes.candles || 0);
+    if (type === 'roses') btn.textContent = '🌹 ' + (tributes.roses || 0);
+    if (type === 'prayers') btn.textContent = '🤲 ' + (tributes.prayers || 0);
   });
 }
 function setupTributeButtons(root) {
@@ -1111,7 +1111,7 @@ function setupTributeButtons(root) {
     btn.addEventListener('click', handleTributeClick);
   });
 }
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ HANZALA REWARDS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── HANZALA REWARDS ──
 // Visitors earn HANZALA points for each tribute. Points are stored locally and
 // can later be claimed/airdropped to their wallet (on-chain distribution needs
 // a backend signer, so for now we accrue the balance the user has earned).
@@ -1173,7 +1173,7 @@ async function earnHanzala(amount) {
 async function updateHanzalaBadge(total) {
   if (total === undefined) total = await loadHanzalaPoints();
   var el = document.getElementById('hanzalaBadge');
-  if (el) el.textContent = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ' + total + ' ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©';
+  if (el) el.textContent = '🏅 ' + total + ' حنظلة';
 }
 
 function handleTributeClick(e) {
@@ -1184,20 +1184,20 @@ function handleTributeClick(e) {
   if (!id || !type) return;
   var counts = addMartyrTribute(id, type);
   updateTributeButtons(id, counts);
-  var label = type === 'candles' ? 'ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ©' : type === 'roses' ? 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ©' : 'ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡';
+  var label = type === 'candles' ? 'شمعة' : type === 'roses' ? 'وردة' : 'دعاء';
   var reward = HANZALA_REWARD[type] || 1;
   earnHanzala(reward);
-  showToast('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ' + label + ' ÃÂÃÂÃÂÃÂ· +' + reward + ' ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ');
+  showToast('✓ تمت إضافة ' + label + ' · +' + reward + ' حنظلة 🏅');
   // HANDALA rewards
   if (type === 'roses' && window.FLHandala) window.FLHandala.earn('rose');
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ HELPERS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── HELPERS ──
 function fmtDate(d){if(!d)return'';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
 function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ INIT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── INIT ──
 window.addEventListener('load',async function(){
   updateHanzalaBadge();
   await initMartyrsAdmin();
@@ -1227,26 +1227,26 @@ async function loadMartyrPrayers(martyrId) {
   var container = document.getElementById('detailPrayers');
   if (!container) return;
   if (!martyrId) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¶ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">لا توجد بيانات لعرض الأدعية.</div>';
     return;
   }
   try {
     var prayers = await FL.rest('martyr_prayers', { query: 'martyr_id=eq.' + encodeURIComponent(martyrId) + '&order=created_at.desc' });
     renderPrayerList(prayers, container);
   } catch (e) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©. ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">فشل تحميل الأدعية. حاول مرة أخرى.</div>';
   }
 }
 
 function renderPrayerList(prayers, container) {
   if (!container) return;
   if (!Array.isArray(prayers) || prayers.length === 0) {
-    container.innerHTML = '<div class="detail-prayers-empty">ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯. ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ.</div>';
+    container.innerHTML = '<div class="detail-prayers-empty">لا توجد أدعية بعد. كن أول من يدعو.</div>';
     return;
   }
-  container.innerHTML = '<div class="detail-prayers-header"><span>ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©</span><span>'+prayers.length+' ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡</span></div>' +
+  container.innerHTML = '<div class="detail-prayers-header"><span>آخر الأدعية</span><span>'+prayers.length+' دعاء</span></div>' +
     prayers.map(function(p) {
-      return '<div class="prayer-card"><div class="prayer-meta"><span class="prayer-user">'+esc(p.user_name || 'ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ±')+'</span><span>'+fmtDateTime(p.created_at)+'</span></div><div class="prayer-text">'+esc(p.prayer_text)+'</div></div>';
+      return '<div class="prayer-card"><div class="prayer-meta"><span class="prayer-user">'+esc(p.user_name || 'زائر')+'</span><span>'+fmtDateTime(p.created_at)+'</span></div><div class="prayer-text">'+esc(p.prayer_text)+'</div></div>';
     }).join('');
 }
 
@@ -1257,7 +1257,7 @@ function openPrayerModal(martyrId, martyrName) {
     c.style.border='2px solid #333'; c.style.background='#1c1c1c';
   });
   var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.textContent = 'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ'; }
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.textContent = 'اختر دعاءً أولاً'; }
   document.getElementById('prayerText').value = '';
   document.getElementById('prayerModal').classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -1284,10 +1284,10 @@ function handleOpenPrayerModal(e) {
 
 async async function sendPrayer() {
   var martyrId = document.getElementById('prayerMartyrId').value;
-  var userName = document.getElementById('prayerName').value.trim() || 'ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ±';
+  var userName = document.getElementById('prayerName').value.trim() || 'زائر';
   var prayerText = document.getElementById('prayerText').value;
   if (!martyrId || !prayerText) {
-    showToast('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ');
+    showToast('يرجى اختيار دعاء أولاً');
     return;
   }
   var payload = {
@@ -1300,13 +1300,13 @@ async async function sendPrayer() {
   try {
     await FL.rest('martyr_prayers', { method: 'POST', body: payload, prefer: 'return=minimal' });
     closePrayerModal();
-    showToast('ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ² ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ +5 HANDALA');
+    showToast('🤲 تم إرسال دعاءك، جزاك الله خيراً +5 HANDALA');
     if (window.FLHandala) window.FLHandala.earn('prayer');
     if (martyrId === currentDetailMartyrId) await loadMartyrPrayers(martyrId);
   } catch (err) {
     console.warn('Failed to save prayer', err);
-    alert('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡: ' + (err && err.message ? err.message : err));
-    showToast('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ', 'err');
+    alert('فشل حفظ الدعاء: ' + (err && err.message ? err.message : err));
+    showToast('فشل حفظ الدعاء، حاول مرة أخرى', 'err');
     if (btn) { btn.disabled = false; btn.style.opacity='1'; }
   }
 }
@@ -1419,7 +1419,7 @@ function chooseDua(el) {
   el.style.background = '#0a2016';
   document.getElementById('prayerText').value = el.getAttribute('data-text');
   var btn = document.getElementById('duaSubmitBtn');
-  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¤ÃÂÃÂ²'; }
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = 'إرسال الدعاء 🤲'; }
 }
 
 function submitSelectedPrayer() {
@@ -1463,7 +1463,7 @@ function downloadCertificate() {
   
   ctx.font = '22px Arial';
   ctx.fillStyle = '#aaa';
-  ctx.fillText('Ø´ÙØ§Ø¯Ø© ØªÙØ¯ÙØ±', 420, 165);
+  ctx.fillText('4G'/) *B/J1', 420, 165);
   
   // Points
   ctx.font = 'bold 80px Arial';
@@ -1472,11 +1472,11 @@ function downloadCertificate() {
   
   ctx.font = '20px Arial';
   ctx.fillStyle = '#ce1126';
-  ctx.fillText('Ø¹ÙÙØ© Ø­ÙØ¸ÙØ© ðª', 420, 330);
+  ctx.fillText('9ED) -F8D) >�', 420, 330);
   
   ctx.font = '18px Arial';
   ctx.fillStyle = '#ccc';
-  ctx.fillText('Ø­Ø§ÙÙ Ø¹ÙÙØ© Ø­ÙØ¸ÙØ© Ø§ÙÙØ¹ØªÙØ¯', 420, 370);
+  ctx.fillText('-'ED 9ED) -F8D) 'DE9*E/', 420, 370);
   
   // Date
   ctx.font = '14px Arial';
@@ -1496,21 +1496,21 @@ async function loadComments(martyrId) {
   currentMartyrId = martyrId;
   var list = document.getElementById('comments-list');
   if (!list) return;
-  list.innerHTML = '<div style="color:#aaa;text-align:center">جاري التحميل...</div>';
+  list.innerHTML = '<div style="color:#aaa;text-align:center">,'1J 'D*-EJD...</div>';
   try {
     var res = await fetch(FL.SUPABASE_URL + '/rest/v1/martyr_comments?martyr_id=eq.' + encodeURIComponent(martyrId) + '&order=created_at.desc&limit=20', {
       headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY }
     });
     var comments = await res.json();
-    if (!comments.length) { list.innerHTML = '<div style="color:#aaa;text-align:center">لا توجد تعليقات بعد — كن أول من يعلّق</div>'; return; }
+    if (!comments.length) { list.innerHTML = '<div style="color:#aaa;text-align:center">D' *H,/ *9DJB'* (9/  CF #HD EF J9DQB</div>'; return; }
     list.innerHTML = comments.map(function(cm) {
-      return '<div class="comment-card"><div class="comment-author">🗣 ' + (cm.user_name||'زائر') + ' · ' + new Date(cm.created_at).toLocaleDateString('ar') + '</div><div class="comment-text">' + cm.comment + '</div></div>';
+      return '<div class="comment-card"><div class="comment-author">=� ' + (cm.user_name||'2'&1') + ' � ' + new Date(cm.created_at).toLocaleDateString('ar') + '</div><div class="comment-text">' + cm.comment + '</div></div>';
     }).join('');
-  } catch(e) { list.innerHTML = '<div style="color:#aaa">تعذّر تحميل التعليقات</div>'; }
+  } catch(e) { list.innerHTML = '<div style="color:#aaa">*90Q1 *-EJD 'D*9DJB'*</div>'; }
 }
 
 async function submitComment() {
-  var name = (document.getElementById('comment-name').value.trim()) || 'زائر';
+  var name = (document.getElementById('comment-name').value.trim()) || '2'&1';
   var text = document.getElementById('comment-text').value.trim();
   if (!text) return;
   var btn = document.querySelector('.comment-submit-btn');
@@ -1526,7 +1526,7 @@ async function submitComment() {
       await loadComments(currentMartyrId);
     }
   } catch(e) {}
-  btn.disabled = false; btn.textContent = 'إرسال 💬';
+  btn.disabled = false; btn.textContent = '%13'D =�';
 }
 </script>
 </body>
