@@ -50,7 +50,7 @@ self.addEventListener('fetch', function(e) {
         return caches.match(e.request).then(function(cached) {
           if (cached) return cached;
           return caches.match('Index.html').then(function(home) {
-            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>Offline</h1><p>ÃÂ§ÃÂÃÂÃÂ³ÃÂ®ÃÂ© ÃÂ§ÃÂÃÂÃÂ®ÃÂ²ÃÂÃÂ© ÃÂºÃÂÃÂ± ÃÂÃÂªÃÂ§ÃÂ­ÃÂ©. ÃÂ£ÃÂ¹ÃÂ¯ ÃÂ§ÃÂÃÂªÃÂ­ÃÂÃÂÃÂ ÃÂ¹ÃÂÃÂ¯ ÃÂ§ÃÂÃÂ§ÃÂªÃÂµÃÂ§ÃÂ ÃÂ£ÃÂ ÃÂ§ÃÂÃÂ³ÃÂ­ cache ÃÂ§ÃÂÃÂÃÂªÃÂµÃÂÃÂ­.</p></body>', {
+            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>Offline</h1><p>Ø§ÙÙØ³Ø®Ø© Ø§ÙÙØ®Ø²ÙØ© ØºÙØ± ÙØªØ§Ø­Ø©. Ø£Ø¹Ø¯ Ø§ÙØªØ­ÙÙÙ Ø¹ÙØ¯ Ø§ÙØ§ØªØµØ§Ù Ø£Ù Ø§ÙØ³Ø­ cache Ø§ÙÙØªØµÙØ­.</p></body>', {
               status: 503,
               headers: { 'Content-Type': 'text/html; charset=utf-8' }
             });
