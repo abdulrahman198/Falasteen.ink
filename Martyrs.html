@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <link rel="stylesheet" href="styles.css"/>
-<script src="app-config.js"><\/script>
-<script src="common.js"><\/script>
-<script src="app.js" defer><\/script>
+<script src="app-config.js"></script>
+<script src="common.js"></script>
+<script src="app.js" defer></script>
 <script src="ollama-auto-tagging.js" defer></script>
 <script>
   // Respect user reduced-motion preference early for JS-driven enhancements
@@ -22,7 +22,7 @@
       var _ov = document.getElementById('namesOverlay'); if(_ov) _ov.remove();
     });
   } catch(e) {}
-<\/script>
+</script>
 <script>
 var _editingMartyrId = null;
 
@@ -63,8 +63,8 @@ function deleteMartyr(id) {
   if (typeof loadSection === 'function') loadSection(currentTab, false);
   FL.toast('✓ تم الحذف / Deleted');
 }
-<\/script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"><\/script>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>سجل الشهداء | FALASTEEN.INK</title>
 
@@ -251,19 +251,7 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 .pager-info{font-family:"Courier New",monospace;font-size:.56rem;color:var(--dim);}
 .pager-btn{background:var(--s2);border:1px solid rgba(93,63,59,.3);color:var(--text);font-size:.78rem;font-weight:700;padding:10px 18px;cursor:pointer;}
 .pager-btn:disabled{opacity:.45;cursor:not-allowed;}
-
-.comments-section { margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; }
-.comments-title { font-size: 1rem; color: #fff; margin-bottom: 12px; }
-.comments-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-.comment-card { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 14px; }
-.comment-author { font-size: 0.8rem; color: #aaa; margin-bottom: 4px; }
-.comment-text { font-size: 0.9rem; color: #eee; }
-.comment-form { display: flex; flex-direction: column; gap: 8px; }
-.comment-form input, .comment-form textarea { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.9rem; }
-.comment-submit-btn { background: linear-gradient(135deg, #e63946, #c1121f); color: #fff; border: none; border-radius: 8px; padding: 10px; cursor: pointer; font-size: 0.9rem; }
 </style>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 </head>
 <body>
 <div id="namesOverlay" class="names-overlay" aria-hidden="true"></div>
@@ -271,7 +259,6 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 <nav class="topnav">
   <a href="Index.html" class="logo">FALASTEEN<span class="logo-dot">.</span>INK</a>
   <span id="hanzalaBadge" class="hanzala-badge" title="رصيدك من حنظلة — يُكتسب بإضاءة شمعة أو وردة أو دعاء">🏅 0 حنظلة</span>
-  <button onclick="downloadCertificate()" style="margin-top:16px;padding:12px 24px;background:linear-gradient(135deg,#ce1126,#8b0000);color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;font-family:inherit;display:block;margin-left:auto;margin-right:auto;"><� *-EJD 4G'/*J</button>
   <a  class="donate-btn" href="donate.html">تبرع / Donate</a>
   <button class="add-btn" id="martyrAddBtn" onclick="openModal()" style="display:none;">+ أضف / Add</button>
 </nav>
@@ -320,7 +307,6 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
     <button class="tab-btn" onclick="switchTab('adults',this)">🕊 كبار <span class="tc" id="tc-adults">0</span></button>
     <button class="tab-btn" onclick="switchTab('journalists',this)">📸 صحفيون <span class="tc" id="tc-journalists">0</span></button>
     <button class="tab-btn" onclick="switchTab('prisoners',this)">⛓ أسرى <span class="tc" id="tc-prisoners">0</span></button>
-    <button class="tab-btn" id="tab-map" onclick="showMapTab()">=� .1J7)</button>
   </div>
 </div>
 
@@ -929,15 +915,6 @@ async function showDetail(m) {
     '<button class="share-btn" onclick="shareX(\''+esc(m.name)+'\')">𝕏 تغريد</button>'+ 
     '<button class="share-btn" onclick="copyLink(\''+esc(m.name)+'\')">🔗 نسخ الرابط</button>'+ 
     '<button class="share-btn" onclick="nativeShare(\''+esc(m.name)+'\')">↗ مشاركة</button>'+ 
-    '</div>'+
-    '<div class=\"comments-section\" id=\"comments-section\">'+
-    '<h3 class=\"comments-title\">&#x1F4AC; 'D*9DJB'*</h3>'+
-    '<div id=\"comments-list\" class=\"comments-list\"></div>'+
-    '<div class=\"comment-form\">'+
-    '<input type=\"text\" id=\"comment-name\" placeholder=\"'3EC ('.*J'1J)\" maxlength=\"50\"/>'+
-    '<textarea id=\"comment-text\" placeholder=\"'C*( *9DJBC...\" maxlength=\"500\" rows=\"3\"></textarea>'+
-    '<button onclick=\"submitComment()\" class=\"comment-submit-btn\">%13'D &#x1F4AC;</button>'+
-    '</div>'+
     '</div>';
   // remove any floating-name elements immediately and stop generator
   try {
@@ -952,7 +929,6 @@ async function showDetail(m) {
   setupPrayerButtons(content);
   await loadMartyrPrayers(m.id);
   document.body.style.overflow = 'hidden';
-  loadComments(m.id);
 }
 
 // ── SHARE FUNCTIONS ──
@@ -1116,62 +1092,17 @@ function setupTributeButtons(root) {
 // can later be claimed/airdropped to their wallet (on-chain distribution needs
 // a backend signer, so for now we accrue the balance the user has earned).
 var HANZALA_REWARD = { candles: 1, roses: 2, prayers: 3 };
-
-async function saveHanzalaPoints(total) {
-  // Always save to localStorage
+function getHanzalaPoints() {
+  try { return parseInt(localStorage.getItem('fl_hanzala_points') || '0', 10) || 0; } catch(e) { return 0; }
+}
+function earnHanzala(amount) {
+  var total = getHanzalaPoints() + amount;
   try { localStorage.setItem('fl_hanzala_points', String(total)); } catch(e) {}
-  
-  // If logged in, also save to Supabase
-  if (!window.FL || !FL.SUPABASE_URL) return;
-  try {
-    const user = await FL.getUser();
-    if (!user) return;
-    await fetch(FL.SUPABASE_URL + '/rest/v1/handala_points', {
-      method: 'POST',
-      headers: {
-        'apikey': FL.SUPABASE_KEY,
-        'Authorization': 'Bearer ' + FL.SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({ user_id: user.id, points: total, updated_at: new Date().toISOString() })
-    });
-  } catch(e) { console.warn('Supabase points save failed:', e); }
-}
-
-async function loadHanzalaPoints() {
-  // Default: use localStorage
-  let local = 0;
-  try { local = parseInt(localStorage.getItem('fl_hanzala_points') || '0', 10) || 0; } catch(e) {}
-  
-  if (!window.FL || !FL.SUPABASE_URL) return local;
-  try {
-    const user = await FL.getUser();
-    if (!user) return local;
-    const res = await fetch(FL.SUPABASE_URL + '/rest/v1/handala_points?user_id=eq.' + user.id + '&select=points', {
-      headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY }
-    });
-    if (!res.ok) return local;
-    const data = await res.json();
-    if (data && data[0]) {
-      const dbPoints = data[0].points || 0;
-      // Use whichever is higher (in case local has unsaved points)
-      const total = Math.max(local, dbPoints);
-      localStorage.setItem('fl_hanzala_points', String(total));
-      return total;
-    }
-  } catch(e) { console.warn('Supabase points load failed:', e); }
-  return local;
-}
-
-async function earnHanzala(amount) {
-  var total = (await loadHanzalaPoints()) + amount;
-  await saveHanzalaPoints(total);
   updateHanzalaBadge(total);
   return total;
 }
-async function updateHanzalaBadge(total) {
-  if (total === undefined) total = await loadHanzalaPoints();
+function updateHanzalaBadge(total) {
+  if (total === undefined) total = getHanzalaPoints();
   var el = document.getElementById('hanzalaBadge');
   if (el) el.textContent = '🏅 ' + total + ' حنظلة';
 }
@@ -1338,77 +1269,9 @@ function showUploadProgress(inp) {
   };
   reader.readAsDataURL(file);
 }
-<\/script>
-<script src="rewards.js"><\/script>
-<script src="fl-nav.js" defer><\/script>
-
-<div id="martyrs-m
-var martyrsMap = null;
-
-function showMapTab() {
-  document.querySelectorAll('[id^="grid-"],[id^="list-"]').forEach(el => el.style.display='none');
-  var mapEl = document.getElementById('martyrs-map');
-  mapEl.style.display = 'block';
-  
-  if (!martyrsMap) {
-    martyrsMap = L.map('martyrs-map').setView([31.9, 35.2], 8);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '\u00a9 OpenStreetMap'
-    }).addTo(martyrsMap);
-    loadMapMarkers();
-  }
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-map').classList.add('active');
-}
-
-async function loadMapMarkers() {
-  var cityCoords = {
-    '\u063a\u0632\u0629': [31.5, 34.47], '\u0631\u0641\u062d': [31.29, 34.25], '\u062e\u0627\u0646\u064a\u0648\u0646\u0633': [31.34, 34.3],
-    '\u062c\u0628\u0627\u0644\u064a\u0627': [31.53, 34.49], '\u0628\u064a\u062a \u0644\u0627\u0647\u064a\u0627': [31.55, 34.49],
-    '\u0627\u0644\u0634\u062c\u0627\u0639\u064a\u0629': [31.49, 34.5], '\u0627\u0644\u0646\u0635\u064a\u0631\u0627\u062a': [31.44, 34.39],
-    '\u062f\u064a\u0631 \u0627\u0644\u0628\u0644\u062d': [31.42, 34.35], '\u0628\u064a\u062a \u062d\u0627\u0646\u0648\u0646': [31.55, 34.53],
-    '\u0627\u0644\u0642\u062f\u0633': [31.78, 35.21], '\u0627\u0644\u062e\u0644\u064a\u0644': [31.53, 35.09],
-    '\u0646\u0627\u0628\u0644\u0633': [32.22, 35.26], '\u062c\u0646\u064a\u0646': [32.46, 35.29],
-    '\u0631\u0627\u0645 \u0627\u0644\u0644\u0647': [31.9, 35.2], '\u0637\u0648\u0644\u0643\u0631\u0645': [32.31, 35.02],
-    '\u0623\u0631\u064a\u062d\u0627': [31.86, 35.44], '\u0642\u0644\u0642\u064a\u0644\u064a\u0629': [32.19, 34.97]
-  };
-  
-  try {
-    const res = await fetch(FL.SUPABASE_URL + '/rest/v1/martyrs?select=id,name,city,category,date&limit=500', {
-      headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY }
-    });
-    const martyrs = await res.json();
-    
-    var cityGroups = {};
-    martyrs.forEach(m => {
-      var city = m.city || '\u063a\u0632\u0629';
-      if (!cityGroups[city]) cityGroups[city] = [];
-      cityGroups[city].push(m);
-    });
-    
-    Object.keys(cityGroups).forEach(city => {
-      var coords = cityCoords[city];
-      if (!coords) coords = cityCoords['\u063a\u0632\u0629'];
-      var count = cityGroups[city].length;
-      var names = cityGroups[city].slice(0,5).map(m => m.name).join('<br/>');
-      var more = count > 5 ? '<br/>...' + (count-5) + ' \u0622\u062e\u0631\u0648\u0646' : '';
-      
-      var marker = L.circleMarker(coords, {
-        radius: Math.min(5 + count * 2, 30),
-        fillColor: '#e63946',
-        color: '#fff',
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.8
-      }).addTo(martyrsMap);
-      
-      marker.bindPopup('<b>' + city + '</b><br/>' + count + ' \u0634\u0647\u064a\u062f<br/>' + names + more);
-    });
-  } catch(e) {
-    console.warn('Map load error:', e);
-  }
-}
-ap" style="height:500px;width:100%;border-radius:12px;display:none;"></div>
+</script>
+<script src="rewards.js"></script>
+<script src="fl-nav.js" defer></script>
 <script>
 function chooseDua(el) {
   document.querySelectorAll('[onclick="chooseDua(this)"]').forEach(function(c) {
@@ -1426,107 +1289,6 @@ function submitSelectedPrayer() {
   var pt = document.getElementById('prayerText');
   if (!pt || !pt.value) return;
   sendPrayer();
-}
-<\/script>
-
-<script>
-function downloadCertificate() {
-  var points = parseInt(localStorage.getItem('fl_hanzala_points') || '0');
-  var canvas = document.createElement('canvas');
-  canvas.width = 800; canvas.height = 560;
-  var ctx = canvas.getContext('2d');
-  
-  // Background
-  ctx.fillStyle = '#0d1117';
-  ctx.fillRect(0, 0, 800, 560);
-  
-  // Border stripes (Palestinian flag colors)
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 800, 18);
-  ctx.fillStyle = '#009736'; ctx.fillRect(0, 18, 800, 18);
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 36, 800, 18);
-  ctx.fillStyle = '#ce1126'; ctx.fillRect(0, 54, 800, 18);
-  // Bottom
-  ctx.fillStyle = '#ce1126'; ctx.fillRect(0, 488, 800, 18);
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 506, 800, 18);
-  ctx.fillStyle = '#009736'; ctx.fillRect(0, 524, 800, 18);
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 542, 800, 18);
-  
-  // Red triangle
-  ctx.fillStyle = '#ce1126';
-  ctx.beginPath(); ctx.moveTo(0,72); ctx.lineTo(120,280); ctx.lineTo(0,488); ctx.closePath(); ctx.fill();
-  
-  // Title
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 28px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('FALASTEEN.INK', 420, 130);
-  
-  ctx.font = '22px Arial';
-  ctx.fillStyle = '#aaa';
-  ctx.fillText('4G'/) *B/J1', 420, 165);
-  
-  // Points
-  ctx.font = 'bold 80px Arial';
-  ctx.fillStyle = '#f4d03f';
-  ctx.fillText(points, 420, 290);
-  
-  ctx.font = '20px Arial';
-  ctx.fillStyle = '#ce1126';
-  ctx.fillText('9ED) -F8D) >�', 420, 330);
-  
-  ctx.font = '18px Arial';
-  ctx.fillStyle = '#ccc';
-  ctx.fillText('-'ED 9ED) -F8D) 'DE9*E/', 420, 370);
-  
-  // Date
-  ctx.font = '14px Arial';
-  ctx.fillStyle = '#666';
-  ctx.fillText(new Date().toLocaleDateString('ar-SA'), 420, 460);
-  
-  // Download
-  var link = document.createElement('a');
-  link.download = 'handala-certificate.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
-
-var currentMartyrId = null;
-
-async function loadComments(martyrId) {
-  currentMartyrId = martyrId;
-  var list = document.getElementById('comments-list');
-  if (!list) return;
-  list.innerHTML = '<div style="color:#aaa;text-align:center">,'1J 'D*-EJD...</div>';
-  try {
-    var res = await fetch(FL.SUPABASE_URL + '/rest/v1/martyr_comments?martyr_id=eq.' + encodeURIComponent(martyrId) + '&order=created_at.desc&limit=20', {
-      headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY }
-    });
-    var comments = await res.json();
-    if (!comments.length) { list.innerHTML = '<div style="color:#aaa;text-align:center">D' *H,/ *9DJB'* (9/  CF #HD EF J9DQB</div>'; return; }
-    list.innerHTML = comments.map(function(cm) {
-      return '<div class="comment-card"><div class="comment-author">=� ' + (cm.user_name||'2'&1') + ' � ' + new Date(cm.created_at).toLocaleDateString('ar') + '</div><div class="comment-text">' + cm.comment + '</div></div>';
-    }).join('');
-  } catch(e) { list.innerHTML = '<div style="color:#aaa">تعذر تحميل التعليقات</div>'; }
-}
-
-async function submitComment() {
-  var name = (document.getElementById('comment-name').value.trim()) || '2'&1';
-  var text = document.getElementById('comment-text').value.trim();
-  if (!text) return;
-  var btn = document.querySelector('.comment-submit-btn');
-  btn.disabled = true; btn.textContent = '...';
-  try {
-    var res = await fetch(FL.SUPABASE_URL + '/rest/v1/martyr_comments', {
-      method: 'POST',
-      headers: { 'apikey': FL.SUPABASE_KEY, 'Authorization': 'Bearer ' + FL.SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ martyr_id: currentMartyrId, user_name: name, comment: text })
-    });
-    if (res.ok) {
-      document.getElementById('comment-text').value = '';
-      await loadComments(currentMartyrId);
-    }
-  } catch(e) {}
-  btn.disabled = false; btn.textContent = '%13'D =�';
 }
 </script>
 </body>
