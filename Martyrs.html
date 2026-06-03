@@ -1506,7 +1506,7 @@ async function loadComments(martyrId) {
     list.innerHTML = comments.map(function(cm) {
       return '<div class="comment-card"><div class="comment-author">=� ' + (cm.user_name||'2'&1') + ' � ' + new Date(cm.created_at).toLocaleDateString('ar') + '</div><div class="comment-text">' + cm.comment + '</div></div>';
     }).join('');
-  } catch(e) { list.innerHTML = '<div style="color:#aaa">*90Q1 *-EJD 'D*9DJB'*</div>'; }
+  } catch(e) { list.innerHTML = '<div style="color:#aaa">تعذر تحميل التعليقات</div>'; }
 }
 
 async function submitComment() {
