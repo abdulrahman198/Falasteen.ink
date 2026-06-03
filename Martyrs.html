@@ -1314,13 +1314,21 @@ window.addEventListener('load', async function() {
     var journalists = await getCount('category=eq.journalist');
     var prisoners = await getCount('category=eq.prisoner');
     
-    function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = val.toLocaleString('ar'); }
-    setEl('cntTotal', total);
-    setEl('cntChildren', children);
-    setEl('cntYouth', youth);
-    setEl('cntAdults', adults);
-    setEl('cntJournalists', journalists);
-    setEl('cntPrisoners', prisoners);
+    function animateCounter(id, target) {
+      var el = document.getElementById(id); if (!el) return;
+      var duration = 1500, startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts-startTime)/duration,1);
+        var ease = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(ease*target).toLocaleString('ar');
+        if (p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    animateCounter('cntTotal',total); animateCounter('cntChildren',children);
+    animateCounter('cntYouth',youth); animateCounter('cntAdults',adults);
+    animateCounter('cntJournalists',journalists); animateCounter('cntPrisoners',prisoners);
   } catch(e) { console.warn('counter error:', e); }
   
   // Also load martyrs list
