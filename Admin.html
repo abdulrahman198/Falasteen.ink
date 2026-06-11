@@ -285,13 +285,9 @@ async function init() {
     } catch(e) {}
   }
   if (!session || !session.user || session.user.email !== ADMIN_EMAIL) {
-    // Fallback password for offline testing
-    var pass = prompt('🔐 كلمة مرور الأدمن / Admin Password:');
-    if (pass !== 'Falasteen1948') {
-      alert('غير مصرح / Unauthorized');
-      window.location.href = 'Index.html';
-      return;
-    }
+    alert('غير مصرح — سجّل دخول بحساب الأدمن / Unauthorized — sign in with the admin account');
+    window.location.href = 'Auth.html';
+    return;
   }
   await render();
 }
