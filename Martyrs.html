@@ -1065,7 +1065,8 @@ function tributeButtonsHtml(m) {
   var t = getMartyrTributes(m.id);
   return '<button class="tribute-btn tribute-candle" data-id="'+esc(m.id)+'" data-type="candles">🕯️ '+t.candles+'</button>' +
          '<button class="tribute-btn tribute-rose" data-id="'+esc(m.id)+'" data-type="roses">🌹 '+t.roses+'</button>' +
-         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">🤲 '+t.prayers+'</button>';
+         '<button class="tribute-btn tribute-prayer" data-id="'+esc(m.id)+'" data-type="prayers">🤲 '+t.prayers+'</button>' +
+         '<button class="tribute-btn tribute-share" onclick="shareCard(this);event.stopPropagation();" data-name="'+esc(m.name||'')+'" data-photo="'+esc(m.photo||'')+'" data-age="'+esc(String(m.age||''))+'" data-city="'+esc(m.city||'')+'" data-date="'+esc(m.date||'')+'" data-category="'+esc(m.category||'')+'">📤 شارك</button>';
 }
 function updateTributeButtons(id, tributes) {
   var safeId = id.replace(/"/g,'\\"');
@@ -1258,6 +1259,86 @@ window.addEventListener('load', function() {
     if (el) el.textContent = pts.toLocaleString('ar');
   } catch(e) {}
 });
+</script>
+
+<style>
+.tribute-share { background:rgba(206,17,38,0.12)!important; border-color:rgba(206,17,38,0.35)!important; }
+.tribute-share:hover { background:rgba(206,17,38,0.22)!important; }
+</style>
+<script>
+function shareCard(btn) {
+  btn.disabled = true;
+  var name = btn.dataset.name || '';
+  var photo = btn.dataset.photo || '';
+  var age = btn.dataset.age || '';
+  var city = btn.dataset.city || '';
+  var date = btn.dataset.date || '';
+  var category = btn.dataset.category || '';
+  var W = 1080, H = 1350;
+  var canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+  function drawCard(img) {
+    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, W, H);
+    [['#000000',0],['#CE1126',1],['#FFFFFF',2],['#007A3D',3]].forEach(function(s){
+      ctx.fillStyle = s[0]; ctx.fillRect(0, s[1]*18, W, 18);
+    });
+    ctx.fillStyle = '#007A3D';
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(200,36); ctx.lineTo(0,72); ctx.closePath(); ctx.fill();
+    var cx = W/2, cy = 460, r = 190;
+    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.clip();
+    if (img) {
+      ctx.drawImage(img, cx-r, cy-r, r*2, r*2);
+    } else {
+      ctx.fillStyle = '#1a1a1a'; ctx.fillRect(cx-r, cy-r, r*2, r*2);
+      ctx.fillStyle = '#666'; ctx.font = '110px serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('🕊', cx, cy);
+    }
+    ctx.restore();
+    ctx.strokeStyle = '#CE1126'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(cx, cy, r+8, 0, Math.PI*2); ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.direction = 'rtl';
+    var fsize = name.length > 25 ? 56 : 72;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold ' + fsize + 'px Arial,"Segoe UI",Tahoma,sans-serif';
+    ctx.fillText(name, W/2, 710);
+    var parts = [];
+    if (age) parts.push(age + ' عاماً');
+    if (city) parts.push(city);
+    if (date) { var dp = date.split('-'); parts.push(dp.length===3 ? dp[2]+'/'+dp[1]+'/'+dp[0] : date); }
+    if (category) parts.push(category);
+    ctx.fillStyle = '#9a9898'; ctx.font = '36px Arial,"Segoe UI",Tahoma,sans-serif';
+    ctx.fillText(parts.join(' · '), W/2, 812);
+    ctx.fillStyle = '#CE1126'; ctx.fillRect(W/2-180, 890, 360, 3);
+    ctx.font = 'bold 29px Arial,"Segoe UI",Tahoma,sans-serif';
+    ctx.fillText('ليسوا أرقاماً — They Are Not Numbers', W/2, 910);
+    ctx.fillStyle = '#444'; ctx.font = '26px "Courier New",monospace';
+    ctx.fillText('falasteen.ink', W/2, 1300);
+    canvas.toBlob(function(blob) {
+      btn.disabled = false;
+      var safe = (name || 'martyr').replace(/\s+/g, '-').replace(/[^\u0600-\u06FFa-zA-Z0-9-]/g, '');
+      var file = new File([blob], 'martyr-' + safe + '.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ title: name, text: 'من سجل شهداء فلسطين | falasteen.ink', files: [file] }).catch(function(){});
+      } else {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'martyr-' + safe + '.png';
+        a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+      }
+    }, 'image/png');
+  }
+  if (photo) {
+    var img = new Image(); img.crossOrigin = 'anonymous';
+    img.onload = function(){ drawCard(img); };
+    img.onerror = function(){ drawCard(null); };
+    img.src = photo;
+  } else {
+    drawCard(null);
+  }
+}
 </script>
 </body>
 </html>
