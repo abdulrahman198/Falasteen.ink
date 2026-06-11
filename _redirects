@@ -1,2 +1,3 @@
 # Netlify redirects
 /index  /Index.html  301
+/  /Index.html  200
