@@ -1,6 +1,3 @@
 // FALASTEEN.INK — app-config.js
 window.SUPABASE_URL = "https://audvtdbylhmumvdrhijk.supabase.co";
 window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU";
-
-// Livepeer — decentralized video streaming
-window.LIVEPEER_API_KEY = "7f763967-912a-4243-99e9-92505c2bcb9b";
