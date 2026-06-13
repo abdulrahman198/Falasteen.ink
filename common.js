@@ -40,7 +40,7 @@ if (window.fetch && !window.fetch._flAuditWrapped) {
 }
 
 FL.SUPABASE_URL = window.SUPABASE_URL || "https://audvtdbylhmumvdrhijk.supabase.co";
-FL.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb";
+FL.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU";
 
 // ── Supabase Auth ──
 FL.getSupabaseClient = function() {
