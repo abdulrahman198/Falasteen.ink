@@ -1,5 +1,5 @@
 // FALASTEEN.INK Service Worker v12
-var CACHE = 'fl-v29';
+var CACHE = 'fl-v30';
 var APP_SHELL = [
   '/', 'Index.html', 'Feed.html', 'Martyrs.html', 'Landmarks.html',
   'Map.html', 'Archive.html', 'live.html', 'Guardian_hub1.html',
@@ -27,7 +27,13 @@ self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(keys.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));
-    }).then(function() { return self.clients.claim(); })
+    }).then(function() {
+      return self.clients.claim();
+    }).then(function() {
+      return self.clients.matchAll({ type: 'window' }).then(function(clients) {
+        clients.forEach(function(c) { c.postMessage({ type: 'SW_UPDATED' }); });
+      });
+    })
   );
 });
 
@@ -50,7 +56,7 @@ self.addEventListener('fetch', function(e) {
         return caches.match(e.request).then(function(cached) {
           if (cached) return cached;
           return caches.match('Index.html').then(function(home) {
-            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>Offline</h1><p>ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ©. ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ­ cache ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­.</p></body>', {
+            return home || new Response('<!doctype html><meta charset="utf-8"><title>FALASTEEN Offline</title><body style="background:#0e0e0e;color:#e5e2e1;font-family:Arial;padding:24px"><h1>غير متصل / Offline</h1><p>أنت غير متصل بالإنترنت حالياً. أعد الاتصال للوصول إلى المحتوى، أو استخدم النسخة المخزنة مؤقتاً.</p><p>You are currently offline. Reconnect to load content, or use the cached version.</p></body>', {
               status: 503,
               headers: { 'Content-Type': 'text/html; charset=utf-8' }
             });
@@ -78,13 +84,4 @@ self.addEventListener('fetch', function(e) {
 // Offline detection message
 self.addEventListener('message', function(e) {
   if (e.data === 'ping') e.source.postMessage('pong');
-});
-
-// Notify clients of new version
-self.addEventListener('activate', function(e) {
-  e.waitUntil(
-    self.clients.matchAll({ type: 'window' }).then(function(clients) {
-      clients.forEach(function(c) { c.postMessage({ type: 'SW_UPDATED' }); });
-    })
-  );
 });
