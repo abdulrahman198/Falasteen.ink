@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>falasteen.ink — Free Palestine Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700;900&family=Noto+Sans+Arabic:wght@300;400;700&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --bg:#080808;--surface:#121212;--card:#1a1a1a;--card2:#202020;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --red:#e30613;--red2:#ff1a26;--red3:rgba(227,6,19,0.15);
+  --green:#1e7a3c;--green2:#25a050;--green3:rgba(30,122,60,0.15);
+  --white:#f0ebe0;--gray:#777;--lgray:#aaa;--gold:#c8a84b;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Noto Kufi Arabic','DM Sans',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--red);}
+.page{display:none;}
+.page.active{display:block;}
+#page-auth{display:flex;min-height:100vh;align-items:center;justify-content:center;}
+.auth-wrap{width:100%;max-width:900px;display:grid;grid-template-columns:1fr 1fr;min-height:580px;border-radius:20px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.8);animation:authIn 0.7s cubic-bezier(.16,1,.3,1);}
+@keyframes authIn{from{opacity:0;transform:translateY(40px) scale(0.97)}to{opacity:1;transform:none}}
+.auth-visual{background:linear-gradient(160deg,rgba(227,6,19,0.3) 0%,transparent 50%),linear-gradient(320deg,rgba(30,122,60,0.25) 0%,transparent 60%),#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;position:relative;overflow:hidden;}
+.auth-visual::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.flag-big{display:flex;flex-direction:column;width:100px;border-radius:6px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 30px rgba(0,0,0,0.5);position:relative;}
+.flag-big div{height:20px;}
+.fb-black{background:#000;}.fb-white{background:#fff;}.fb-green{background:#1e7a3c;}
+.flag-triangle-big{position:absolute;left:0;top:0;width:0;height:0;border-top:30px solid transparent;border-bottom:30px solid transparent;border-left:40px solid var(--red);}
+.auth-visual h2{font-size:2.2rem;font-weight:900;margin-bottom:8px;line-height:1.2;}
+.auth-visual h2 span{color:var(--red);}
+.auth-visual p{color:rgba(255,255,255,0.5);font-size:0.85rem;line-height:1.6;max-width:220px;}
+.auth-stat{text-align:center;}
+.auth-stat strong{display:block;font-size:1.4rem;font-weight:900;color:var(--red);}
+.auth-stat span{font-size:0.7rem;color:rgba(255,255,255,0.4);}
+.auth-form{background:var(--surface);padding:40px 36px;display:flex;flex-direction:column;justify-content:center;}
+.auth-tabs{display:flex;background:rgba(255,255,255,0.05);border-radius:8px;padding:3px;margin-bottom:28px;}
+.auth-tab{flex:1;text-align:center;padding:9px;border-radius:6px;cursor:pointer;font-size:0.85rem;color:var(--gray);transition:all 0.2s;}
+.auth-tab.active{background:var(--red);color:white;font-weight:700;}
+.lang-switcher{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.lang-btn{padding:4px 10px;border-radius:4px;border:1px solid var(--border2);background:none;color:var(--lgray);font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.lang-btn:hover,.lang-btn.active{background:var(--red);color:white;border-color:var(--red);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:0.75rem;color:var(--lgray);margin-bottom:5px;}
+.field input,.field select{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:'Noto Kufi Arabic','DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border 0.2s,background 0.2s;}
+.field input:focus{border-color:var(--red);background:rgba(227,6,19,0.05);}
+.btn-main{width:100%;padding:13px;background:var(--red);border:none;border-radius:8px;color:white;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+.btn-main:hover{background:var(--red2);transform:translateY(-1px);box-shadow:0 8px 20px rgba(227,6,19,0.3);}
+.auth-note{text-align:center;margin-top:14px;font-size:0.78rem;color:var(--gray);}
+.auth-note span{color:var(--red);cursor:pointer;}
+#page-app{min-height:100vh;display:flex;flex-direction:column;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;height:60px;background:rgba(8,8,8,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;backdrop-filter:blur(20px);}
+.t-logo{font-size:1.5rem;font-weight:900;cursor:pointer;flex-shrink:0;letter-spacing:-0.5px;}
+.t-logo span{color:var(--red);}
+.t-logo small{font-size:0.6rem;color:var(--gray);font-weight:400;display:block;margin-top:-4px;}
+.t-search{flex:1;max-width:320px;position:relative;}
+.t-search input{width:100%;padding:8px 16px 8px 38px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:20px;color:var(--white);font-family:inherit;font-size:0.82rem;outline:none;transition:all 0.2s;}
+.t-search input:focus{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);}
+.t-search .si{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:0.8rem;}
+.t-nav{display:flex;gap:2px;margin:0 auto;}
+.t-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:0.7rem;color:var(--gray);border:none;background:none;font-family:inherit;transition:all 0.2s;position:relative;}
+.t-btn .ti{font-size:1.1rem;}
+.t-btn:hover{color:var(--white);background:rgba(255,255,255,0.06);}
+.t-btn.active{color:var(--white);}
+.t-btn.active::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:var(--red);border-radius:1px;}
+.nbadge{position:absolute;top:4px;right:8px;background:var(--red);color:white;width:16px;height:16px;border-radius:50%;font-size:0.58rem;display:flex;align-items:center;justify-content:center;font-weight:900;}
+.t-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.t-lang{background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--lgray);font-family:inherit;font-size:0.75rem;padding:5px 10px;border-radius:6px;cursor:pointer;outline:none;}
+.t-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--green));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;cursor:pointer;border:2px solid transparent;transition:border 0.2s;flex-shrink:0;}
+.t-avatar:hover{border-color:var(--red);}
+.app-body{margin-top:60px;display:grid;grid-template-columns:240px 1fr 260px;max-width:1140px;margin-left:auto;margin-right:auto;padding:20px 12px;gap:16px;}
+.sl{position:sticky;top:76px;height:fit-content;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.sc h3{font-size:0.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.profile-card{text-align:center;padding:8px 0 4px;}
+.pc-cover{height:50px;background:linear-gradient(135deg,var(--red3),var(--green3));border-radius:8px;margin-bottom:-20px;position:relative;}
+.pc-av{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--green));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;margin:0 auto;border:3px solid var(--surface);position:relative;z-index:1;}
+.pc-name{font-size:0.92rem;font-weight:700;margin-top:8px;}
+.pc-city{font-size:0.72rem;color:var(--gray);margin-top:2px;}
+.pc-stats{display:flex;justify-content:center;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.pcs strong{display:block;font-size:1rem;font-weight:900;}
+.pcs span{font-size:0.65rem;color:var(--gray);}
+.sl-link{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:0.85rem;color:var(--lgray);transition:all 0.2s;}
+.sl-link:hover,.sl-link.active{background:rgba(255,255,255,0.06);color:var(--white);}
+.sl-link .icon{font-size:0.95rem;width:18px;text-align:center;}
+.sl-link.danger{color:rgba(227,6,19,0.7);}
+.sl-link.danger:hover{color:var(--red);background:var(--red3);}
+.feed-wrap{min-width:0;}
+.feed-filter{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding:2px 0;}
+.ff-btn{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--lgray);font-family:inherit;font-size:0.78rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.ff-btn:hover{border-color:rgba(255,255,255,0.25);color:var(--white);}
+.ff-btn.active{background:var(--white);color:#000;border-color:var(--white);font-weight:700;}
+.composer{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.cmp-top{display:flex;gap:10px;}
+.cmp-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--green));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;}
+.cmp-ta{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--white);resize:none;font-family:inherit;font-size:0.9rem;min-height:72px;outline:none;transition:border 0.2s;}
+.cmp-ta:focus{border-color:rgba(255,255,255,0.2);}
+.cmp-img-preview{margin-top:10px;border-radius:8px;overflow:hidden;display:none;position:relative;}
+.cmp-img-preview img{width:100%;max-height:220px;object-fit:cover;}
+.cmp-img-preview .rm{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.75);border:none;color:white;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.85rem;}
+.cmp-loc{display:none;margin-top:8px;align-items:center;gap:8px;}
+.cmp-loc.show{display:flex;}
+.cmp-loc input{flex:1;padding:7px 12px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--white);font-family:inherit;font-size:0.8rem;outline:none;}
+.cmp-bar{display:flex;gap:6px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.cb{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;background:none;border:none;color:var(--lgray);font-family:inherit;font-size:0.75rem;cursor:pointer;transition:all 0.2s;}
+.cb:hover{background:rgba(255,255,255,0.07);color:var(--white);}
+.cmp-cat{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--lgray);font-family:inherit;font-size:0.75rem;padding:6px 10px;border-radius:6px;outline:none;cursor:pointer;}
+.cmp-submit{margin-right:auto;padding:8px 22px;background:var(--red);border:none;border-radius:8px;color:white;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.cmp-submit:hover{background:var(--red2);transform:translateY(-1px);}
+input[type=file]{display:none;}
+.live-banner{background:linear-gradient(135deg,rgba(227,6,19,0.2),rgba(227,6,19,0.05));border:1px solid rgba(227,6,19,0.3);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
+.live-banner:hover{border-color:var(--red);background:rgba(227,6,19,0.15);}
+.live-dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(227,6,19,0.7)}50%{box-shadow:0 0 0 8px rgba(227,6,19,0)}}
+.live-text strong{display:block;font-size:0.85rem;color:var(--white);}
+.live-text span{font-size:0.72rem;color:var(--lgray);}
+.live-count{margin-right:auto;font-size:0.72rem;color:var(--red);font-weight:700;}
+.post{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;animation:postIn 0.4s cubic-bezier(.16,1,.3,1);}
+@keyframes postIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.post-head{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;}
+.p-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;}
+.p-info{flex:1;min-width:0;}
+.p-info strong{display:block;font-size:0.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-info span{font-size:0.72rem;color:var(--gray);}
+.p-cat{padding:3px 10px;border-radius:10px;font-size:0.68rem;font-weight:700;flex-shrink:0;}
+.cat-protest{background:var(--red3);color:var(--red);}
+.cat-doc{background:rgba(30,122,60,0.15);color:#4caf74;}
+.cat-film{background:rgba(200,168,75,0.15);color:var(--gold);}
+.cat-news{background:rgba(100,150,255,0.15);color:#8ab4ff;}
+.cat-art{background:rgba(200,100,200,0.15);color:#e080e0;}
+.post-body{padding:0 16px 12px;}
+.post-txt{font-family:'Noto Sans Arabic','DM Sans',sans-serif;font-size:0.9rem;line-height:1.75;color:#ddd;margin-bottom:10px;}
+.post-img{width:100%;border-radius:8px;max-height:380px;object-fit:cover;cursor:pointer;display:block;transition:opacity 0.2s;}
+.post-img:hover{opacity:0.9;}
+.post-loc{display:flex;align-items:center;gap:5px;font-size:0.73rem;color:var(--gray);margin-top:8px;}
+.post-loc span{color:var(--green2);}
+.post-acts{display:flex;padding:8px 12px;border-top:1px solid var(--border);gap:2px;}
+.pa{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:8px;background:none;border:none;color:var(--gray);font-family:inherit;font-size:0.8rem;cursor:pointer;transition:all 0.2s;flex:1;justify-content:center;}
+.pa:hover{background:rgba(255,255,255,0.06);color:var(--white);}
+.pa.liked{color:var(--red);}
+.comments-box{display:none;border-top:1px solid var(--border);background:rgba(0,0,0,0.2);padding:12px 16px;}
+.comments-box.open{display:block;}
+.cmt{display:flex;gap:8px;margin-bottom:10px;}
+.cmt-av{width:26px;height:26px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700;flex-shrink:0;}
+.cmt-b{background:rgba(255,255,255,0.05);border-radius:8px;padding:7px 11px;flex:1;font-size:0.8rem;}
+.cmt-b strong{font-size:0.72rem;color:var(--lgray);display:block;margin-bottom:2px;}
+.cmt-b p{color:#ccc;font-family:'Noto Sans Arabic',sans-serif;line-height:1.5;}
+.cmt-input{display:flex;gap:8px;margin-top:8px;}
+.cmt-input input{flex:1;padding:8px 14px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--white);font-family:inherit;font-size:0.8rem;outline:none;}
+.cmt-send{background:var(--red);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:0.9rem;transition:background 0.2s;}
+.cmt-send:hover{background:var(--red2);}
+.sr{position:sticky;top:76px;height:fit-content;}
+.map-widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
+.map-mini{height:140px;background:radial-gradient(ellipse at 30% 40%,rgba(227,6,19,0.2) 0%,transparent 50%),radial-gradient(ellipse at 70% 60%,rgba(30,122,60,0.15) 0%,transparent 50%),linear-gradient(135deg,#0a1a0a,#0a0a1a,#1a0a0a);display:flex;align-items:center;justify-content:center;font-size:2.5rem;cursor:pointer;position:relative;overflow:hidden;}
+.map-mini::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,0.6));}
+.map-dots{position:absolute;inset:0;}
+.mdot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--red);animation:mapPulse 2s infinite;}
+.mdot::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--red);animation:mapRing 2s infinite;opacity:0;}
+@keyframes mapPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes mapRing{0%{transform:scale(1);opacity:0.7}100%{transform:scale(2.5);opacity:0}}
+.map-info{padding:12px 14px;}
+.map-info h4{font-size:0.82rem;font-weight:700;margin-bottom:8px;}
+.map-country{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.75rem;}
+.map-country:last-child{border:none;}
+.map-country .flag{font-size:1rem;}
+.map-country .cnt{color:var(--red);font-weight:700;font-size:0.7rem;}
+.trend-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:16px;margin:3px;background:rgba(255,255,255,0.05);border:1px solid var(--border);font-size:0.72rem;color:var(--lgray);cursor:pointer;transition:all 0.2s;}
+.trend-tag:hover{background:var(--red3);color:var(--red);border-color:rgba(227,6,19,0.3);}
+.section-page{display:none;padding:80px 20px 40px;max-width:860px;margin:0 auto;}
+.section-page.active{display:block;}
+.sec-title{font-size:1.4rem;font-weight:900;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.sec-title::before{content:'';width:4px;height:24px;background:var(--red);border-radius:2px;display:block;}
+.map-full{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);height:380px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;overflow:hidden;cursor:pointer;}
+.map-full-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(30,122,60,0.1),transparent 70%),linear-gradient(135deg,#060e06,#0e0606,#06060e);}
+.map-full-dots{position:absolute;inset:0;}
+.protest-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.protest-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:all 0.2s;}
+.protest-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.pc-flag{font-size:1.8rem;}
+.pc-info h4{font-size:0.88rem;font-weight:700;}
+.pc-info p{font-size:0.72rem;color:var(--gray);margin-top:2px;}
+.pc-count{margin-right:auto;background:var(--red3);color:var(--red);padding:3px 9px;border-radius:10px;font-size:0.7rem;font-weight:700;}
+.films-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.film-card{background:var(--card);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform 0.3s,box-shadow 0.3s;}
+.film-card:hover{transform:scale(1.04) translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.6);}
+.film-thumb{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;}
+.film-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent 50%);opacity:0;transition:opacity 0.2s;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;}
+.film-card:hover .film-overlay{opacity:1;}
+.film-play{width:32px;height:32px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#000;margin-bottom:6px;}
+.film-info{padding:10px;}
+.film-title{font-size:0.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.film-meta{font-size:0.65rem;color:var(--gray);margin-top:3px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;}
+.stat-box .num{font-size:2rem;font-weight:900;color:var(--red);}
+.stat-box .lbl{font-size:0.75rem;color:var(--gray);margin-top:4px;}
+.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.live-card{background:var(--card);border:1px solid rgba(227,6,19,0.2);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all 0.2s;}
+.live-card:hover{border-color:var(--red);transform:translateY(-2px);}
+.live-thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;background:linear-gradient(135deg,#1a0808,#080808);}
+.live-badge{position:absolute;top:10px;right:10px;background:var(--red);color:white;padding:3px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;display:flex;align-items:center;gap:4px;}
+.live-badge .dot{width:6px;height:6px;border-radius:50%;background:white;animation:pulse 1.5s infinite;}
+.live-info{padding:12px;}
+.live-info h4{font-size:0.85rem;font-weight:700;}
+.live-info p{font-size:0.72rem;color:var(--gray);margin-top:3px;}
+.live-viewers{font-size:0.68rem;color:var(--red);margin-top:6px;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);}
+.modal.open{display:flex;}
+.modal-box{background:#181818;border-radius:12px;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;animation:modalIn 0.3s cubic-bezier(.16,1,.3,1);}
+@keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(20px)}to{opacity:1;transform:none}}
+.modal-hero{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;}
+.modal-hero-grad{position:absolute;inset:0;background:linear-gradient(to top,#181818 0%,transparent 60%);}
+.modal-close{position:absolute;top:12px;left:12px;width:30px;height:30px;background:rgba(0,0,0,0.7);border:none;color:white;border-radius:50%;cursor:pointer;font-size:0.85rem;z-index:1;}
+.modal-body{padding:20px 24px 28px;}
+.modal-title{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+.modal-desc{font-family:'Noto Sans Arabic','DM Sans',sans-serif;font-size:0.88rem;line-height:1.75;color:#ccc;margin:14px 0;}
+.modal-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.mtag{padding:4px 10px;border-radius:14px;background:rgba(255,255,255,0.07);color:var(--gray);font-size:0.72rem;}
+.img-modal{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px);}
+.img-modal.open{display:flex;}
+.img-modal img{max-width:92vw;max-height:90vh;border-radius:8px;}
+.toast{position:fixed;bottom:28px;right:28px;z-index:9998;padding:12px 20px;border-radius:8px;font-size:0.85rem;font-weight:600;display:none;animation:toastIn 0.3s ease;max-width:300px;}
+.toast.show{display:block;}
+.toast.ok{background:var(--green);}
+.toast.err{background:var(--red);}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+[data-lang="en"] .ar{display:none!important;}
+[data-lang="en"] .en{display:block!important;}
+[data-lang="fr"] .ar{display:none!important;}
+[data-lang="fr"] .fr{display:block!important;}
+[data-lang="en"],[data-lang="fr"]{direction:ltr;font-family:'DM Sans',sans-serif;}
+.en,.fr,.tr,.de{display:none;}
+@media(max-width:960px){
+  .app-body{grid-template-columns:1fr;}
+  .sl,.sr{display:none;}
+  .auth-wrap{grid-template-columns:1fr;}
+  .auth-visual{display:none;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+}
+.empty{text-align:center;padding:50px 20px;color:var(--gray);}
+.empty .ei{font-size:2.8rem;margin-bottom:12px;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="page-auth" class="page active">
+  <div style="padding:20px;width:100%;">
+  <div class="auth-wrap" style="margin:0 auto;">
+    <div class="auth-visual">
+      <div class="flag-big">
+        <div class="fb-black"></div><div class="fb-white"></div><div class="fb-green"></div>
+        <div class="flag-triangle-big"></div>
+      </div>
+      <h2>فلس<span>طين</span><br><span style="font-size:1rem;color:rgba(255,255,255,0.4);">falasteen.ink</span></h2>
+      <p>منصة عالمية لتوثيق المظاهرات والأفلام الفلسطينية — من الشعب للشعب</p>
+      <div class="auth-stat" style="margin-top:24px;background:rgba(255,255,255,0.05);padding:16px 24px;border-radius:10px;border:1px solid var(--border);">
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:12px;">🌍 أرقام المنصة</div>
+        <div style="display:flex;gap:24px;">
+          <div class="auth-stat"><strong>50K+</strong><span>مستخدم</span></div>
+          <div class="auth-stat"><strong>120+</strong><span>دولة</span></div>
+          <div class="auth-stat"><strong>8K+</strong><span>توثيق</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-form">
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('ar')">🇸🇦 العربية</button>
+        <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="setLang('fr')">🇫🇷 Français</button>
+        <button class="lang-btn" onclick="setLang('tr')">🇹🇷 Türkçe</button>
+        <button class="lang-btn" onclick="setLang('de')">🇩🇪 Deutsch</button>
+      </div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('login')">
+          <span class="ar">تسجيل الدخول</span><span class="en">Sign In</span><span class="fr">Connexion</span>
+        </div>
+        <div class="auth-tab" onclick="switchTab('register')">
+          <span class="ar">إنشاء حساب</span><span class="en">Register</span><span class="fr">S'inscrire</span>
+        </div>
+      </div>
+      <div id="form-login">
+        <div class="field">
+          <label class="ar">البريد الإلكتروني</label><label class="en">Email</label><label class="fr">Email</label>
+          <input type="email" id="l-user" placeholder="email@example.com">
+        </div>
+        <div class="field">
+          <label class="ar">كلمة المرور</label><label class="en">Password</label><label class="fr">Mot de passe</label>
+          <input type="password" id="l-pass" placeholder="••••••••">
+        </div>
+        <button class="btn-main" onclick="doLogin()">
+          <span class="ar">دخول ←</span><span class="en">Sign In →</span><span class="fr">Connexion →</span>
+        </button>
+        <p class="auth-note">
+          <span class="ar">أول مرة؟ <span onclick="switchTab('register')">أنشئ حساباً</span></span>
+          <span class="en">New here? <span onclick="switchTab('register')">Create account</span></span>
+        </p>
+      </div>
+      <div id="form-register" style="display:none;">
+        <div class="field">
+          <label class="ar">الاسم الكامل</label><label class="en">Full Name</label>
+          <input type="text" id="r-name" placeholder="Your name...">
+        </div>
+        <div class="field">
+          <label class="ar">اسم المستخدم</label><label class="en">Username</label>
+          <input type="text" id="r-user" placeholder="@username">
+        </div>
+        <div class="field">
+          <label class="ar">البريد الإلكتروني</label><label class="en">Email</label>
+          <input type="email" id="r-email" placeholder="email@example.com">
+        </div>
+        <div class="field">
+          <label class="ar">البلد / المدينة</label><label class="en">Country / City</label>
+          <input type="text" id="r-city" placeholder="Hamburg, Germany...">
+        </div>
+        <div class="field">
+          <label class="ar">كلمة المرور</label><label class="en">Password</label>
+          <input type="password" id="r-pass" placeholder="••••••••">
+        </div>
+        <button class="btn-main" onclick="doRegister()">
+          <span class="ar">إنشاء الحساب 🇵🇸</span><span class="en">Create Account 🇵🇸</span>
+        </button>
+        <p class="auth-note"><span class="ar">عندك حساب؟ <span onclick="switchTab('login')">سجّل دخولك</span></span></p>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="page-app" class="page">
+  <div class="topbar">
+    <div class="t-logo" onclick="goHome()">falasteen<span>.ink</span><small>🇵🇸 Free Palestine</small></div>
+    <div class="t-search">
+      <span class="si">🔍</span>
+      <input type="text" id="search-input" placeholder="ابحث..." oninput="doSearch(this.value)">
+    </div>
+    <div class="t-nav">
+      <button class="t-btn active" id="tb-home" onclick="showSec('home')"><span class="ti">🏠</span><span class="ar">الرئيسية</span><span class="en">Home</span></button>
+      <button class="t-btn" id="tb-map" onclick="showSec('map')"><span class="ti">🗺</span><span class="ar">الخريطة</span><span class="en">Map</span><div class="nbadge" id="mb">!</div></button>
+      <button class="t-btn" id="tb-films" onclick="showSec('films')"><span class="ti">🎬</span><span class="ar">أفلام</span><span class="en">Films</span></button>
+      <button class="t-btn" id="tb-live" onclick="showSec('live')"><span class="ti">📡</span><span class="ar">مباشر</span><span class="en">Live</span><div class="nbadge" style="background:var(--red);animation:pulse 1.5s infinite;">3</div></button>
+      <button class="t-btn" id="tb-notif" onclick="showSec('notif')"><span class="ti">🔔</span><span class="ar">إشعارات</span><span class="en">Alerts</span><div class="nbadge" id="nb" style="display:none;">0</div></button>
+    </div>
+    <div class="t-right">
+      <select class="t-lang" onchange="setLang(this.value)" id="app-lang-sel">
+        <option value="ar">🇸🇦 AR</option><option value="en">🇬🇧 EN</option>
+        <option value="fr">🇫🇷 FR</option><option value="de">🇩🇪 DE</option><option value="tr">🇹🇷 TR</option>
+      </select>
+      <div class="t-avatar" id="t-av" onclick="toast('صفحتك الشخصية قريباً!')">م</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="sec-home" class="app-body">
+    <div class="sl">
+      <div class="sc">
+        <div class="profile-card">
+          <div class="pc-cover"></div>
+          <div class="pc-av" id="sl-av">م</div>
+          <div class="pc-name" id="sl-name">مستخدم</div>
+          <div class="pc-city" id="sl-city">🌍 العالم</div>
+          <div class="pc-stats">
+            <div class="pcs"><strong id="p-posts">0</strong><span class="ar">منشور</span><span class="en">Posts</span></div>
+            <div class="pcs"><strong id="p-likes">0</strong><span class="ar">إعجاب</span><span class="en">Likes</span></div>
+            <div class="pcs"><strong id="p-docs">0</strong><span class="ar">توثيق</span><span class="en">Docs</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sc">
+        <h3 class="ar">القائمة</h3><h3 class="en">Menu</h3>
+        <div class="sl-link active" onclick="filterFeed('all')"><span class="icon">🌐</span><span class="ar">كل المنشورات</span><span class="en">All Posts</span></div>
+        <div class="sl-link" onclick="filterFeed('protest')"><span class="icon">✊</span><span class="ar">المظاهرات</span><span class="en">Protests</span></div>
+        <div class="sl-link" onclick="filterFeed('documentary')"><span class="icon">🎬</span><span class="ar">الوثائقيات</span><span class="en">Documentaries</span></div>
+        <div class="sl-link" onclick="filterFeed('news')"><span class="icon">📰</span><span class="ar">الأخبار</span><span class="en">News</span></div>
+        <div class="sl-link" onclick="filterFeed('art')"><span class="icon">🎨</span><span class="ar">الفن</span><span class="en">Art</span></div>
+        <div class="divider"></div>
+        <div class="sl-link danger" onclick="doLogout()"><span class="icon">🚪</span><span class="ar">خروج</span><span class="en">Logout</span></div>
+      </div>
+    </div>
+
+    <div class="feed-wrap">
+      <div class="live-banner" onclick="showSec('live')">
+        <div class="live-dot"></div>
+        <div class="live-text">
+          <strong class="ar">🔴 بث مباشر الآن — مظاهرة لندن</strong>
+          <strong class="en">🔴 Live Now — London Protest</strong>
+          <span class="ar">انضم لمشاهدة المظاهرة مباشرة</span>
+          <span class="en">Join the live stream now</span>
+        </div>
+        <div class="live-count">👁 12.4K</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button class="cb" id="news-ai-btn" onclick="fetchNewsAI()" style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:7px 14px;">📰 <span class="ar">جلب أخبار حقيقية</span><span class="en">Fetch Live News</span></button>
+      </div>
+      <div class="feed-filter">
+        <button class="ff-btn active" onclick="filterFeed('all',this)">🌐 <span class="ar">الكل</span><span class="en">All</span></button>
+        <button class="ff-btn" onclick="filterFeed('protest',this)">✊ <span class="ar">مظاهرات</span><span class="en">Protests</span></button>
+        <button class="ff-btn" onclick="filterFeed('documentary',this)">🎬 <span class="ar">وثائقيات</span><span class="en">Docs</span></button>
+        <button class="ff-btn" onclick="filterFeed('news',this)">📰 <span class="ar">أخبار</span><span class="en">News</span></button>
+        <button class="ff-btn" onclick="filterFeed('art',this)">🎨 <span class="ar">فن</span><span class="en">Art</span></button>
+      </div>
+      <div class="composer">
+        <div class="cmp-top">
+          <div class="cmp-av" id="cmp-av">م</div>
+          <textarea class="cmp-ta" id="cmp-txt" placeholder="وثّق مظاهرة، شارك فيلم، أو أي شيء فلسطيني... 🇵🇸"></textarea>
+        </div>
+        <div class="cmp-img-preview" id="img-prev"><img id="prev-img" src=""><button class="rm" onclick="rmImg()">✕</button></div>
+        <div class="cmp-loc" id="cmp-loc"><span>📍</span><input type="text" id="loc-in" placeholder="الموقع: مثال لندن — المملكة المتحدة"></div>
+        <div class="cmp-bar">
+          <label><div class="cb" onclick="document.getElementById('f-up').click()">📷 <span class="ar">صورة</span><span class="en">Photo</span></div></label>
+          <input type="file" id="f-up" accept="image/*" onchange="prevImg(this)">
+          <button class="cb" onclick="toggleLoc()">📍 <span class="ar">موقع</span><span class="en">Location</span></button>
+          <button class="cb" id="glif-btn" onclick="generateAIImage()">🎨 <span class="ar">صورة AI</span><span class="en">AI Image</span></button>
+          <select class="cmp-cat" id="cmp-cat">
+            <option value="protest">✊ مظاهرة / Protest</option>
+            <option value="documentary">🎬 وثائقي / Documentary</option>
+            <option value="news">📰 خبر / News</option>
+            <option value="film">🎥 فيلم / Film</option>
+            <option value="art">🎨 فن / Art</option>
+          </select>
+          <button class="cmp-submit" onclick="submitPost()">▶ <span class="ar">نشر</span><span class="en">Post</span></button>
+        </div>
+      </div>
+      <div id="feed-posts"></div>
+    </div>
+
+    <div class="sr">
+      <div class="map-widget">
+        <div class="map-mini" onclick="showSec('map')">
+          <div class="map-dots">
+            <div class="mdot" style="top:28%;left:45%;"></div>
+            <div class="mdot" style="top:22%;left:48%;background:var(--green2);"></div>
+            <div class="mdot" style="top:35%;left:52%;animation-delay:0.8s;"></div>
+            <div class="mdot" style="top:25%;left:30%;animation-delay:0.3s;"></div>
+            <div class="mdot" style="top:20%;left:35%;animation-delay:0.6s;background:var(--gold);"></div>
+            <div class="mdot" style="top:38%;left:38%;animation-delay:1s;"></div>
+            <div class="mdot" style="top:45%;left:25%;animation-delay:0.2s;"></div>
+          </div>
+          <div style="position:relative;z-index:1;font-size:1.5rem;">🗺</div>
+        </div>
+        <div class="map-info">
+          <h4 class="ar">🔴 مظاهرات نشطة اليوم</h4><h4 class="en">🔴 Active Protests Today</h4>
+          <div class="map-country"><span><span class="flag">🇬🇧</span> London</span><span class="cnt">500K+</span></div>
+          <div class="map-country"><span><span class="flag">🇩🇪</span> Hamburg</span><span class="cnt">50K+</span></div>
+          <div class="map-country"><span><span class="flag">🇫🇷</span> Paris</span><span class="cnt">200K+</span></div>
+          <div class="map-country"><span><span class="flag">🇺🇸</span> New York</span><span class="cnt">300K+</span></div>
+          <div style="text-align:center;margin-top:8px;font-size:0.72rem;color:var(--red);cursor:pointer;" onclick="showSec('map')">
+            <span class="ar">عرض الكل ›</span><span class="en">View All ›</span>
+          </div>
+        </div>
+      </div>
+      <div class="sc">
+        <h3 class="ar">🔥 الأكثر تداولاً</h3><h3 class="en">🔥 Trending</h3>
+        <div>
+          <span class="trend-tag">#غزة</span><span class="trend-tag">#Gaza</span>
+          <span class="trend-tag">#القدس</span><span class="trend-tag">#Jerusalem</span>
+          <span class="trend-tag">#FreePalestine</span><span class="trend-tag">#فلسطين_حرة</span>
+          <span class="trend-tag">#حق_العودة</span><span class="trend-tag">#وقف_النار</span>
+          <span class="trend-tag">#Nakba</span><span class="trend-tag">#انتفاضة</span>
+        </div>
+      </div>
+      <div class="sc">
+        <h3 class="ar">📊 إحصائيات المنصة</h3><h3 class="en">📊 Platform Stats</h3>
+        <div style="font-size:0.78rem;color:var(--lgray);line-height:2.2;">
+          <div>📝 <span class="ar">المنشورات</span><span class="en">Posts</span>: <strong id="s-posts">0</strong></div>
+          <div>✊ <span class="ar">المظاهرات</span><span class="en">Protests</span>: <strong id="s-protests">0</strong></div>
+          <div>🌍 <span class="ar">الدول</span><span class="en">Countries</span>: <strong>47</strong></div>
+          <div>🎬 <span class="ar">الأفلام</span><span class="en">Films</span>: <strong>120+</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div id="sec-map" class="section-page">
+    <h2 class="sec-title ar">🗺 خريطة المظاهرات العالمية</h2>
+    <h2 class="sec-title en">🗺 Global Protest Map</h2>
+    <div class="map-full" onclick="toast('الخريطة التفاعلية الكاملة قريباً!')">
+      <div class="map-full-bg"></div>
+      <div class="map-full-dots" id="mfd"></div>
+      <div style="position:relative;z-index:1;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:8px;">🗺</div>
+        <div style="font-size:0.85rem;color:var(--lgray);" class="ar">خريطة تفاعلية — اضغط لعرض تفاصيل كل مظاهرة</div>
+        <div style="font-size:0.85rem;color:var(--lgray);" class="en">Interactive Map — Click to view protest details</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:0.78rem;color:var(--gray);" class="ar">تحديث بالذكاء الاصطناعي:</span>
+      <button class="ff-btn" id="ai-protests-btn" onclick="fetchLiveProtests(this)">🔍 Perplexity — <span class="ar">مظاهرات حديثة</span><span class="en">Latest Protests</span></button>
+    </div>
+    <div class="protest-cards" id="protest-cards"></div>
+  </div>
+
+  <!-- FILMS -->
+  <div id="sec-films" class="section-page">
+    <h2 class="sec-title ar">🎬 الأفلام الفلسطينية</h2>
+    <h2 class="sec-title en">🎬 Palestinian Films</h2>
+    <div class="feed-filter" style="margin-bottom:16px;">
+      <button class="ff-btn active" onclick="filterFilms('all',this)">الكل / All</button>
+      <button class="ff-btn" onclick="filterFilms('doc',this)">وثائقي</button>
+      <button class="ff-btn" onclick="filterFilms('feature',this)">روائي</button>
+      <button class="ff-btn" onclick="filterFilms('short',this)">قصير</button>
+      <button class="ff-btn" onclick="filterFilms('history',this)">تاريخي</button>
+    </div>
+    <div class="films-grid" id="films-grid"></div>
+  </div>
+
+  <!-- LIVE -->
+  <div id="sec-live" class="section-page">
+    <h2 class="sec-title ar">📡 البث المباشر</h2>
+    <h2 class="sec-title en">📡 Live Streams</h2>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="num">3</div><div class="lbl ar">بث نشط</div><div class="lbl en">Live Now</div></div>
+      <div class="stat-box"><div class="num">12.4K</div><div class="lbl ar">مشاهد</div><div class="lbl en">Viewers</div></div>
+      <div class="stat-box"><div class="num">47</div><div class="lbl ar">دولة مشاركة</div><div class="lbl en">Countries</div></div>
+      <div class="stat-box"><div class="num" style="color:var(--green2);">FREE</div><div class="lbl ar">مجاناً للجميع</div><div class="lbl en">Always Free</div></div>
+    </div>
+    <div class="live-grid" id="live-grid"></div>
+  </div>
+
+  <!-- NOTIF -->
+  <div id="sec-notif" class="section-page">
+    <h2 class="sec-title ar">🔔 الإشعارات</h2>
+    <h2 class="sec-title en">🔔 Notifications</h2>
+    <div id="notif-list"></div>
+  </div>
+</div>
+
+<!-- FILM MODAL -->
+<div class="modal" id="film-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-hero" id="fm-hero" style="background:linear-gradient(135deg,#0d1a0d,#1a0808);">
+      <span id="fm-emoji" style="position:relative;z-index:1;font-size:5rem;">🎬</span>
+      <div class="modal-hero-grad"></div>
+      <button class="modal-close" onclick="document.getElementById('film-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title" id="fm-title"></h2>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;font-size:0.8rem;color:var(--lgray);" id="fm-meta"></div>
+      <div style="display:flex;gap:8px;margin:14px 0;">
+        <button class="btn-main" style="flex:1;padding:10px;">▶ <span class="ar">مشاهدة</span><span class="en">Watch</span></button>
+        <button class="btn-main" style="flex:0.5;padding:10px;background:rgba(255,255,255,0.08);">+ <span class="ar">قائمتي</span><span class="en">Watchlist</span></button>
+        <button class="btn-main" style="flex:0.4;padding:10px;background:rgba(255,255,255,0.08);">👍</button>
+      </div>
+      <p class="modal-desc" id="fm-desc"></p>
+      <div class="modal-tags" id="fm-tags"></div>
+    </div>
+  </div>
+</div>
+
+<div class="img-modal" id="img-modal" onclick="this.classList.remove('open')">
+  <img id="im-src" src="">
+</div>
+<div class="toast" id="toast-el"></div>
+
+<script>
+const SURL = 'https://audvtdbylhmumvdrhijk.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+const sb = window.supabase.createClient(SURL, SKEY);
+const EDGE_URL = `${SURL}/functions/v1`;
+
+let CU = null, posts = [], curFilter = 'all', curImg = null, showLoc = false, notifs = [];
+
+const FILMS = [
+  {id:1,title:'5 كاميرات مكسورة',en:'5 Broken Cameras',emoji:'🎬',year:'2012',type:'doc',dur:'94 min',desc:'فلاح فلسطيني يصوّر بخمس كاميرات سنوات من المقاومة السلمية في بلعين.',tags:['أوسكار','بلعين','مقاومة'],bg:'linear-gradient(135deg,#0d1a0d,#1a0808)'},
+  {id:2,title:'الجنة الآن',en:'Paradise Now',emoji:'🌿',year:'2005',type:'feature',dur:'90 min',desc:'شابان فلسطينيان. غولدن غلوب لأفضل فيلم أجنبي.',tags:['غولدن غلوب','هاني أبو أسعد'],bg:'linear-gradient(135deg,#0a1a0a,#0d1a08)'},
+  {id:3,title:'عمر',en:'Omar',emoji:'👤',year:'2013',type:'feature',dur:'96 min',desc:'شاب يتسلق الجدار كل يوم. ترشح للأوسكار.',tags:['أوسكار','جدار','حب'],bg:'linear-gradient(135deg,#0a0a1a,#1a0a0a)'},
+  {id:4,title:'جنين جنين',en:'Jenin Jenin',emoji:'🏕',year:'2002',type:'doc',dur:'54 min',desc:'وثائقي يرصد مجزرة مخيم جنين 2002.',tags:['جنين','2002','شهادات'],bg:'linear-gradient(135deg,#1a0808,#081a08)'},
+  {id:5,title:'شجرة الليمون',en:'Lemon Tree',emoji:'🍋',year:'2008',type:'feature',dur:'106 min',desc:'أرملة فلسطينية تناضل للحفاظ على بستان ليمونها.',tags:['أرض','قانون','امرأة'],bg:'linear-gradient(135deg,#1a1a08,#0a1a0a)'},
+  {id:6,title:'يد إلهية',en:'Divine Intervention',emoji:'✋',year:'2002',type:'feature',dur:'92 min',desc:'فيلم إيليا سليمان الساخر عن الحياة الفلسطينية.',tags:['سخرية','ايليا سليمان'],bg:'linear-gradient(135deg,#0a0a1a,#1a0808)'},
+  {id:7,title:'ملح هذا البحر',en:'Salt of This Sea',emoji:'🌊',year:'2008',type:'feature',dur:'109 min',desc:'شابة فلسطينية من بروكلين تسافر لاسترداد ذاكرة عائلتها.',tags:['يافا','عودة','هوية'],bg:'linear-gradient(135deg,#081018,#180808)'},
+  {id:8,title:'ذاكرة النكبة',en:'Memory of Nakba',emoji:'🗝',year:'2008',type:'history',dur:'60 min',desc:'شهادات من الجيل الأول للاجئين 1948.',tags:['1948','لاجئون','ذاكرة'],bg:'linear-gradient(135deg,#1a1008,#08101a)'},
+  {id:9,title:'زيتون بلادي',en:'Olive of My Land',emoji:'🫒',year:'2020',type:'doc',dur:'52 min',desc:'توثيق رحلة شجرة الزيتون الفلسطينية.',tags:['زيتون','أرض','صمود'],bg:'linear-gradient(135deg,#0d1a0a,#1a1408)'},
+  {id:10,title:'شعراء المقاومة',en:'Poets of Resistance',emoji:'✍',year:'2018',type:'doc',dur:'75 min',desc:'رحلة في شعر محمود درويش وسميح القاسم.',tags:['درويش','شعر','مقاومة'],bg:'linear-gradient(135deg,#1a0a1a,#0a1a0a)'},
+  {id:11,title:'العاشق',en:'The Lover',emoji:'💌',year:'2019',type:'short',dur:'18 min',desc:'فيلم قصير عن حب وسط الحصار.',tags:['حب','غزة','قصير'],bg:'linear-gradient(135deg,#1a0808,#0a081a)'},
+  {id:12,title:'حياة اعتيادية',en:'Ordinary Life',emoji:'🏘',year:'2021',type:'doc',dur:'65 min',desc:'يوم عادي في حياة عائلة فلسطينية.',tags:['يومي','عائلة','ضفة'],bg:'linear-gradient(135deg,#081a0a,#0a0a18)'},
+];
+
+const PROTESTS = [
+  {flag:'🇬🇧',city:'London',country:'United Kingdom',count:'500,000+',date:'Oct 2023'},
+  {flag:'🇩🇪',city:'Berlin',country:'Germany',count:'100,000+',date:'Nov 2023'},
+  {flag:'🇩🇪',city:'Hamburg',country:'Germany',count:'50,000+',date:'Dec 2023'},
+  {flag:'🇫🇷',city:'Paris',country:'France',count:'200,000+',date:'Oct 2023'},
+  {flag:'🇺🇸',city:'New York',country:'USA',count:'300,000+',date:'Mar 2024'},
+  {flag:'🇹🇷',city:'Istanbul',country:'Turkey',count:'1,000,000+',date:'Oct 2023'},
+  {flag:'🇯🇴',city:'Amman',country:'Jordan',count:'200,000+',date:'Oct 2023'},
+  {flag:'🇲🇦',city:'Rabat',country:'Morocco',count:'300,000+',date:'Oct 2023'},
+  {flag:'🇮🇩',city:'Jakarta',country:'Indonesia',count:'500,000+',date:'Nov 2023'},
+  {flag:'🇵🇰',city:'Karachi',country:'Pakistan',count:'400,000+',date:'Oct 2023'},
+  {flag:'🇦🇺',city:'Sydney',country:'Australia',count:'80,000+',date:'Oct 2023'},
+  {flag:'🇨🇦',city:'Toronto',country:'Canada',count:'100,000+',date:'Oct 2023'},
+];
+
+const LIVES = [
+  {emoji:'✊',title:{ar:'مظاهرة لندن — مباشر',en:'London Protest — LIVE'},city:'London 🇬🇧',viewers:'12,400',bg:'linear-gradient(135deg,#1a0808,#080808)'},
+  {emoji:'🕌',title:{ar:'القدس — الحرم الشريف',en:'Jerusalem — Al-Aqsa'},city:'Jerusalem 🇵🇸',viewers:'8,200',bg:'linear-gradient(135deg,#0d1a0d,#1a1408)'},
+  {emoji:'🎤',title:{ar:'مؤتمر تضامن — برلين',en:'Solidarity Conference — Berlin'},city:'Berlin 🇩🇪',viewers:'3,100',bg:'linear-gradient(135deg,#08081a,#1a0808)'},
+];
+
+// ===== INIT =====
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { await loadProfile(session.user.id); if (CU) startApp(); }
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      await loadProfile(session.user.id);
+      if (CU) startApp();
+    } else if (event === 'SIGNED_OUT') {
+      CU = null;
+      document.getElementById('page-app').classList.remove('active');
+      document.getElementById('page-app').style.display = 'none';
+      document.getElementById('page-auth').classList.add('active');
+    }
+  });
+}
+
+async function loadProfile(uid) {
+  const { data } = await sb.from('profiles').select('*').eq('id', uid).single();
+  CU = data ? { ...data, av: (data.full_name || 'م')[0].toUpperCase() }
+             : { id: uid, full_name: 'مستخدم', username: 'user', av: 'م' };
+}
+
+// ===== AUTH =====
+async function doLogin() {
+  const email = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!email || !pass) { toast('أدخل البيانات كاملة', true); return; }
+  toast('جاري الدخول...');
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) toast('بيانات خاطئة / Wrong credentials', true);
+}
+
+async function doRegister() {
+  const name = document.getElementById('r-name').value.trim();
+  const username = document.getElementById('r-user').value.trim().replace('@', '');
+  const email = document.getElementById('r-email').value.trim();
+  const city = document.getElementById('r-city').value.trim();
+  const pass = document.getElementById('r-pass').value;
+  if (!name || !username || !email || !pass) { toast('أكمل البيانات', true); return; }
+  toast('جاري إنشاء الحساب...');
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  if (error) { toast(error.message, true); return; }
+  if (data.user) {
+    await sb.from('profiles').upsert({ id: data.user.id, username, full_name: name, city: city || 'World 🌍' });
+  }
+  toast(`مرحباً ${name}! 🇵🇸 تحقق من بريدك للتفعيل`);
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  toast('إلى اللقاء 👋');
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.auth-tab').forEach((el, i) => el.classList.toggle('active', (i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('form-login').style.display = t === 'login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = t === 'register' ? 'block' : 'none';
+}
+
+// ===== APP =====
+async function startApp() {
+  document.getElementById('page-auth').classList.remove('active');
+  document.getElementById('page-app').style.display = 'flex';
+  document.getElementById('page-app').classList.add('active');
+  ['t-av','sl-av','cmp-av'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = CU.av; });
+  document.getElementById('sl-name').textContent = CU.full_name || 'مستخدم';
+  document.getElementById('sl-city').textContent = '📍 ' + (CU.city || 'World');
+  await loadPosts();
+  renderFilms(); renderProtests(); renderLive(); renderNotifs();
+}
+
+// ===== POSTS =====
+async function loadPosts() {
+  const { data } = await sb.from('posts')
+    .select('*, profiles(id, username, full_name, city)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  posts = (data || []).map(p => ({
+    id: p.id,
+    user: p.profiles?.full_name || 'مستخدم',
+    username: p.profiles?.username || 'user',
+    city: p.profiles?.city || '',
+    av: (p.profiles?.full_name || 'م')[0].toUpperCase(),
+    text: p.content,
+    cat: p.category,
+    loc: p.location_name,
+    img: p.media_url,
+    likes: p.likes_count || 0,
+    liked: false, likeId: null,
+    comments: [], commentsCount: p.comments_count || 0,
+    time: timeAgo(p.created_at)
+  }));
+
+  if (CU?.id) {
+    const { data: ul } = await sb.from('likes').select('id, post_id').eq('user_id', CU.id);
+    const lm = {};
+    (ul || []).forEach(l => { lm[l.post_id] = l.id; });
+    posts.forEach(p => { if (lm[p.id]) { p.liked = true; p.likeId = lm[p.id]; } });
+  }
+
+  renderFeed(); updateStats();
+}
+
+function timeAgo(d) {
+  const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (s < 60) return 'Just now';
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
+}
+
+function renderFeed(f) {
+  if (f) curFilter = f;
+  const c = document.getElementById('feed-posts');
+  const fp = curFilter === 'all' ? posts : posts.filter(p => p.cat === curFilter);
+  if (!fp.length) { c.innerHTML = `<div class="empty"><div class="ei">🇵🇸</div><p>لا توجد منشورات — كن أول من يوثّق!</p></div>`; return; }
+  c.innerHTML = fp.map(renderPost).join('');
+  updateStats();
+}
+
+function renderPost(p) {
+  const cl = {protest:'cat-protest',documentary:'cat-doc',film:'cat-film',news:'cat-news',art:'cat-art'}[p.cat] || 'cat-news';
+  const lb = {protest:'✊ Protest',documentary:'🎬 Doc',film:'🎥 Film',news:'📰 News',art:'🎨 Art'}[p.cat] || 'News';
+  const cm = (p.comments || []).map(c => `<div class="cmt"><div class="cmt-av">${c.av}</div><div class="cmt-b"><strong>${c.user}</strong><p>${c.text}</p></div></div>`).join('');
+  return `<div class="post" id="post-${p.id}">
+    <div class="post-head">
+      <div class="p-av" style="background:linear-gradient(135deg,var(--red),var(--green));">${p.av}</div>
+      <div class="p-info"><strong>${p.user}</strong><span>@${p.username} · ${p.time} · ${p.city}</span></div>
+      <span class="p-cat ${cl}">${lb}</span>
+    </div>
+    <div class="post-body">
+      <p class="post-txt">${p.text}</p>
+      ${p.img ? `<img class="post-img" src="${p.img}" onclick="openImgModal(this.src)" loading="lazy">` : ''}
+      ${p.loc ? `<div class="post-loc">📍 <span>${p.loc}</span></div>` : ''}
+    </div>
+    <div class="post-acts">
+      <button class="pa ${p.liked?'liked':''}" onclick="toggleLike('${p.id}')">${p.liked?'❤️':'🤍'} ${p.likes}</button>
+      <button class="pa" onclick="toggleCmt('${p.id}')">💬 ${p.commentsCount}</button>
+      <button class="pa" onclick="sharePost('${p.id}')">↗ <span class="ar">مشاركة</span><span class="en">Share</span></button>
+    </div>
+    <div class="comments-box" id="cb-${p.id}">
+      ${cm}
+      <div class="cmt-input">
+        <div class="cmt-av">${CU ? CU.av : ' '}</div>
+        <input type="text" id="ci-${p.id}" placeholder="أضف تعليقاً..." onkeypress="if(event.key==='Enter')addCmt('${p.id}')">
+        <button class="cmt-send" onclick="addCmt('${p.id}')">↑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function submitPost() {
+  const txt = document.getElementById('cmp-txt').value.trim();
+  if (!txt) { toast('اكتب شيئاً أولاً!', true); return; }
+  const cat = document.getElementById('cmp-cat').value;
+  const loc = showLoc ? document.getElementById('loc-in').value.trim() : null;
+  const { data, error } = await sb.from('posts').insert({
+    user_id: CU.id, content: txt, category: cat,
+    location_name: loc || null, media_url: curImg || null, media_type: curImg ? 'image' : 'none'
+  }).select('*').single();
+  if (error) { toast('خطأ في النشر', true); return; }
+  posts.unshift({ id: data.id, user: CU.full_name, username: CU.username, city: CU.city || '', av: CU.av, text: data.content, cat: data.category, loc: data.location_name, img: data.media_url, likes: 0, liked: false, likeId: null, comments: [], commentsCount: 0, time: 'Just now' });
+  document.getElementById('cmp-txt').value = ''; rmImg();
+  document.getElementById('loc-in').value = '';
+  document.getElementById('cmp-loc').classList.remove('show'); showLoc = false;
+  renderFeed(); toast('تم النشر! 🇵🇸');
+}
+
+async function toggleLike(postId) {
+  if (!CU) return;
+  const post = posts.find(p => p.id === postId); if (!post) return;
+  if (post.liked) {
+    await sb.from('likes').delete().eq('id', post.likeId);
+    post.liked = false; post.likes--; post.likeId = null;
+  } else {
+    const { data } = await sb.from('likes').insert({ user_id: CU.id, post_id: postId }).select('id').single();
+    post.liked = true; post.likes++; post.likeId = data?.id;
+  }
+  renderFeed();
+}
+
+async function toggleCmt(postId) {
+  const box = document.getElementById(`cb-${postId}`); if (!box) return;
+  if (!box.classList.contains('open')) {
+    const post = posts.find(p => p.id === postId);
+    if (post && !post.comments.length && post.commentsCount > 0) {
+      const { data } = await sb.from('comments').select('*, profiles(username, full_name)').eq('post_id', postId).order('created_at');
+      post.comments = (data || []).map(c => ({ user: c.profiles?.full_name || 'مستخدم', av: (c.profiles?.full_name || 'م')[0].toUpperCase(), text: c.content }));
+      renderFeed();
+      setTimeout(() => document.getElementById(`cb-${postId}`)?.classList.add('open'), 50);
+      return;
+    }
+  }
+  box.classList.toggle('open');
+}
+
+async function addCmt(postId) {
+  const inp = document.getElementById(`ci-${postId}`);
+  const txt = inp?.value.trim(); if (!txt || !CU) return;
+  await sb.from('comments').insert({ user_id: CU.id, post_id: postId, content: txt });
+  const post = posts.find(p => p.id === postId);
+  if (post) { post.comments.push({ user: CU.full_name, av: CU.av, text: txt }); post.commentsCount++; }
+  if (inp) inp.value = '';
+  renderFeed();
+  setTimeout(() => document.getElementById(`cb-${postId}`)?.classList.add('open'), 50);
+}
+
+function sharePost(postId) {
+  const p = posts.find(x => x.id === postId);
+  if (navigator.share) navigator.share({ title: 'falasteen.ink', text: p?.text || '' });
+  else { navigator.clipboard?.writeText(p?.text || ''); toast('تم النسخ 📋'); }
+}
+
+function filterFeed(f, btn) {
+  curFilter = f;
+  if (btn) { document.querySelectorAll('.ff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  renderFeed();
+}
+
+// ===== FILMS =====
+let filmsFilter = 'all';
+function renderFilms(f) {
+  if (f) filmsFilter = f;
+  const grid = document.getElementById('films-grid'); if (!grid) return;
+  const fl = filmsFilter === 'all' ? FILMS : FILMS.filter(x => x.type === filmsFilter);
+  grid.innerHTML = fl.map(f => `
+    <div class="film-card" onclick="openFilm(${f.id})">
+      <div class="film-thumb" style="background:${f.bg};">
+        <span style="position:relative;z-index:1;">${f.emoji}</span>
+        <div class="film-overlay"><div class="film-play">▶</div><div style="font-size:0.72rem;color:#ccc;">${f.title}</div></div>
+      </div>
+      <div class="film-info"><div class="film-title">${f.title}</div><div class="film-meta">${f.year} · ${f.dur}</div></div>
+    </div>`).join('');
+}
+function filterFilms(f, btn) {
+  document.querySelectorAll('#sec-films .ff-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); renderFilms(f);
+}
+function openFilm(id) {
+  const f = FILMS.find(x => x.id === id); if (!f) return;
+  document.getElementById('fm-emoji').textContent = f.emoji;
+  document.getElementById('fm-hero').style.background = f.bg;
+  document.getElementById('fm-title').textContent = f.title;
+  document.getElementById('fm-meta').innerHTML = `<span style="color:var(--green2);">${f.year}</span><span>${f.type}</span><span>${f.dur}</span>`;
+  document.getElementById('fm-desc').textContent = f.desc;
+  document.getElementById('fm-tags').innerHTML = f.tags.map(t => `<span class="mtag">#${t}</span>`).join('');
+  document.getElementById('film-modal').classList.add('open');
+}
+function closeModal(e) { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); }
+
+// ===== PROTESTS =====
+function renderProtests() {
+  const c = document.getElementById('protest-cards'); if (!c) return;
+  const mfd = document.getElementById('mfd');
+  const allP = [...PROTESTS, ...posts.filter(p => p.cat === 'protest' && p.loc).map(p => ({ flag: '📍', city: p.loc, country: p.city || '', count: 'موثّق', date: p.time }))];
+  c.innerHTML = allP.map(p => `<div class="protest-card"><div class="pc-flag">${p.flag}</div><div class="pc-info"><h4>${p.city}</h4><p>${p.country} · ${p.date}</p></div><div class="pc-count">${p.count}</div></div>`).join('');
+  const pos = [[28,45],[22,48],[35,52],[25,30],[20,35],[38,38],[45,25],[30,60],[50,55],[35,70],[20,55],[40,65]];
+  if (mfd) mfd.innerHTML = pos.map((p, i) => `<div class="mdot" style="top:${p[0]}%;left:${p[1]}%;animation-delay:${i*0.2}s;${i%3===1?'background:var(--green2);':i%3===2?'background:var(--gold);':''}"></div>`).join('');
+  document.getElementById('mb').textContent = allP.length;
+}
+
+// ===== LIVE =====
+function renderLive() {
+  const el = document.getElementById('live-grid'); if (!el) return;
+  el.innerHTML = LIVES.map(l => `
+    <div class="live-card" onclick="toast('البث المباشر قريباً!')">
+      <div class="live-thumb" style="background:${l.bg};"><span style="font-size:2.5rem;">${l.emoji}</span><div class="live-badge"><div class="dot"></div>LIVE</div></div>
+      <div class="live-info">
+        <h4 class="ar">${l.title.ar}</h4><h4 class="en" style="display:none;">${l.title.en}</h4>
+        <p>${l.city}</p><div class="live-viewers">👁 ${l.viewers}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ===== NOTIFS =====
+function addNotif(txt, icon) {
+  notifs.unshift({ txt, icon, time: 'Just now' });
+  if (notifs.length > 20) notifs.pop();
+  const nb = document.getElementById('nb');
+  nb.style.display = 'flex'; nb.textContent = notifs.length > 9 ? '9+' : notifs.length;
+  renderNotifs();
+}
+function renderNotifs() {
+  const el = document.getElementById('notif-list'); if (!el) return;
+  if (!notifs.length) { el.innerHTML = `<div class="empty"><div class="ei">🔔</div><p>لا توجد إشعارات</p></div>`; return; }
+  el.innerHTML = notifs.map(n => `<div style="display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:8px;"><span style="font-size:1.2rem;">${n.icon}</span><div><div style="font-size:0.85rem;">${n.txt}</div><div style="font-size:0.7rem;color:var(--gray);margin-top:2px;">${n.time}</div></div></div>`).join('');
+}
+
+// ===== NAV =====
+function showSec(s) {
+  ['home','map','films','live','notif'].forEach(x => {
+    const el = document.getElementById(`sec-${x}`);
+    if (el) el.style.display = x === s ? (x === 'home' ? 'grid' : 'block') : 'none';
+    el?.classList.toggle('active', x === s);
+    document.getElementById(`tb-${x}`)?.classList.toggle('active', x === s);
+  });
+  if (s === 'notif') document.getElementById('nb').style.display = 'none';
+  if (s === 'films') renderFilms();
+  if (s === 'map') renderProtests();
+}
+function goHome() { showSec('home'); }
+
+function doSearch(q) {
+  if (!q) { renderFeed(); return; }
+  const fp = posts.filter(p => p.text.includes(q) || p.user.includes(q) || (p.loc && p.loc.includes(q)));
+  document.getElementById('feed-posts').innerHTML = fp.length ? fp.map(renderPost).join('') : `<div class="empty"><div class="ei">🔍</div><p>لا نتائج لـ "${q}"</p></div>`;
+}
+
+// ===== STATS =====
+function updateStats() {
+  document.getElementById('s-posts').textContent = posts.length;
+  document.getElementById('s-protests').textContent = posts.filter(p => p.cat === 'protest').length;
+  if (CU) {
+    document.getElementById('p-posts').textContent = posts.filter(p => p.username === CU.username).length;
+    document.getElementById('p-likes').textContent = posts.filter(p => p.liked).length;
+    document.getElementById('p-docs').textContent = posts.filter(p => p.username === CU.username && p.cat === 'documentary').length;
+  }
+}
+
+// ===== LANG =====
+function setLang(l) {
+  document.documentElement.setAttribute('data-lang', l);
+  document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+  const sel = document.getElementById('app-lang-sel'); if (sel) sel.value = l;
+  const si = document.getElementById('search-input'); if (si) si.placeholder = l === 'ar' ? 'ابحث...' : 'Search...';
+}
+
+// ===== IMAGE =====
+function prevImg(inp) {
+  const f = inp.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => { curImg = e.target.result; document.getElementById('prev-img').src = curImg; document.getElementById('img-prev').style.display = 'block'; };
+  r.readAsDataURL(f);
+}
+function rmImg() { curImg = null; document.getElementById('img-prev').style.display = 'none'; document.getElementById('prev-img').src = ''; document.getElementById('f-up').value = ''; }
+function toggleLoc() { showLoc = !showLoc; document.getElementById('cmp-loc').classList.toggle('show', showLoc); }
+function openImgModal(src) { document.getElementById('im-src').src = src; document.getElementById('img-modal').classList.add('open'); }
+
+// ===== TOAST =====
+function toast(msg, err = false) {
+  const el = document.getElementById('toast-el');
+  el.textContent = msg; el.className = 'toast show ' + (err ? 'err' : 'ok');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ===== AI FEATURES =====
+async function _aiHeaders() {
+  const { data: { session } } = await sb.auth.getSession();
+  return { 'Authorization': `Bearer ${session?.access_token || SKEY}`, 'Content-Type': 'application/json' };
+}
+
+async function fetchLiveProtests(btn) {
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ <span class="ar">جاري البحث...</span>'; btn.disabled = true; }
+  try {
+    const res = await fetch(`${EDGE_URL}/search-protests`, { method: 'POST', headers: await _aiHeaders() });
+    if (!res.ok) throw new Error('edge-fn-error');
+    const { protests } = await res.json();
+    if (protests && protests.length) {
+      protests.forEach(p => { if (!PROTESTS.find(e => e.city === p.city)) PROTESTS.unshift(p); });
+      renderProtests();
+      toast(`✅ تم تحديث ${protests.length} مظاهرة عبر Perplexity!`);
+    } else { toast('لا نتائج جديدة', true); }
+  } catch { toast('Perplexity: تحتاج إضافة PERPLEXITY_API_KEY في Supabase Secrets', true); }
+  finally { if (btn) { btn.innerHTML = orig; btn.disabled = false; } }
+}
+
+async function fetchNewsAI() {
+  const btn = document.getElementById('news-ai-btn');
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ <span class="ar">جاري الجلب...</span>'; btn.disabled = true; }
+  try {
+    const res = await fetch(`${EDGE_URL}/scrape-news`, { method: 'POST', headers: await _aiHeaders() });
+    if (!res.ok) throw new Error('edge-fn-error');
+    const { articles } = await res.json();
+    if (articles && articles.length) {
+      articles.forEach(a => {
+        if (!a.title) return;
+        posts.unshift({ id: 'fc-' + Date.now() + Math.random().toString(36).slice(2), user: '🌐 Firecrawl Bot', username: 'firecrawl', city: '', av: '🌐', text: a.title + (a.excerpt ? '\n\n' + a.excerpt : ''), cat: 'news', loc: null, img: a.image || null, likes: 0, liked: false, likeId: null, comments: [], commentsCount: 0, time: 'Just now' });
+      });
+      renderFeed();
+      toast(`📰 تم جلب ${articles.length} أخبار عبر Firecrawl!`);
+    } else { toast('لا أخبار جديدة', true); }
+  } catch { toast('Firecrawl: تحتاج إضافة FIRECRAWL_API_KEY في Supabase Secrets', true); }
+  finally { if (btn) { btn.innerHTML = orig; btn.disabled = false; } }
+}
+
+async function generateAIImage() {
+  const btn = document.getElementById('glif-btn');
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ <span class="ar">توليد...</span>'; btn.disabled = true; }
+  const prompt = document.getElementById('cmp-txt').value.trim() || 'Palestinian solidarity art, olive tree, freedom';
+  try {
+    const res = await fetch(`${EDGE_URL}/generate-image`, { method: 'POST', headers: await _aiHeaders(), body: JSON.stringify({ prompt }) });
+    if (!res.ok) throw new Error('edge-fn-error');
+    const { imageUrl } = await res.json();
+    if (imageUrl) {
+      curImg = imageUrl;
+      document.getElementById('prev-img').src = imageUrl;
+      document.getElementById('img-prev').style.display = 'block';
+      toast('🎨 تم توليد الصورة عبر Glif!');
+    } else { toast('لم يتم توليد الصورة', true); }
+  } catch { toast('Glif: تحتاج إضافة GLIF_API_TOKEN في Supabase Secrets', true); }
+  finally { if (btn) { btn.innerHTML = orig; btn.disabled = false; } }
+}
+
+init();
+</script>
+</body>
+</html>
