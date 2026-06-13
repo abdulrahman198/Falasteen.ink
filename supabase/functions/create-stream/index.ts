@@ -10,13 +10,21 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  const LIVEPEER_API_KEY = Deno.env.get('LIVEPEER_API_KEY')
+  if (!LIVEPEER_API_KEY) {
+    return new Response(JSON.stringify({ error: 'LIVEPEER_API_KEY is not configured' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
   try {
     const { title } = await req.json()
-    
+
     const res = await fetch('https://livepeer.studio/api/stream', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer 7f763967-912a-4243-99e9-92505c2bcb9b',
+        'Authorization': 'Bearer ' + LIVEPEER_API_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -27,7 +35,7 @@ serve(async (req) => {
         ]
       })
     })
-    
+
     const data = await res.json()
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
