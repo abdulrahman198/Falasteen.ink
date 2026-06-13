@@ -39,8 +39,8 @@ if (window.fetch && !window.fetch._flAuditWrapped) {
   window.fetch = flAuditFetch;
 }
 
-FL.SUPABASE_URL = window.SUPABASE_URL || "https://audvtdbylhmumvdrhijk.supabase.co";
-FL.SUPABASE_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb";
+FL.SUPABASE_URL = window.SUPABASE_URL;
+FL.SUPABASE_KEY = window.SUPABASE_ANON_KEY;
 
 // ── Supabase Auth ──
 FL.getSupabaseClient = function() {
