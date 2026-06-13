@@ -287,7 +287,7 @@ window.addEventListener('load', () => {
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
         <code>// 1. أضف API Key في أعلى ملف live.html
-var LIVEPEER_API_KEY = window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b';
+var LIVEPEER_API_KEY = window.LIVEPEER_API_KEY || '';
 
 // 2. استبدل دالة startLive بهذه:
 async function startLive() {
@@ -485,7 +485,7 @@ python -m http.server 8080</code>
 
 var FL_CONFIG = {
   // Livepeer API Key من livepeer.studio
-  LIVEPEER_API_KEY: window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b',
+  LIVEPEER_API_KEY: window.LIVEPEER_API_KEY || 'YOUR_LIVEPEER_API_KEY',
 
   // Network: 'mainnet' للإنتاج, 'polygon' أرخص
   NETWORK: 'polygon',
