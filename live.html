@@ -129,10 +129,10 @@ async function startBroadcast() {
     setStatus('جارٍ إنشاء البث على Livepeer...', '#f59e0b');
 
     var title = document.getElementById('streamTitle').value.trim() || 'بث مباشر من فلسطين';
-    var res = await fetch('https://audvtdbylhmumvdrhijk.supabase.co/functions/v1/create-stream', {
+    var res = await fetch(SUPA_URL + '/functions/v1/create-stream', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY5MTY3MDYsImV4cCI6MjAzMjQ5MjcwNn0.KqCE7GxIUqXqMNXbDYbNFBxJH38lAHBMkdQjBCBN5qA',
+        'Authorization': 'Bearer ' + SUPA_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ title: title || 'بث مباشر' })
