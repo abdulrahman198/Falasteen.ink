@@ -613,8 +613,8 @@ function copyCode(btn) {
 // ── SUPABASE CLIENT ──
 var _sb = null;
 try {
-  var _SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
-  var _SB_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+  var _SB_URL = window.SUPABASE_URL;
+  var _SB_KEY = window.SUPABASE_ANON_KEY;
   _sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(_SB_URL, _SB_KEY) : null;
 } catch(e) { console.warn('Supabase init failed:', e); }
 
