@@ -255,8 +255,8 @@ if (window.caches && !sessionStorage.getItem('fl_admin_caches_cleared_v3')) {
   }).catch(function(){});
 }
 
-var SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
-var SB_KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb';
+var SB_URL = window.SUPABASE_URL;
+var SB_KEY = window.SUPABASE_ANON_KEY;
 var ADMIN_EMAIL = 'alazzehabdul@gmail.com';
 var LOCAL_REELS_KEY = 'fl_local_reels';
 var sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(SB_URL, SB_KEY) : null;

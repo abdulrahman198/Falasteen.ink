@@ -92,9 +92,8 @@ h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:24px 0 8px;text-ali
 <div class="toast" id="toast"></div>
 
 <script>
-var LIVEPEER_KEY = window.LIVEPEER_API_KEY || '7f763967-912a-4243-99e9-92505c2bcb9b';
-var SUPA_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
-var SUPA_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+var SUPA_URL = window.SUPABASE_URL;
+var SUPA_KEY = window.SUPABASE_ANON_KEY;
 
 var localStream = null;
 var pc = null;
@@ -130,10 +129,10 @@ async function startBroadcast() {
     setStatus('جارٍ إنشاء البث على Livepeer...', '#f59e0b');
 
     var title = document.getElementById('streamTitle').value.trim() || 'بث مباشر من فلسطين';
-    var res = await fetch('https://audvtdbylhmumvdrhijk.supabase.co/functions/v1/create-stream', {
+    var res = await fetch(SUPA_URL + '/functions/v1/create-stream', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY5MTY3MDYsImV4cCI6MjAzMjQ5MjcwNn0.KqCE7GxIUqXqMNXbDYbNFBxJH38lAHBMkdQjBCBN5qA',
+        'Authorization': 'Bearer ' + SUPA_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ title: title || 'بث مباشر' })
@@ -153,7 +152,7 @@ async function startBroadcast() {
     var whipUrl = 'https://livepeer.studio/webrtc/' + stream.streamKey;
     var whipRes = await fetch(whipUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/sdp', 'Authorization': 'Bearer ' + LIVEPEER_KEY },
+      headers: { 'Content-Type': 'application/sdp' },
       body: offer.sdp
     });
     if (whipRes.ok) {
