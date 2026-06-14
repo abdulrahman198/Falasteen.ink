@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>falasteen.ink — Free Palestine Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700;900&family=Noto+Sans+Arabic:wght@300;400;700&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="app-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root {
@@ -560,8 +561,8 @@ input[type=file]{display:none;}
 <div class="toast" id="toast-el"></div>
 
 <script>
-const SURL = 'https://audvtdbylhmumvdrhijk.supabase.co';
-const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZHZ0ZGJ5bGhtdW12ZHJoaWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMTA5NjAsImV4cCI6MjA5MTU4Njk2MH0.Clrp9j8uN08AZ28Uu53NiQDYqDo0SGgVo-HVGBEa4gU';
+const SURL = window.SUPABASE_URL;
+const SKEY = window.SUPABASE_ANON_KEY;
 const sb = window.supabase.createClient(SURL, SKEY);
 const EDGE_URL = `${SURL}/functions/v1`;
 
