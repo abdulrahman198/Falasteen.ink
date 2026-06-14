@@ -353,8 +353,8 @@ body { background:var(--bg); color:var(--text); font-family:Arial,"Segoe UI",Tah
 
 <script src="ollama-auto-tagging.js" defer></script>
 <script>
-var SB_URL = window.SUPABASE_URL || 'https://audvtdbylhmumvdrhijk.supabase.co';
-var SB_KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_dNiywN77kMc9WlxuBULxjA_SMWK3YGb';
+var SB_URL = window.SUPABASE_URL;
+var SB_KEY = window.SUPABASE_ANON_KEY;
 var sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(SB_URL, SB_KEY) : null;
 
 var COMMENTS_KEY = 'fl_comments';
